@@ -36,7 +36,7 @@ export const getProjectCurrentSupply = async (project_id: number, conn: Connecti
 
   const query = await Project.findById({ _id: project_id });
 
-  return query.current_supply || 0;
+  return query?.current_supply || 0;
 };
 
 export const updateProjectCurrentSupply = async (
