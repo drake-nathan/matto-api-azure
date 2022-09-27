@@ -8,7 +8,7 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
   let conn: Connection;
 
   try {
-    conn = await connectionFactory();
+    conn = await connectionFactory(context);
 
     const project = await getProject(project_slug, conn);
 

@@ -57,13 +57,7 @@ export const checkForNewTransactions = async (
   context: Context,
   conn: Connection,
 ) => {
-  const {
-    _id: project_id,
-    contract_address,
-    events,
-    project_name,
-    creation_block,
-  } = project;
+  const { _id: project_id, contract_address, events, project_name } = project;
   const contract = getContract(abis[project_id], contract_address);
 
   const logValues: ILogValues = {
@@ -73,13 +67,7 @@ export const checkForNewTransactions = async (
     currentSupply: 0,
   };
 
-  // TODO: Remove creation_block from this query
-  const fetchedTransactions = await fetchEvents(
-    contract,
-    events,
-    project_id,
-    creation_block,
-  );
+  const fetchedTransactions = await fetchEvents(contract, events, project_id, conn);
 
   const newTransactionsAdded = await Promise.all(
     fetchedTransactions.map(async (tx) => addTransaction(tx, conn)),

@@ -8,7 +8,7 @@ const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
   let conn: Connection;
 
   try {
-    conn = await connectionFactory();
+    conn = await connectionFactory(context);
 
     const arrOfLogValues = await Promise.all(
       projects.map((project) => checkForNewTransactions(project, context, conn)),
@@ -21,7 +21,7 @@ const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
 
       const logMsg = `${logValues.project_name}: ${logValues.numOfTxsAdded} new transactions. ${tokenMsg} Current supply: ${logValues.currentSupply}`;
 
-      context.log(logMsg);
+      context.log.info(logMsg);
     });
   } catch (error) {
     context.res = {

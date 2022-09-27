@@ -1,4 +1,5 @@
 import { Contract } from 'web3-eth-contract';
+import { Connection } from 'mongoose';
 import { IScriptInputs } from '../db/schemas/schemaTypes';
 import { getLastTxProcessed } from '../db/queries/transactionQueries';
 
@@ -6,10 +7,10 @@ export const fetchEvents = async (
   contract: Contract,
   events: string[],
   project_id: number,
+  conn: Connection,
   startingBlock?: number,
 ) => {
-  const fromBlock = startingBlock || (await getLastTxProcessed(project_id));
-
+  const fromBlock = startingBlock || (await getLastTxProcessed(project_id, conn));
   const options = { fromBlock };
 
   const allTransactions = await contract.getPastEvents('allEvents', options);

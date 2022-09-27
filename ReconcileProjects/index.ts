@@ -8,7 +8,7 @@ const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
   let conn: Connection;
 
   try {
-    conn = await connectionFactory();
+    conn = await connectionFactory(context);
 
     await checkForNewProjects(context, projects, conn);
 

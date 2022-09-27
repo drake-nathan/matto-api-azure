@@ -61,7 +61,13 @@ export const reconcileProject = async (
   const contract = getContract(abis[project_id], contract_address);
 
   // fetch all transactions from blockchain, add missing ones
-  const allTransactions = await fetchEvents(contract, events, project_id, creation_block);
+  const allTransactions = await fetchEvents(
+    contract,
+    events,
+    project_id,
+    conn,
+    creation_block,
+  );
   const newTransactionsAdded = await Promise.all(
     allTransactions.map((tx) => addTransaction(tx, conn)),
   );
