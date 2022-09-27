@@ -1,7 +1,7 @@
-import { Schema, model } from 'mongoose';
-import { IToken } from './modelTypes';
+import { Schema } from 'mongoose';
+import { IToken } from './schemaTypes';
 
-const tokenSchema = new Schema<IToken>({
+export const tokenSchema = new Schema<IToken>({
   token_id: { type: Number, required: true },
   name: { type: String, required: true, maxLength: 100 },
   project_id: { type: Number, required: true },
@@ -44,5 +44,3 @@ const tokenSchema = new Schema<IToken>({
     },
   ],
 });
-
-export const Token = model<IToken>('Token', tokenSchema);

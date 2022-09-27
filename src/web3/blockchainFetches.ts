@@ -1,5 +1,5 @@
 import { Contract } from 'web3-eth-contract';
-import { IScriptInputs } from '../db/models/modelTypes';
+import { IScriptInputs } from '../db/schemas/schemaTypes';
 import { getLastTxProcessed } from '../db/queries/transactionQueries';
 
 export const fetchEvents = async (

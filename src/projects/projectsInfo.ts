@@ -1,5 +1,5 @@
 import { AbiItem } from 'web3-utils';
-import { IProject } from '../db/models/modelTypes';
+import { IProject } from '../db/schemas/schemaTypes';
 import chainlifeAbi from './abis/chainlife.abi.json';
 
 enum projectIds {

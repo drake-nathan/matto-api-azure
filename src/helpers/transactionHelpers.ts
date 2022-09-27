@@ -1,7 +1,8 @@
 /* eslint-disable no-restricted-syntax */
 import { Context } from '@azure/functions';
 import { Contract } from 'web3-eth-contract';
-import { IProject, ITransaction } from '../db/models/modelTypes';
+import { Connection } from 'mongoose';
+import { IProject, ITransaction } from '../db/schemas/schemaTypes';
 import { getProjectCurrentSupply } from '../db/queries/projectQueries';
 import { checkIfTokenExists } from '../db/queries/tokenQueries';
 import { addTransaction } from '../db/queries/transactionQueries';
@@ -22,6 +23,7 @@ export const processNewTransactions = async (
   project: IProject,
   contract: Contract,
   context: Context,
+  conn: Connection,
 ) => {
   const newTokenIds: number[] = [];
 
@@ -30,26 +32,31 @@ export const processNewTransactions = async (
     const script_inputs = await fetchScriptInputs(contract, token_id);
 
     if (event_type === 'Mint') {
-      const doesTokenExist = await checkIfTokenExists(token_id);
+      const doesTokenExist = await checkIfTokenExists(token_id, conn);
       if (!doesTokenExist) {
         const { newTokenId } = await processNewTokenMint(
           token_id,
           project,
           script_inputs,
           context,
+          conn,
         );
         newTokenIds.push(newTokenId);
       }
     } else {
       // this handles transfer and custom rule events
-      await processTransferEvent(token_id, project, script_inputs, context);
+      await processTransferEvent(token_id, project, script_inputs, context, conn);
     }
   }
 
   return newTokenIds;
 };
 
-export const checkForNewTransactions = async (project: IProject, context: Context) => {
+export const checkForNewTransactions = async (
+  project: IProject,
+  context: Context,
+  conn: Connection,
+) => {
   const {
     _id: project_id,
     contract_address,
@@ -75,12 +82,12 @@ export const checkForNewTransactions = async (project: IProject, context: Contex
   );
 
   const newTransactionsAdded = await Promise.all(
-    fetchedTransactions.map(async (tx) => addTransaction(tx)),
+    fetchedTransactions.map(async (tx) => addTransaction(tx, conn)),
   );
   const newTxNoNull = newTransactionsAdded.filter(Boolean);
 
   if (!newTxNoNull.length) {
-    const currentSupply = await getProjectCurrentSupply(project._id);
+    const currentSupply = await getProjectCurrentSupply(project._id, conn);
     logValues.currentSupply = currentSupply;
     return logValues;
   }
@@ -92,10 +99,11 @@ export const checkForNewTransactions = async (project: IProject, context: Contex
     project,
     contract,
     context,
+    conn,
   );
   logValues.newTokens = newTokenIds;
 
-  const newSupply = await getProjectCurrentSupply(project._id);
+  const newSupply = await getProjectCurrentSupply(project._id, conn);
   logValues.currentSupply = newSupply;
 
   return logValues;

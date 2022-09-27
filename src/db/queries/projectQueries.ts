@@ -1,8 +1,9 @@
-import { IProject } from '../models/modelTypes';
-import { Project } from '../models/project';
+import { Connection } from 'mongoose';
+import { IProject } from '../schemas/schemaTypes';
 
-export const addProject = async (projectToAdd: IProject) => {
+export const addProject = async (projectToAdd: IProject, conn: Connection) => {
   const { _id } = projectToAdd;
+  const Project = conn.model<IProject>('Project');
 
   const doesProjectExist = await Project.exists({ _id });
   if (doesProjectExist) return;
@@ -13,7 +14,9 @@ export const addProject = async (projectToAdd: IProject) => {
   return query;
 };
 
-export const getProject = (project_slug: string) => {
+export const getProject = (project_slug: string, conn: Connection) => {
+  const Project = conn.model<IProject>('Project');
+
   const query = Project.findOne({ project_slug });
 
   query.select('-__v');
@@ -21,12 +24,16 @@ export const getProject = (project_slug: string) => {
   return query.lean().exec();
 };
 
-export const getAllProjects = async () => {
+export const getAllProjects = async (conn: Connection) => {
+  const Project = conn.model<IProject>('Project');
+
   const query = await Project.find();
   return query;
 };
 
-export const getProjectCurrentSupply = async (project_id: number) => {
+export const getProjectCurrentSupply = async (project_id: number, conn: Connection) => {
+  const Project = conn.model<IProject>('Project');
+
   const query = await Project.findById({ _id: project_id });
 
   return query.current_supply || 0;
@@ -35,13 +42,18 @@ export const getProjectCurrentSupply = async (project_id: number) => {
 export const updateProjectCurrentSupply = async (
   project_id: number,
   current_supply: number,
+  conn: Connection,
 ) => {
+  const Project = conn.model<IProject>('Project');
+
   const query = await Project.findByIdAndUpdate(project_id, { current_supply });
 
   return query.current_supply;
 };
 
-export const checkIfNewProjects = async (projects: IProject[]) => {
+export const checkIfNewProjects = async (projects: IProject[], conn: Connection) => {
+  const Project = conn.model<IProject>('Project');
+
   const doAllProjectsExist = await Promise.all(
     projects.map(({ _id }) => Project.exists({ _id })),
   );
@@ -49,7 +61,9 @@ export const checkIfNewProjects = async (projects: IProject[]) => {
   return doAllProjectsExist.includes(null);
 };
 
-export const checkIfProjectExists = async (project_slug: string) => {
+export const checkIfProjectExists = async (project_slug: string, conn: Connection) => {
+  const Project = conn.model<IProject>('Project');
+
   const query = await Project.exists({ project_slug });
   return query;
 };

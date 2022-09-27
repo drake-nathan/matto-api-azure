@@ -1,24 +1,21 @@
 import { AzureFunction, Context } from '@azure/functions';
-import { connect, disconnect } from 'mongoose';
-import * as dotenv from 'dotenv';
+import { Connection } from 'mongoose';
 import { projects } from '../src/projects/projectsInfo';
 import { checkForNewProjects, reconcileProject } from '../src/helpers/projectHelpers';
+import { connectionFactory } from '../src/db/connectionFactory';
 
 const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
-  dotenv.config();
-  const dbConnectionString = process.env.DB_CONNECTION_STRING as string;
-
-  if (!dbConnectionString) {
-    throw new Error('DB_CONNECTION_STRING not found in .env');
-  }
+  let conn: Connection;
 
   try {
-    await connect(dbConnectionString);
+    conn = await connectionFactory();
 
-    await checkForNewProjects(context, projects);
+    await checkForNewProjects(context, projects, conn);
 
     const reconcileAllProjects = async () => {
-      await Promise.all(projects.map((project) => reconcileProject(context, project)));
+      await Promise.all(
+        projects.map((project) => reconcileProject(context, project, conn)),
+      );
     };
 
     await reconcileAllProjects();
@@ -29,7 +26,7 @@ const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
       body: error,
     };
   } finally {
-    await disconnect();
+    await conn.close();
   }
 };
 
