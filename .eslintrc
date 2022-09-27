@@ -1,0 +1,35 @@
+{
+  "extends": ["airbnb-base", "airbnb-typescript/base"],
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
+  "rules": {
+    "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
+    "@typescript-eslint/no-unused-vars": "warn",
+    "import/prefer-default-export": "off",
+    "radix": "off",
+    "no-console": ["warn", { "allow": ["info", "warn", "error"] }],
+    "no-debugger": "warn",
+    "implicit-arrow-linebreak": "off",
+    "function-paren-newline": "off",
+    "no-underscore-dangle": "off",
+    "consistent-return": "off",
+    "no-return-assign": "off",
+    "object-curly-newline": "off",
+    "@typescript-eslint/naming-convention": [
+      "error",
+      {
+        "selector": "variable",
+        "format": ["camelCase", "UPPER_CASE", "PascalCase", "snake_case"],
+        "leadingUnderscore": "allow"
+      }
+    ]
+  },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      }
+    }
+  }
+}
