@@ -1,4 +1,5 @@
 /* eslint-disable no-restricted-syntax */
+import { Context } from '@azure/functions';
 import { Contract } from 'web3-eth-contract';
 import { IProject, ITransaction } from '../db/models/modelTypes';
 import { getProjectCurrentSupply } from '../db/queries/projectQueries';
@@ -20,6 +21,7 @@ export const processNewTransactions = async (
   newTxs: ITransaction[],
   project: IProject,
   contract: Contract,
+  context: Context,
 ) => {
   const newTokenIds: number[] = [];
 
@@ -34,19 +36,20 @@ export const processNewTransactions = async (
           token_id,
           project,
           script_inputs,
+          context,
         );
         newTokenIds.push(newTokenId);
       }
     } else {
       // this handles transfer and custom rule events
-      await processTransferEvent(token_id, project, script_inputs);
+      await processTransferEvent(token_id, project, script_inputs, context);
     }
   }
 
   return newTokenIds;
 };
 
-export const checkForNewTransactions = async (project: IProject) => {
+export const checkForNewTransactions = async (project: IProject, context: Context) => {
   const {
     _id: project_id,
     contract_address,
@@ -84,7 +87,12 @@ export const checkForNewTransactions = async (project: IProject) => {
 
   logValues.numOfTxsAdded = newTxNoNull.length;
 
-  const newTokenIds = await processNewTransactions(newTxNoNull, project, contract);
+  const newTokenIds = await processNewTransactions(
+    newTxNoNull,
+    project,
+    contract,
+    context,
+  );
   logValues.newTokens = newTokenIds;
 
   const newSupply = await getProjectCurrentSupply(project._id);

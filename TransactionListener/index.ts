@@ -17,7 +17,7 @@ const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
   try {
     if (!wasDbAlreadyConnected) await connect(dbConnectionString);
     const arrOfLogValues = await Promise.all(
-      projects.map((project) => checkForNewTransactions(project)),
+      projects.map((project) => checkForNewTransactions(project, context)),
     );
 
     arrOfLogValues.forEach((logValues) => {

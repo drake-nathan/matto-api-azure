@@ -93,7 +93,7 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
       },
     };
   } catch (error) {
-    console.error(error);
+    context.log.error(error);
     context.res = {
       status: 500,
       body: 'This token may not be minted yet.',

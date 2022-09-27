@@ -1,6 +1,5 @@
 import { BlobServiceClient } from '@azure/storage-blob';
 import * as dotenv from 'dotenv';
-import fs from 'fs';
 
 export const uploadThumbnail = async (
   file: Buffer,
@@ -15,34 +14,21 @@ export const uploadThumbnail = async (
     throw new Error('AZURE_STORAGE_CONNECTION_STRING not found');
   }
 
-  try {
-    const blobServiceClient = BlobServiceClient.fromConnectionString(
-      azureStorageConnectionString,
-    );
+  const blobServiceClient = BlobServiceClient.fromConnectionString(
+    azureStorageConnectionString,
+  );
 
-    const containerName = 'images';
-    const containerClient = blobServiceClient.getContainerClient(containerName);
+  const containerName = 'images';
+  const containerClient = blobServiceClient.getContainerClient(containerName);
 
-    const imageName = `${project_slug}_${token_id}.png`;
-    const blockBlobClient = containerClient.getBlockBlobClient(imageName);
+  const imageName = `${project_slug}_${token_id}.png`;
+  const blockBlobClient = containerClient.getBlockBlobClient(imageName);
 
-    await blockBlobClient.upload(file, file.length);
+  await blockBlobClient.upload(file, file.length);
 
-    await blockBlobClient.setHTTPHeaders({
-      blobContentType: 'image/png',
-    });
+  await blockBlobClient.setHTTPHeaders({
+    blobContentType: 'image/png',
+  });
 
-    return blockBlobClient.url;
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
+  return blockBlobClient.url;
 };
-
-// const testImage = fs.readFileSync(
-//   '/Users/nathandrake/code/matto-azure-functions/degenz.png',
-// );
-
-// uploadThumbnail(testImage, 'chainlife', 1)
-//   .then((url) => console.log(url))
-//   .catch((error) => console.error(error));

@@ -1,4 +1,5 @@
 import * as dotenv from 'dotenv';
+import { Context } from '@azure/functions';
 import { IProject, IScriptInputs, IToken } from '../db/models/modelTypes';
 import {
   getProjectCurrentSupply,
@@ -19,6 +20,7 @@ export const processNewTokenMint = async (
   token_id: number,
   project: IProject,
   script_inputs: IScriptInputs,
+  context: Context,
 ) => {
   const {
     _id: project_id,
@@ -37,7 +39,7 @@ export const processNewTokenMint = async (
   const doesTokenExist = await checkIfTokenExists(token_id);
   if (doesTokenExist) return;
 
-  console.info('Adding token', token_id, 'to', project.project_name);
+  context.log.info('Adding token', token_id, 'to', project.project_name);
 
   const generator_url = `${rootServerUrl}/project/${project_slug}/generator/${token_id}`;
 
@@ -80,8 +82,9 @@ export const processTransferEvent = async (
   token_id: number,
   project: IProject,
   script_inputs: IScriptInputs,
+  context: Context,
 ) => {
-  console.info('Updating token', token_id, 'on', project.project_name);
+  context.log.info('Updating token', token_id, 'on', project.project_name);
 
   const { _id: project_id, project_slug } = project;
   const generator_url = `${rootServerUrl}/project/${project_id}/generator/${token_id}`;

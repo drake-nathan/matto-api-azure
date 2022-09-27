@@ -15,15 +15,15 @@ const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
   try {
     await connect(dbConnectionString);
 
-    await checkForNewProjects(projects);
+    await checkForNewProjects(context, projects);
 
     const reconcileAllProjects = async () => {
-      await Promise.all(projects.map((project) => reconcileProject(project)));
+      await Promise.all(projects.map((project) => reconcileProject(context, project)));
     };
 
     await reconcileAllProjects();
   } catch (error) {
-    console.error(error);
+    context.log.error(error);
     context.res = {
       status: 500,
       body: error,

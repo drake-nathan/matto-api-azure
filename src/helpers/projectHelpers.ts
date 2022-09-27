@@ -1,3 +1,4 @@
+import { Context } from '@azure/functions';
 import { nullAddress } from '../constants';
 import { IProject } from '../db/models/modelTypes';
 import {
@@ -22,20 +23,20 @@ const processNewProjects = async (projects: IProject[]) => {
   return { projectsAdded, namesOfProjectsAdded };
 };
 
-export const checkForNewProjects = async (projects: IProject[]) => {
+export const checkForNewProjects = async (context: Context, projects: IProject[]) => {
   const isNewProject = await checkIfNewProjects(projects);
   if (isNewProject) {
-    console.info('New project found, adding to db...');
+    context.log.info('New project found, adding to db...');
 
     const { namesOfProjectsAdded } = await processNewProjects(projects);
 
-    console.info('These new projects were added:', ...namesOfProjectsAdded);
+    context.log.info('These new projects were added:', ...namesOfProjectsAdded);
   } else {
-    console.info('No new projects to add.');
+    context.log.info('No new projects to add.');
   }
 };
 
-export const reconcileProject = async (project: IProject) => {
+export const reconcileProject = async (context: Context, project: IProject) => {
   const {
     _id: project_id,
     contract_address,
@@ -43,7 +44,7 @@ export const reconcileProject = async (project: IProject) => {
     creation_block,
     project_name,
   } = project;
-  console.info(`Reconciling ${project_name} database to blockchain.`);
+  context.log.info(`Reconciling ${project_name} database to blockchain.`);
 
   const contract = getContract(abis[project_id], contract_address);
 
@@ -54,34 +55,38 @@ export const reconcileProject = async (project: IProject) => {
   );
   const newTxNoNull = newTransactionsAdded.filter(Boolean);
 
-  await processNewTransactions(newTxNoNull, project, contract);
+  await processNewTransactions(newTxNoNull, project, contract, context);
 
   const totalMintTransactions = allTransactions.filter(
     (tx) => tx.event === 'Transfer' && tx.returnValues.from === nullAddress,
   ).length;
   const totalTokensInDb = await getCurrentTokenSupply(project_id);
 
-  console.info('Total mint transactions:', totalMintTransactions);
-  console.info('Total tokens in db:', totalTokensInDb);
+  context.log.info('Total mint transactions:', totalMintTransactions);
+  context.log.info('Total tokens in db:', totalTokensInDb);
 
   if (totalMintTransactions === totalTokensInDb) {
-    console.info(`${project_name} has been fully reconciled.`);
+    context.log.info(`${project_name} has been fully reconciled.`);
     await updateProjectCurrentSupply(project_id, totalTokensInDb);
   } else {
     if (totalMintTransactions < totalTokensInDb) {
-      console.info(`${project_name} has a token count discrepancy, attempting to fix.`);
+      context.log.info(
+        `${project_name} has a token count discrepancy, attempting to fix.`,
+      );
       await removeDuplicateTokens(project_id);
     } else {
-      console.info(`${project_name} has a token count discrepancy, attempting to fix.`);
+      context.log.info(
+        `${project_name} has a token count discrepancy, attempting to fix.`,
+      );
       const allMintTransactions = await getAllMintTransactions(project_id);
-      await processNewTransactions(allMintTransactions, project, contract);
+      await processNewTransactions(allMintTransactions, project, contract, context);
     }
     const newTotalTokensInDb = await getCurrentTokenSupply(project_id);
     if (totalMintTransactions === newTotalTokensInDb) {
-      console.info(`${project_name} has been fully reconciled.`);
+      context.log.info(`${project_name} has been fully reconciled.`);
       await updateProjectCurrentSupply(project_id, newTotalTokensInDb);
     } else {
-      console.info(
+      context.log.info(
         `${project_name} still has a token count discrepancy, please check the database.`,
       );
     }
