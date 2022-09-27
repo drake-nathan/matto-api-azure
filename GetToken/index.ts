@@ -1,22 +1,17 @@
 import { AzureFunction, Context } from '@azure/functions';
-import * as dotenv from 'dotenv';
-import { connect, disconnect } from 'mongoose';
+import { Connection } from 'mongoose';
+import { connectionFactory } from '../src/db/connectionFactory';
 import { checkIfProjectExists } from '../src/db/queries/projectQueries';
 import { getToken } from '../src/db/queries/tokenQueries';
 
 const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
-  dotenv.config();
-  const dbConnectionString = process.env.DB_CONNECTION_STRING as string;
-
-  if (!dbConnectionString) {
-    throw new Error('DB_CONNECTION_STRING not found in .env');
-  }
+  const { project_slug, token_id } = context.bindingData;
+  let conn: Connection;
 
   try {
-    await connect(dbConnectionString);
-    const { project_slug, token_id } = context.bindingData;
+    conn = await connectionFactory(context);
 
-    const doesProjectExist = await checkIfProjectExists(project_slug);
+    const doesProjectExist = await checkIfProjectExists(project_slug, conn);
 
     if (!doesProjectExist) {
       context.res = {
@@ -26,7 +21,7 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
       return;
     }
 
-    const token = await getToken(project_slug, token_id);
+    const token = await getToken(project_slug, token_id, conn);
 
     if (!token) {
       context.res = {
@@ -47,7 +42,7 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
       body: 'Internal Server Error',
     };
   } finally {
-    await disconnect();
+    await conn.close();
   }
 };
 

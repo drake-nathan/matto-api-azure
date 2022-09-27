@@ -1,7 +1,7 @@
-import { Schema, model } from 'mongoose';
-import { IProject } from './modelTypes';
+import { Schema } from 'mongoose';
+import { IProject } from './schemaTypes';
 
-const projectSchema = new Schema<IProject>({
+export const projectSchema = new Schema<IProject>({
   _id: { type: Number, required: true },
   project_name: { type: String, required: true, maxLength: 100 },
   project_slug: { type: String, required: true, maxLength: 100, unique: true },
@@ -22,5 +22,3 @@ const projectSchema = new Schema<IProject>({
   events: [{ type: String, maxlength: 100 }],
   creation_block: { type: Number, required: true },
 });
-
-export const Project = model<IProject>('Project', projectSchema);

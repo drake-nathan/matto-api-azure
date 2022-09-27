@@ -1,23 +1,17 @@
 import { AzureFunction, Context } from '@azure/functions';
-import { connect, connection, disconnect } from 'mongoose';
-import * as dotenv from 'dotenv';
+import { Connection } from 'mongoose';
+import { connectionFactory } from '../src/db/connectionFactory';
 import { checkForNewTransactions } from '../src/helpers/transactionHelpers';
 import { projects } from '../src/projects/projectsInfo';
 
 const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
-  dotenv.config();
-  const dbConnectionString = process.env.DB_CONNECTION_STRING as string;
-
-  if (!dbConnectionString) {
-    throw new Error('DB_CONNECTION_STRING not found in .env');
-  }
-
-  const wasDbAlreadyConnected = connection.readyState === 1;
+  let conn: Connection;
 
   try {
-    if (!wasDbAlreadyConnected) await connect(dbConnectionString);
+    conn = await connectionFactory(context);
+
     const arrOfLogValues = await Promise.all(
-      projects.map((project) => checkForNewTransactions(project, context)),
+      projects.map((project) => checkForNewTransactions(project, context, conn)),
     );
 
     arrOfLogValues.forEach((logValues) => {
@@ -27,7 +21,7 @@ const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
 
       const logMsg = `${logValues.project_name}: ${logValues.numOfTxsAdded} new transactions. ${tokenMsg} Current supply: ${logValues.currentSupply}`;
 
-      context.log(logMsg);
+      context.log.info(logMsg);
     });
   } catch (error) {
     context.res = {
@@ -35,7 +29,7 @@ const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
       body: error,
     };
   } finally {
-    if (!wasDbAlreadyConnected) await disconnect();
+    await conn.close();
   }
 };
 

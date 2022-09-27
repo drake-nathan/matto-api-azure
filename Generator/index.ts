@@ -1,33 +1,25 @@
 import { AzureFunction, Context } from '@azure/functions';
-import { connect, disconnect, connection } from 'mongoose';
-import * as dotenv from 'dotenv';
+import { Connection } from 'mongoose';
 import { fetchScriptInputs } from '../src/web3/blockchainFetches';
 import { getProject } from '../src/db/queries/projectQueries';
 import { getContract } from '../src/web3/contract';
 import { abis } from '../src/projects/projectsInfo';
+import { connectionFactory } from '../src/db/connectionFactory';
 
 const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
-  dotenv.config();
-  const dbConnectionString = process.env.DB_CONNECTION_STRING as string;
-
-  if (!dbConnectionString) {
-    throw new Error('DB_CONNECTION_STRING not found in .env');
-  }
-
   const { project_slug, token_id } = context.bindingData;
-  const wasDbAlreadyConnected = connection.readyState === 1;
+  let conn: Connection;
 
   try {
-    if (!wasDbAlreadyConnected) await connect(dbConnectionString);
+    conn = await connectionFactory(context);
 
-    const project = await getProject(project_slug);
+    const project = await getProject(project_slug, conn);
 
     if (!project) {
       context.res = {
         status: 404,
         body: 'Project not found',
       };
-      if (!wasDbAlreadyConnected) return await disconnect();
       return;
     }
 
@@ -99,7 +91,7 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
       body: 'This token may not be minted yet.',
     };
   } finally {
-    if (!wasDbAlreadyConnected) await disconnect();
+    await conn.close();
   }
 };
 

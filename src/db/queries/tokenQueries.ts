@@ -1,13 +1,17 @@
-import { IToken, IScriptInputs, IAttribute } from '../models/modelTypes';
-import { Token } from '../models/token';
+import { Connection } from 'mongoose';
+import { IToken, IScriptInputs, IAttribute } from '../schemas/schemaTypes';
 
-export const checkIfTokenExists = async (token_id: number) => {
+export const checkIfTokenExists = async (token_id: number, conn: Connection) => {
+  const Token = conn.model<IToken>('Token');
+
   const query = await Token.exists({ token_id });
   return query;
 };
 
 // get data for script
-export const getToken = (project_slug: string, token_id: string) => {
+export const getToken = (project_slug: string, token_id: string, conn: Connection) => {
+  const Token = conn.model<IToken>('Token');
+
   const query = Token.findOne({ project_slug, token_id });
 
   query.select('-_id -__v -attributes._id -script_inputs._id');
@@ -15,7 +19,9 @@ export const getToken = (project_slug: string, token_id: string) => {
   return query.lean().exec();
 };
 
-export const addToken = async (tokenToAdd: IToken) => {
+export const addToken = async (tokenToAdd: IToken, conn: Connection) => {
+  const Token = conn.model<IToken>('Token');
+
   const newToken = new Token(tokenToAdd);
 
   const query = await newToken.save();
@@ -23,7 +29,9 @@ export const addToken = async (tokenToAdd: IToken) => {
   return query;
 };
 
-export const getCurrentTokenSupply = async (project_id: number) => {
+export const getCurrentTokenSupply = async (project_id: number, conn: Connection) => {
+  const Token = conn.model<IToken>('Token');
+
   const query = Token.find({ project_id });
 
   const tokens = await query.lean().exec();
@@ -38,11 +46,16 @@ export const updateTokenMetadataOnTransfer = async (
   token_id: number,
   script_inputs: IScriptInputs,
   attributes: IAttribute[],
+  conn: Connection,
 ) => {
+  const Token = conn.model<IToken>('Token');
+
   await Token.findOneAndUpdate({ project_id, token_id }, { script_inputs, attributes });
 };
 
-export const removeDuplicateTokens = async (project_id: number) => {
+export const removeDuplicateTokens = async (project_id: number, conn: Connection) => {
+  const Token = conn.model<IToken>('Token');
+
   const query = Token.aggregate([
     {
       $match: {

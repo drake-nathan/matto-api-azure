@@ -1,10 +1,11 @@
 import { EventData } from 'web3-eth-contract';
+import { Connection } from 'mongoose';
 import { nullAddress } from '../../constants';
 import { projects } from '../../projects/projectsInfo';
-import { ITransaction } from '../models/modelTypes';
-import { Transaction } from '../models/transaction';
+import { ITransaction } from '../schemas/schemaTypes';
 
-export const addTransaction = async (incomingTx: EventData) => {
+export const addTransaction = async (incomingTx: EventData, conn: Connection) => {
+  const Transaction = conn.model<ITransaction>('Transaction');
   const {
     address: contract_address,
     blockNumber: block_number,
@@ -32,7 +33,9 @@ export const addTransaction = async (incomingTx: EventData) => {
   return query;
 };
 
-export const getLastTxProcessed = async (project_id: number) => {
+export const getLastTxProcessed = async (project_id: number, conn: Connection) => {
+  const Transaction = conn.model<ITransaction>('Transaction');
+
   const query = await Transaction.findOne({ project_id })
     .sort('-block_number')
     .select('block_number');
@@ -40,7 +43,9 @@ export const getLastTxProcessed = async (project_id: number) => {
   return query?.block_number || null;
 };
 
-export const getAllMintTransactions = async (project_id: number) => {
+export const getAllMintTransactions = async (project_id: number, conn: Connection) => {
+  const Transaction = conn.model<ITransaction>('Transaction');
+
   const query = await Transaction.find({ project_id, event_type: 'Mint' });
 
   return query;

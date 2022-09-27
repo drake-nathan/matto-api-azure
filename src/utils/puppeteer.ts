@@ -1,5 +1,5 @@
 import puppeteer from 'puppeteer';
-import { IAttribute } from '../db/models/modelTypes';
+import { IAttribute } from '../db/schemas/schemaTypes';
 
 export const runPuppeteer = async (url: string) => {
   const browser = await puppeteer.launch({

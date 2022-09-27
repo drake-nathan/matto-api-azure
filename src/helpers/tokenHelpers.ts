@@ -1,6 +1,7 @@
 import * as dotenv from 'dotenv';
 import { Context } from '@azure/functions';
-import { IProject, IScriptInputs, IToken } from '../db/models/modelTypes';
+import { Connection } from 'mongoose';
+import { IProject, IScriptInputs, IToken } from '../db/schemas/schemaTypes';
 import {
   getProjectCurrentSupply,
   updateProjectCurrentSupply,
@@ -21,6 +22,7 @@ export const processNewTokenMint = async (
   project: IProject,
   script_inputs: IScriptInputs,
   context: Context,
+  conn: Connection,
 ) => {
   const {
     _id: project_id,
@@ -36,7 +38,7 @@ export const processNewTokenMint = async (
     royalty_info,
   } = project;
 
-  const doesTokenExist = await checkIfTokenExists(token_id);
+  const doesTokenExist = await checkIfTokenExists(token_id, conn);
   if (doesTokenExist) return;
 
   context.log.info('Adding token', token_id, 'to', project.project_name);
@@ -70,10 +72,14 @@ export const processNewTokenMint = async (
     attributes,
   };
 
-  const { token_id: newTokenId } = await addToken(newToken);
+  const { token_id: newTokenId } = await addToken(newToken, conn);
 
-  const previousSupply = await getProjectCurrentSupply(project_id);
-  const newSupply = await updateProjectCurrentSupply(project_id, previousSupply + 1);
+  const previousSupply = await getProjectCurrentSupply(project_id, conn);
+  const newSupply = await updateProjectCurrentSupply(
+    project_id,
+    previousSupply + 1,
+    conn,
+  );
 
   return { newTokenId, newSupply };
 };
@@ -83,6 +89,7 @@ export const processTransferEvent = async (
   project: IProject,
   script_inputs: IScriptInputs,
   context: Context,
+  conn: Connection,
 ) => {
   context.log.info('Updating token', token_id, 'on', project.project_name);
 
@@ -95,5 +102,11 @@ export const processTransferEvent = async (
 
   await uploadThumbnail(screenshot, project_slug, token_id);
 
-  await updateTokenMetadataOnTransfer(project_id, token_id, script_inputs, attributes);
+  await updateTokenMetadataOnTransfer(
+    project_id,
+    token_id,
+    script_inputs,
+    attributes,
+    conn,
+  );
 };
