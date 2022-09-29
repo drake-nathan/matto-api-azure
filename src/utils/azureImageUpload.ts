@@ -18,7 +18,8 @@ export const uploadThumbnail = async (
     azureStorageConnectionString,
   );
 
-  const containerName = 'images';
+  const isDev = process.env.NODE_ENV === 'development';
+  const containerName = isDev ? 'images-dev' : 'images';
   const containerClient = blobServiceClient.getContainerClient(containerName);
 
   const imageName = `${project_slug}_${token_id}.png`;

@@ -2,16 +2,17 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Chainlife</title>
 
+    <link rel="stylesheet" type="text/css" href="style.css">
     <style type="text/css" id="Chainlife Generator">
       body {
         margin: 0;
         padding: 0;
       }
-
+    
       canvas {
         padding: 0;
         margin: auto;
@@ -23,19 +24,11 @@
         right: 0;
       }
     </style>
-
-    <script type="text/javascript" defer></script>
-
-    <script
-      type="text/javascript"
-      defer
-      src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.0.0/p5.min.js"
-    ></script>
-
-    <script type="text/javascript" defer></script>
+    <script src="libraries/p5.v1.0.0.min.js"></script>
   </head>
-
   <body>
-    <canvas></canvas>
+    <div id="canvas-container"></div>
+    <script src="scriptInputs.js"></script>
+    <script src="Chainlife.js"></script>
   </body>
 </html>

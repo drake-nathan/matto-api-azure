@@ -30,9 +30,9 @@ export const projects: IProject[] = [
     website: 'https://matto.xyz/',
     external_url: 'https://matto.xyz/project/chainlife',
     license: 'CC BY-NC 4.0',
-    contract_address: '0x2711139E94926840e169C015CFBb8a91c073fbC4',
+    contract_address: '0xf2c871512810015D3b0916B3831aA7582F4078c9',
     events: ['Transfer', 'CustomRule'],
-    creation_block: 7559621,
+    creation_block: 7597125,
   },
   // {
   //   _id: projectIds['100x10x1a'],
