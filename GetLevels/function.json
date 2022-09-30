@@ -6,7 +6,7 @@
       "direction": "in",
       "name": "req",
       "methods": ["get"],
-      "route": "project/{project_slug}/transfers"
+      "route": "project/{project_slug}/levels"
     },
     {
       "type": "http",
@@ -14,5 +14,5 @@
       "name": "res"
     }
   ],
-  "scriptFile": "../dist/GetTransfers/index.js"
+  "scriptFile": "../dist/GetLevels/index.js"
 }
