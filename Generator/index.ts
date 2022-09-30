@@ -1,31 +1,56 @@
-import { AzureFunction, Context } from '@azure/functions';
+/* eslint-disable operator-linebreak */
+import { AzureFunction, Context, HttpRequest } from '@azure/functions';
 import { Connection } from 'mongoose';
-import { fetchScriptInputs } from '../src/web3/blockchainFetches';
-import { getProject } from '../src/db/queries/projectQueries';
-import { getContract } from '../src/web3/contract';
-import { abis } from '../src/projects/projectsInfo';
+import { checkIfProjectExists } from '../src/db/queries/projectQueries';
 import { connectionFactory } from '../src/db/connectionFactory';
+import { getScriptInputsFromDb } from '../src/db/queries/tokenQueries';
 
-const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
+const httpTrigger: AzureFunction = async (
+  context: Context,
+  req: HttpRequest,
+): Promise<void> => {
   const { project_slug, token_id } = context.bindingData;
   let conn: Connection;
 
   try {
     conn = await connectionFactory(context);
 
-    const project = await getProject(project_slug, conn);
+    const project = await checkIfProjectExists(project_slug, conn);
 
     if (!project) {
       context.res = {
         status: 404,
-        body: 'Project not found',
+        body: 'Project not found.',
       };
       return;
     }
 
-    const { _id: project_id, contract_address } = project;
-    const contract = getContract(abis[project_id], contract_address);
-    const scriptInputs = await fetchScriptInputs(contract, token_id);
+    let scriptInputs: string;
+
+    if (req.body && req.body.scriptInputs) {
+      scriptInputs = JSON.stringify(req.body.scriptInputs);
+      context.log.info('Using scriptInputs from request body.');
+    } else {
+      const scriptInputsDb = await getScriptInputsFromDb(project_slug, token_id, conn);
+
+      if (!scriptInputsDb) {
+        context.res = {
+          status: 404,
+          body: 'This token may not be minted yet.',
+        };
+        return;
+      }
+
+      scriptInputs = JSON.stringify(scriptInputsDb);
+    }
+
+    if (!scriptInputs) {
+      context.res = {
+        status: 400,
+        body: 'Something went wrong, ngmi.',
+      };
+      return;
+    }
 
     const generatorHtml = `
       <!DOCTYPE html>
@@ -57,7 +82,7 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
         </head>
         <body>
           <div id="canvas-container"></div>
-          <script>const scriptInputs = ${JSON.stringify(scriptInputs)};</script>
+          <script>const scriptInputs = ${scriptInputs};</script>
           <script src="https://matto-cdn.azureedge.net/scripts/Chainlife.min.js"></script>
         </body>
       </html>
@@ -74,7 +99,7 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
     context.log.error(error);
     context.res = {
       status: 500,
-      body: 'This token may not be minted yet.',
+      body: 'Something went wrong, ngmi.',
     };
   } finally {
     await conn.close();

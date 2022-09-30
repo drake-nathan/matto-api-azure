@@ -45,7 +45,7 @@ export const processNewTokenMint = async (
 
   const generator_url = `${rootServerUrl}/project/${project_slug}/generator/${token_id}`;
 
-  const { screenshot, attributes } = await runPuppeteer(generator_url);
+  const { screenshot, attributes } = await runPuppeteer(generator_url, script_inputs);
 
   const image = await uploadThumbnail(screenshot, project_slug, token_id);
 
@@ -96,9 +96,7 @@ export const processTransferEvent = async (
   const { _id: project_id, project_slug } = project;
   const generator_url = `${rootServerUrl}/project/${project_id}/generator/${token_id}`;
 
-  const { screenshot, attributes } = await runPuppeteer(
-    `${generator_url}?token_entropy=${script_inputs.token_entropy}`,
-  );
+  const { screenshot, attributes } = await runPuppeteer(generator_url, script_inputs);
 
   await uploadThumbnail(screenshot, project_slug, token_id);
 

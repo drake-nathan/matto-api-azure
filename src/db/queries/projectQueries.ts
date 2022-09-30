@@ -65,5 +65,5 @@ export const checkIfProjectExists = async (project_slug: string, conn: Connectio
   const Project = conn.model<IProject>('Project');
 
   const query = await Project.exists({ project_slug });
-  return query;
+  return !!query;
 };

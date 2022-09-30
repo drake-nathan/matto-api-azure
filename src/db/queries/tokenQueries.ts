@@ -19,6 +19,22 @@ export const getToken = (project_slug: string, token_id: string, conn: Connectio
   return query.lean().exec();
 };
 
+export const getScriptInputsFromDb = async (
+  project_slug: string,
+  token_id: string,
+  conn: Connection,
+) => {
+  const Token = conn.model<IToken>('Token');
+
+  const query = Token.findOne({ project_slug, token_id });
+
+  query.select('-script_inputs._id');
+
+  const result = await query.lean().exec();
+
+  return result?.script_inputs;
+};
+
 export const addToken = async (tokenToAdd: IToken, conn: Connection) => {
   const Token = conn.model<IToken>('Token');
 
@@ -39,6 +55,28 @@ export const getCurrentTokenSupply = async (project_id: number, conn: Connection
 
   const currentTokenSupply = tokensNoNull?.length || 0;
   return currentTokenSupply;
+};
+
+export const get0to5TransferTokens = async (project_slug: string, conn: Connection) => {
+  const Token = conn.model<IToken>('Token');
+
+  const query = Token.find({ project_slug });
+
+  query.where('script_inputs.transfer_count').gte(0).lte(5);
+  query.select('token_id script_inputs.transfer_count');
+
+  const results = await query.lean().exec();
+
+  const resParsed = results.map((token) => {
+    const {
+      token_id,
+      script_inputs: { transfer_count },
+    } = token;
+
+    return { token_id, transfer_count };
+  });
+
+  return resParsed;
 };
 
 export const updateTokenMetadataOnTransfer = async (

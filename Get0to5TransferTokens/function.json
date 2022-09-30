@@ -5,8 +5,8 @@
       "type": "httpTrigger",
       "direction": "in",
       "name": "req",
-      "methods": ["get", "post"],
-      "route": "project/{project_slug}/generator/{token_id:int}"
+      "methods": ["get"],
+      "route": "project/{project_slug}/transfers"
     },
     {
       "type": "http",
@@ -14,5 +14,5 @@
       "name": "res"
     }
   ],
-  "scriptFile": "../dist/Generator/index.js"
+  "scriptFile": "../dist/Get0to5TransferTokens/index.js"
 }

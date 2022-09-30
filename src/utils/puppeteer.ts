@@ -1,12 +1,31 @@
 import puppeteer from 'puppeteer';
-import { IAttribute } from '../db/schemas/schemaTypes';
+import { IAttribute, IScriptInputs } from '../db/schemas/schemaTypes';
 
-export const runPuppeteer = async (url: string) => {
+export const runPuppeteer = async (url: string, scriptInputs: IScriptInputs) => {
   const browser = await puppeteer.launch({
     defaultViewport: { width: 2160, height: 2160 },
   });
 
   const page = await browser.newPage();
+
+  await page.setRequestInterception(true);
+
+  page.once('request', (request) => {
+    const data = {
+      method: 'POST',
+      postData: JSON.stringify({ scriptInputs }),
+      headers: {
+        ...request.headers(),
+        'Content-Type': 'application/json',
+      },
+    };
+
+    request.continue(data);
+
+    // Immediately disable setRequestInterception, or all other requests will hang
+    page.setRequestInterception(false);
+  });
+
   await page.goto(url, { waitUntil: 'networkidle0' });
 
   const screenshot = (await page.screenshot({ encoding: 'binary' })) as Buffer;
