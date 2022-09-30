@@ -14,5 +14,5 @@
       "name": "res"
     }
   ],
-  "scriptFile": "../dist/Get0to5TransferTokens/index.js"
+  "scriptFile": "../dist/GetTransfers/index.js"
 }

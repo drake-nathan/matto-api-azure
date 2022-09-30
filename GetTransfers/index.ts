@@ -2,7 +2,7 @@ import { AzureFunction, Context } from '@azure/functions';
 import { Connection } from 'mongoose';
 import { connectionFactory } from '../src/db/connectionFactory';
 import { checkIfProjectExists } from '../src/db/queries/projectQueries';
-import { get0to5TransferTokens } from '../src/db/queries/tokenQueries';
+import { getTokenTransfers } from '../src/db/queries/tokenQueries';
 
 const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
   const { project_slug } = context.bindingData;
@@ -22,7 +22,7 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
       return;
     }
 
-    const transfers = await get0to5TransferTokens(project_slug, conn);
+    const transfers = await getTokenTransfers(project_slug, conn);
 
     context.res = {
       status: 200,

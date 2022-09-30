@@ -57,12 +57,12 @@ export const getCurrentTokenSupply = async (project_id: number, conn: Connection
   return currentTokenSupply;
 };
 
-export const get0to5TransferTokens = async (project_slug: string, conn: Connection) => {
+export const getTokenTransfers = async (project_slug: string, conn: Connection) => {
   const Token = conn.model<IToken>('Token');
 
   const query = Token.find({ project_slug });
 
-  query.where('script_inputs.transfer_count').gte(0).lte(5);
+  // query.where('script_inputs.transfer_count').gte(0).lte(5);
   query.select('token_id script_inputs.transfer_count');
 
   const results = await query.lean().exec();
@@ -76,7 +76,23 @@ export const get0to5TransferTokens = async (project_slug: string, conn: Connecti
     return { token_id, transfer_count };
   });
 
-  return resParsed;
+  const listOfTransferCounts = [
+    ...new Set(resParsed.map((token) => token.transfer_count)),
+  ];
+
+  const tokenTransfers: { [key: string]: number[] } = {};
+
+  listOfTransferCounts.forEach((transferCount) => {
+    const tokensWithTransferCount = resParsed.filter(
+      (token) => token.transfer_count === transferCount,
+    );
+
+    tokenTransfers[transferCount] = tokensWithTransferCount.map(
+      (token) => token.token_id,
+    );
+  });
+
+  return tokenTransfers;
 };
 
 export const updateTokenMetadataOnTransfer = async (
