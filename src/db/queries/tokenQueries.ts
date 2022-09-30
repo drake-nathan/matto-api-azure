@@ -116,6 +116,7 @@ export const updateTokenMetadataOnTransfer = async (
   const query = Token.findOneAndUpdate(
     { project_id, token_id },
     { script_inputs, image, attributes },
+    { new: true },
   );
 
   const result = await query.lean().exec();
