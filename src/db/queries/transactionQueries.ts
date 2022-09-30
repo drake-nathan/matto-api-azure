@@ -9,11 +9,13 @@ export const addTransaction = async (incomingTx: EventData, conn: Connection) =>
   const {
     address: contract_address,
     blockNumber: block_number,
-    transactionHash: transaction_hash,
+    transactionHash,
     returnValues,
     event,
   } = incomingTx;
-  const { tokenId, _tokenId, from } = returnValues;
+  const { tokenId, from } = returnValues;
+
+  const transaction_hash = transactionHash.toLowerCase();
 
   const doesTxExist = await Transaction.exists({ transaction_hash });
 
@@ -24,7 +26,7 @@ export const addTransaction = async (incomingTx: EventData, conn: Connection) =>
     block_number,
     transaction_hash,
     event_type: event === 'Transfer' && from === nullAddress ? 'Mint' : event,
-    token_id: parseInt(tokenId || _tokenId),
+    token_id: parseInt(tokenId),
   };
 
   const newTx = new Transaction(parsedTx);
@@ -49,4 +51,29 @@ export const getAllMintTransactions = async (project_id: number, conn: Connectio
   const query = await Transaction.find({ project_id, event_type: 'Mint' });
 
   return query;
+};
+
+export const removeDuplicateTransactions = async (conn: Connection) => {
+  const Transaction = conn.model<ITransaction>('Transaction');
+
+  const query = await Transaction.aggregate([
+    {
+      $group: {
+        _id: { transaction_hash: '$transaction_hash' },
+        uniqueIds: { $addToSet: '$_id' },
+        count: { $sum: 1 },
+      },
+    },
+    { $match: { count: { $gte: 2 } } },
+  ]);
+
+  const duplicateIds = query.map((q) => q.uniqueIds[1]);
+
+  if (duplicateIds.length) {
+    const { deletedCount } = await Transaction.deleteMany({ _id: { $in: duplicateIds } });
+
+    return deletedCount;
+  }
+  // else
+  return 0;
 };

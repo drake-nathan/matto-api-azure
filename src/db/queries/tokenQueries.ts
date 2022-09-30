@@ -19,6 +19,14 @@ export const getToken = (project_slug: string, token_id: string, conn: Connectio
   return query.lean().exec();
 };
 
+export const getAllTokensFromProject = (project_slug: string, conn: Connection) => {
+  const Token = conn.model<IToken>('Token');
+
+  const query = Token.find({ project_slug });
+
+  return query.lean().exec();
+};
+
 export const getScriptInputsFromDb = async (
   project_slug: string,
   token_id: string,
@@ -99,12 +107,20 @@ export const updateTokenMetadataOnTransfer = async (
   project_id: number,
   token_id: number,
   script_inputs: IScriptInputs,
+  image: string,
   attributes: IAttribute[],
   conn: Connection,
 ) => {
   const Token = conn.model<IToken>('Token');
 
-  await Token.findOneAndUpdate({ project_id, token_id }, { script_inputs, attributes });
+  const query = Token.findOneAndUpdate(
+    { project_id, token_id },
+    { script_inputs, image, attributes },
+  );
+
+  const result = await query.lean().exec();
+
+  return result;
 };
 
 export const removeDuplicateTokens = async (project_id: number, conn: Connection) => {

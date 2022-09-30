@@ -1,3 +1,4 @@
+/* eslint-disable operator-linebreak */
 import { Context } from '@azure/functions';
 import { Connection } from 'mongoose';
 import { nullAddress } from '../constants';
@@ -13,6 +14,7 @@ import { abis } from '../projects/projectsInfo';
 import { fetchEvents } from '../web3/blockchainFetches';
 import { getContract } from '../web3/contract';
 import { processNewTransactions } from './transactionHelpers';
+import { checkIfTokensMissingAttributes, repairBadTokens } from './tokenHelpers';
 
 const processNewProjects = async (projects: IProject[], conn: Connection) => {
   // try to add all projects to db, duplicates removed
@@ -55,8 +57,35 @@ export const reconcileProject = async (
     events,
     creation_block,
     project_name,
+    project_slug,
   } = project;
   context.log.info(`Reconciling ${project_name} database to blockchain.`);
+
+  const { tokensMissingAttributes, numOfBadTokens } =
+    await checkIfTokensMissingAttributes(project_slug, conn);
+
+  if (!numOfBadTokens) {
+    context.log.info(`No bad tokens found for ${project_name}.`);
+  } else {
+    context.log.error(
+      `Found ${numOfBadTokens} bad tokens for ${project_name}, attempting to repair...`,
+    );
+
+    const numOfRemainingBadTokens = await repairBadTokens(
+      project,
+      tokensMissingAttributes,
+      context,
+      conn,
+    );
+
+    if (!numOfRemainingBadTokens) {
+      context.log.info(`Successfully repaired all bad tokens for ${project_name}.`);
+    } else {
+      context.log.error(
+        `${numOfRemainingBadTokens} bad tokens still remain for ${project_name}, db might be slow, will try again at next reconcile.`,
+      );
+    }
+  }
 
   const contract = getContract(abis[project_id], contract_address);
 
@@ -88,12 +117,12 @@ export const reconcileProject = async (
     await updateProjectCurrentSupply(project_id, totalTokensInDb, conn);
   } else {
     if (totalMintTransactions < totalTokensInDb) {
-      context.log.info(
+      context.log.error(
         `${project_name} has a token count discrepancy, attempting to fix.`,
       );
       await removeDuplicateTokens(project_id, conn);
     } else {
-      context.log.info(
+      context.log.error(
         `${project_name} has a token count discrepancy, attempting to fix.`,
       );
       const allMintTransactions = await getAllMintTransactions(project_id, conn);
@@ -104,7 +133,7 @@ export const reconcileProject = async (
       context.log.info(`${project_name} has been fully reconciled.`);
       await updateProjectCurrentSupply(project_id, newTotalTokensInDb, conn);
     } else {
-      context.log.info(
+      context.log.error(
         `${project_name} still has a token count discrepancy, please check the database.`,
       );
     }

@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 import * as dotenv from 'dotenv';
 import { Context } from '@azure/functions';
 import { Connection } from 'mongoose';
@@ -9,6 +10,7 @@ import {
 import {
   addToken,
   checkIfTokenExists,
+  getAllTokensFromProject,
   updateTokenMetadataOnTransfer,
 } from '../db/queries/tokenQueries';
 import { runPuppeteer } from '../utils/puppeteer';
@@ -98,13 +100,55 @@ export const processTransferEvent = async (
 
   const { screenshot, attributes } = await runPuppeteer(generator_url, script_inputs);
 
-  await uploadThumbnail(screenshot, project_slug, token_id);
+  const image = await uploadThumbnail(screenshot, project_slug, token_id);
 
-  await updateTokenMetadataOnTransfer(
+  const updatedToken = await updateTokenMetadataOnTransfer(
     project_id,
     token_id,
     script_inputs,
+    image,
     attributes,
     conn,
   );
+
+  return updatedToken;
+};
+
+export const checkIfTokensMissingAttributes = async (
+  project_slug: string,
+  conn: Connection,
+) => {
+  const allTokens = await getAllTokensFromProject(project_slug, conn);
+
+  const tokensMissingAttributes = allTokens.filter((token) => !token.attributes);
+  const numOfBadTokens = tokensMissingAttributes.length;
+
+  return { tokensMissingAttributes, numOfBadTokens };
+};
+
+export const repairBadTokens = async (
+  project: IProject,
+  bumTokens: IToken[],
+  context: Context,
+  conn: Connection,
+) => {
+  const updatedTokens: IToken[] = [];
+
+  for await (const token of bumTokens) {
+    const { token_id, script_inputs } = token;
+    const updatedToken = await processTransferEvent(
+      token_id,
+      project,
+      script_inputs,
+      context,
+      conn,
+    );
+    updatedTokens.push(updatedToken);
+  }
+
+  const numOfRemainingBadTokens = updatedTokens.filter(
+    (token) => !token.attributes,
+  ).length;
+
+  return numOfRemainingBadTokens;
 };

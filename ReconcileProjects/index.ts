@@ -3,6 +3,7 @@ import { Connection } from 'mongoose';
 import { projects } from '../src/projects/projectsInfo';
 import { checkForNewProjects, reconcileProject } from '../src/helpers/projectHelpers';
 import { connectionFactory } from '../src/db/connectionFactory';
+import { removeDuplicateTransactions } from '../src/db/queries/transactionQueries';
 
 const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
   let conn: Connection;
@@ -19,6 +20,12 @@ const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
     };
 
     await reconcileAllProjects();
+
+    const numOfDuplicateTransactions = await removeDuplicateTransactions(conn);
+
+    if (numOfDuplicateTransactions) {
+      context.log.error('Removed', numOfDuplicateTransactions, 'duplicate transactions.');
+    }
   } catch (error) {
     context.log.error(error);
     context.res = {
