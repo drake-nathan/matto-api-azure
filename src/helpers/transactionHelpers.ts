@@ -44,7 +44,7 @@ export const processNewTransactions = async (
         newTokenIds.push(newTokenId);
       }
     } else {
-      // this handles transfer and custom rule events
+      // this handles all other events events
       await processTransferEvent(token_id, project, script_inputs, context, conn);
     }
   }
