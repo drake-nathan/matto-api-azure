@@ -21,6 +21,7 @@ export const tokenSchema = new Schema<IToken>({
       current_owner: { type: String, required: true, maxLength: 100 },
       previous_owner: { type: String, required: true, maxLength: 100 },
       custom_rule: { type: String },
+      level_shift: { type: Number },
     },
     required: true,
   },

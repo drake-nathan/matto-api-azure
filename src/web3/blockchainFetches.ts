@@ -34,6 +34,7 @@ export const fetchScriptInputs = async (contract: Contract, token_id: number) =>
       current_owner: JSON.parse(propertiesArr[3].split(':')[1]),
       transfer_count: parseInt(JSON.parse(propertiesArr[4].split(':')[1])),
       custom_rule: '',
+      level_shift: parseInt(JSON.parse(propertiesArr[6].split(':')[1])),
     };
     return parsedScriptInputs;
   }

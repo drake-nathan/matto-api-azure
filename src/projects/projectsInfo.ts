@@ -63,3 +63,21 @@ export const projects: IProject[] = [
 export const abis = {
   [projects[projectIds.chainlife]._id]: chainlifeAbi as AbiItem[],
 };
+
+const tokens = [
+  {
+    token_id: 0,
+    transfers: 5,
+    level_shifts: 1,
+  },
+  {
+    token_id: 3,
+    transfers: 5,
+    level_shifts: 1,
+  },
+  {
+    token_id: 69,
+    transfers: 5,
+    level_shifts: 1,
+  },
+];

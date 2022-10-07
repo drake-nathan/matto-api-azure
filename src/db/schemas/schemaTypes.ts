@@ -41,7 +41,8 @@ export interface IScriptInputs {
   current_owner: string;
   previous_owner: string;
   transfer_count: number;
-  custom_rule?: string;
+  custom_rule: string;
+  level_shift: number;
 }
 
 export interface IToken {
