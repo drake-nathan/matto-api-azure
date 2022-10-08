@@ -6,7 +6,7 @@
       "direction": "in",
       "name": "req",
       "methods": ["get", "post"],
-      "route": "project/{project_slug}/generator/{token_id:int}"
+      "route": "project/{project_slug}/esoterra/{token_id:int}"
     },
     {
       "type": "http",
@@ -14,5 +14,5 @@
       "name": "res"
     }
   ],
-  "scriptFile": "../dist/Generator/index.js"
+  "scriptFile": "../dist/Esoterra/index.js"
 }

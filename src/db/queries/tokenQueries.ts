@@ -65,13 +65,12 @@ export const getCurrentTokenSupply = async (project_id: number, conn: Connection
   return currentTokenSupply;
 };
 
-export const getTokenTransfers = async (project_slug: string, conn: Connection) => {
+export const getLevels = async (project_slug: string, conn: Connection) => {
   const Token = conn.model<IToken>('Token');
 
   const query = Token.find({ project_slug });
 
-  // query.where('script_inputs.transfer_count').gte(0).lte(5);
-  query.select('token_id script_inputs.transfer_count');
+  query.select('token_id script_inputs.transfer_count script_inputs.level_shift');
 
   const results = await query.lean().exec();
 
@@ -79,28 +78,13 @@ export const getTokenTransfers = async (project_slug: string, conn: Connection) 
     const {
       token_id,
       script_inputs: { transfer_count },
+      script_inputs: { level_shift },
     } = token;
 
-    return { token_id, transfer_count };
+    return { token_id, transfer_count, level_shift };
   });
 
-  const listOfTransferCounts = [
-    ...new Set(resParsed.map((token) => token.transfer_count)),
-  ];
-
-  const tokenTransfers: { [key: string]: number[] } = {};
-
-  listOfTransferCounts.forEach((transferCount) => {
-    const tokensWithTransferCount = resParsed.filter(
-      (token) => token.transfer_count === transferCount,
-    );
-
-    tokenTransfers[transferCount] = tokensWithTransferCount.map(
-      (token) => token.token_id,
-    );
-  });
-
-  return tokenTransfers;
+  return resParsed;
 };
 
 export const updateTokenMetadataOnTransfer = async (

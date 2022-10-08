@@ -1,4 +1,3 @@
-/* eslint-disable operator-linebreak */
 import { AzureFunction, Context, HttpRequest } from '@azure/functions';
 import { Connection } from 'mongoose';
 import { checkIfProjectExists } from '../src/db/queries/projectQueries';

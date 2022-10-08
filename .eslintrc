@@ -1,5 +1,6 @@
 {
-  "extends": ["airbnb-base", "airbnb-typescript/base"],
+  "extends": ["airbnb-base", "airbnb-typescript/base", "prettier"],
+  "plugins": ["prettier"],
   "parserOptions": {
     "project": "./tsconfig.json"
   },
