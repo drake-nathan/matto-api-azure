@@ -13,8 +13,8 @@ import {
   getAllTokensFromProject,
   updateTokenMetadataOnTransfer,
 } from '../db/queries/tokenQueries';
-import { runPuppeteer } from '../utils/puppeteer';
-import { uploadThumbnail } from '../utils/azureImageUpload';
+import { runPuppeteer } from '../services/puppeteer';
+import { uploadThumbnail } from '../services/azureImageUpload';
 
 dotenv.config();
 const rootServerUrl = process.env.ROOT_URL;

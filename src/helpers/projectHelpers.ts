@@ -1,4 +1,3 @@
-/* eslint-disable operator-linebreak */
 import { Context } from '@azure/functions';
 import { Connection } from 'mongoose';
 import { nullAddress } from '../constants';
@@ -15,6 +14,7 @@ import { fetchEvents } from '../web3/blockchainFetches';
 import { getContract } from '../web3/contract';
 import { processNewTransactions } from './transactionHelpers';
 import { checkIfTokensMissingAttributes, repairBadTokens } from './tokenHelpers';
+import { getWeb3 } from '../web3/provider';
 
 const processNewProjects = async (projects: IProject[], conn: Connection) => {
   // try to add all projects to db, duplicates removed
@@ -54,6 +54,7 @@ export const reconcileProject = async (
   const {
     _id: project_id,
     contract_address,
+    chain,
     events,
     creation_block,
     project_name,
@@ -87,7 +88,8 @@ export const reconcileProject = async (
     }
   }
 
-  const contract = getContract(abis[project_id], contract_address);
+  const web3 = getWeb3(chain);
+  const contract = getContract(web3, abis[project_id], contract_address);
 
   // fetch all transactions from blockchain, add missing ones
   const allTransactions = await fetchEvents(

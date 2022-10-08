@@ -19,6 +19,7 @@ export const projectSchema = new Schema<IProject>({
   external_url: { type: String, required: true },
   license: { type: String, required: true },
   contract_address: { type: String, required: true },
+  chain: { type: String, required: true },
   events: [{ type: String, maxlength: 100 }],
   creation_block: { type: Number, required: true },
 });

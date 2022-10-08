@@ -1,5 +1,16 @@
 import { ObjectId } from 'mongoose';
 
+export enum ProjectId {
+  chainlifeTestnet,
+  chainlifeMainnet,
+  '100x10x1a',
+}
+
+export enum Chain {
+  mainnet = 'mainnet',
+  goerli = 'goerli',
+}
+
 export interface IRoyaltyInfo {
   artist_address: string;
   additional_payee?: string;
@@ -8,7 +19,7 @@ export interface IRoyaltyInfo {
 }
 
 export interface IProject {
-  _id: number;
+  _id: ProjectId;
   project_name: string;
   project_slug: string;
   artist: string;
@@ -26,6 +37,7 @@ export interface IProject {
   external_url: string;
   license: string;
   contract_address: string;
+  chain: Chain;
   events: string[];
   creation_block: number;
 }

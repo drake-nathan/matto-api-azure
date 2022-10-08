@@ -1,16 +1,10 @@
 import { AbiItem } from 'web3-utils';
-import { IProject } from '../db/schemas/schemaTypes';
-import chainlifeAbi from './abis/chainlife.abi.json';
-
-enum projectIds {
-  chainlifeTestnet,
-  chainlifeMainnet,
-  '100x10x1a',
-}
+import { Chain, IProject, ProjectId } from '../db/schemas/schemaTypes';
+import chainlifeGoerliAbi from './abis/chainlife.abi.json';
 
 export const projects: IProject[] = [
   {
-    _id: projectIds.chainlifeTestnet,
+    _id: ProjectId.chainlifeTestnet,
     project_name: 'Chainlife Testnet',
     project_slug: 'chainlife-testnet',
     artist: 'Matto',
@@ -32,6 +26,7 @@ export const projects: IProject[] = [
     external_url: 'https://matto.xyz/project/chainlife',
     license: 'CC BY-NC 4.0',
     contract_address: '0x04c9E99D134565eB0F0Fef07FB70741A5b615075',
+    chain: Chain.goerli,
     events: ['Transfer', 'CustomRule', 'ShiftLevel'],
     creation_block: 7729596,
   },
@@ -88,5 +83,5 @@ export const projects: IProject[] = [
 ];
 
 export const abis = {
-  [projects[projectIds.chainlifeTestnet]._id]: chainlifeAbi as AbiItem[],
+  [projects[ProjectId.chainlifeTestnet]._id]: chainlifeGoerliAbi as AbiItem[],
 };

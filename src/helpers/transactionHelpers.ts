@@ -10,6 +10,7 @@ import { abis } from '../projects/projectsInfo';
 import { fetchEvents, fetchScriptInputs } from '../web3/blockchainFetches';
 import { getContract } from '../web3/contract';
 import { processNewTokenMint, processTransferEvent } from './tokenHelpers';
+import { getWeb3 } from '../web3/provider';
 
 export interface ILogValues {
   project_name: string;
@@ -44,7 +45,7 @@ export const processNewTransactions = async (
         newTokenIds.push(newTokenId);
       }
     } else {
-      // this handles all other events events
+      // this handles all other events events besides Mints
       await processTransferEvent(token_id, project, script_inputs, context, conn);
     }
   }
@@ -57,8 +58,10 @@ export const checkForNewTransactions = async (
   context: Context,
   conn: Connection,
 ) => {
-  const { _id: project_id, contract_address, events, project_name } = project;
-  const contract = getContract(abis[project_id], contract_address);
+  const { _id: project_id, contract_address, chain, events, project_name } = project;
+
+  const web3 = getWeb3(chain);
+  const contract = getContract(web3, abis[project_id], contract_address);
 
   const logValues: ILogValues = {
     project_name,
