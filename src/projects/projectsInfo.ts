@@ -30,7 +30,7 @@ export const projects: IProject[] = [
     website: 'https://matto.xyz/',
     external_url: 'https://matto.xyz/project/chainlife',
     license: 'CC BY-NC 4.0',
-    contract_address: '0x6960704B24DA9e4DfA13747BEf1f966F313801Ba',
+    contract_address: '0x04c9E99D134565eB0F0Fef07FB70741A5b615075',
     events: ['Transfer', 'CustomRule', 'ShiftLevel'],
     creation_block: 7712621,
   },
@@ -63,21 +63,3 @@ export const projects: IProject[] = [
 export const abis = {
   [projects[projectIds.chainlife]._id]: chainlifeAbi as AbiItem[],
 };
-
-const tokens = [
-  {
-    token_id: 0,
-    transfers: 5,
-    level_shifts: 1,
-  },
-  {
-    token_id: 3,
-    transfers: 5,
-    level_shifts: 1,
-  },
-  {
-    token_id: 69,
-    transfers: 5,
-    level_shifts: 1,
-  },
-];
