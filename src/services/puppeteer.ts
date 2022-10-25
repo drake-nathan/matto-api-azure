@@ -22,7 +22,6 @@ export const runPuppeteer = async (url: string, scriptInputs: IScriptInputs) => 
 
     request.continue(data);
 
-    // Immediately disable setRequestInterception, or all other requests will hang
     page.setRequestInterception(false);
   });
 

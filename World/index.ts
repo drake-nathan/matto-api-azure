@@ -1,15 +1,10 @@
-/* eslint-disable operator-linebreak */
-import { AzureFunction, Context, HttpRequest } from '@azure/functions';
+import { AzureFunction, Context } from '@azure/functions';
 import { Connection } from 'mongoose';
 import { checkIfProjectExists } from '../src/db/queries/projectQueries';
 import { connectionFactory } from '../src/db/connectionFactory';
-import { getScriptInputsFromDb } from '../src/db/queries/tokenQueries';
 
-const httpTrigger: AzureFunction = async (
-  context: Context,
-  req: HttpRequest,
-): Promise<void> => {
-  const { project_slug, token_id } = context.bindingData;
+const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
+  const { project_slug } = context.bindingData;
   let conn: Connection;
 
   try {
@@ -25,33 +20,6 @@ const httpTrigger: AzureFunction = async (
       return;
     }
 
-    let scriptInputs: string;
-
-    if (req.body && req.body.scriptInputs) {
-      scriptInputs = JSON.stringify(req.body.scriptInputs);
-      context.log.info('Using scriptInputs from request body.');
-    } else {
-      const scriptInputsDb = await getScriptInputsFromDb(project_slug, token_id, conn);
-
-      if (!scriptInputsDb) {
-        context.res = {
-          status: 404,
-          body: 'This token may not be minted yet.',
-        };
-        return;
-      }
-
-      scriptInputs = JSON.stringify(scriptInputsDb);
-    }
-
-    if (!scriptInputs) {
-      context.res = {
-        status: 400,
-        body: 'Something went wrong, ngmi.',
-      };
-      return;
-    }
-
     const generatorHtml = `
       <!DOCTYPE html>
       <html lang="en">
@@ -59,13 +27,14 @@ const httpTrigger: AzureFunction = async (
           <meta charset="utf-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
       
-          <title>Chainlife</title>
+          <title>Chainlife World Generator</title>
       
           <style type="text/css" id="Chainlife Generator">
             body {
               margin: 0;
               padding: 0;
             }
+          
             canvas {
               padding: 0;
               margin: auto;
@@ -77,15 +46,15 @@ const httpTrigger: AzureFunction = async (
               right: 0;
             }
           </style>
-          <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.0.0/p5.min.js"></script>
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
         </head>
         <body>
           <div id="canvas-container"></div>
-          <script>const scriptInputs = ${scriptInputs};</script>
           <script src="https://matto-cdn.azureedge.net/scripts/Chainlife.min.js"></script>
         </body>
       </html>
   `;
+    // TODO: Swap script
 
     context.res = {
       status: 200,

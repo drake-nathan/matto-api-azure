@@ -6,7 +6,7 @@
       "direction": "in",
       "name": "req",
       "methods": ["get"],
-      "route": "project/{project_slug}/token-levels"
+      "route": "project/{project_slug}/level"
     },
     {
       "type": "http",
@@ -14,5 +14,5 @@
       "name": "res"
     }
   ],
-  "scriptFile": "../dist/GetLevels/index.js"
+  "scriptFile": "../dist/Level/index.js"
 }

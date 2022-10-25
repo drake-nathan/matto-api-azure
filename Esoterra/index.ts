@@ -58,7 +58,7 @@ const httpTrigger: AzureFunction = async (
           <meta charset="utf-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
       
-          <title>Chainlife</title>
+          <title>Esoterra</title>
       
           <style type="text/css" id="Chainlife Generator">
             body {
@@ -86,6 +86,7 @@ const httpTrigger: AzureFunction = async (
         </body>
       </html>
   `;
+    // TODO: Swap script
 
     context.res = {
       status: 200,
