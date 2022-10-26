@@ -2,6 +2,7 @@ import { AzureFunction, Context } from '@azure/functions';
 import { Connection } from 'mongoose';
 import { checkIfProjectExists } from '../src/db/queries/projectQueries';
 import { connectionFactory } from '../src/db/connectionFactory';
+import { getLevels } from '../src/db/queries/tokenQueries';
 
 const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
   const { project_slug } = context.bindingData;
@@ -19,6 +20,8 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
       };
       return;
     }
+
+    const levelsArray = await getLevels(project_slug, conn);
 
     const generatorHtml = `
       <!DOCTYPE html>
@@ -46,15 +49,15 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
               right: 0;
             }
           </style>
-          <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js" defer></script>
+          <script defer>const levelsArray = ${JSON.stringify(levelsArray)};</script>
         </head>
         <body>
           <div id="canvas-container"></div>
-          <script src="https://matto-cdn.azureedge.net/scripts/chainlifeWorld.min.js"></script>
+          <script src="https://matto-cdn.azureedge.net/scripts/chainlifeWorldAPI.js"></script>
         </body>
       </html>
   `;
-    // TODO: Swap script
 
     context.res = {
       status: 200,
