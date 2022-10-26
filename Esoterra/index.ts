@@ -82,11 +82,10 @@ const httpTrigger: AzureFunction = async (
         <body>
           <div id="canvas-container"></div>
           <script>const scriptInputs = ${scriptInputs};</script>
-          <script src="https://matto-cdn.azureedge.net/scripts/Esoterra.min.js"></script>
+          <script src="https://matto-cdn.azureedge.net/scripts/chainlifeEsoterra.min.js"></script>
         </body>
       </html>
   `;
-    // TODO: Swap script
 
     context.res = {
       status: 200,

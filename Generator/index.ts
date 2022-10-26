@@ -82,7 +82,7 @@ const httpTrigger: AzureFunction = async (
         <body>
           <div id="canvas-container"></div>
           <script>const scriptInputs = ${scriptInputs};</script>
-          <script src="https://matto-cdn.azureedge.net/scripts/Chainlife.min.js"></script>
+          <script src="https://matto-cdn.azureedge.net/scripts/chainlifeToken.min.js"></script>
         </body>
       </html>
   `;
