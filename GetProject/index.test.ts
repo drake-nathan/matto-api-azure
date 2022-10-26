@@ -7,7 +7,7 @@ describe('GetProject', () => {
   beforeEach(() => {
     context = {
       log: { error: jest.fn() },
-      bindingData: { project_slug: 'chainlife' },
+      bindingData: { project_slug: 'chainlife-testnet' },
     } as unknown as Context;
   });
 

@@ -1,14 +1,14 @@
 import { Context, HttpRequest } from '@azure/functions';
 import httpTrigger from './index';
 
-describe('Generator', () => {
+describe('Esoterra', () => {
   let context: Context;
   let req: HttpRequest;
 
   beforeEach(() => {
     context = {
       log: { error: jest.fn(), info: jest.fn() },
-      bindingData: { project_slug: 'chainlife', token_id: '1' },
+      bindingData: { project_slug: 'chainlife-testnet', token_id: '1' },
     } as unknown as Context;
 
     req = {

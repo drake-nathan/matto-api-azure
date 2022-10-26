@@ -1,13 +1,13 @@
 import { Context } from '@azure/functions';
 import httpTrigger from './index';
 
-describe('Generator', () => {
+describe('World', () => {
   let context: Context;
 
   beforeEach(() => {
     context = {
       log: { error: jest.fn(), info: jest.fn() },
-      bindingData: { project_slug: 'chainlife', token_id: '1' },
+      bindingData: { project_slug: 'chainlife-testnet', token_id: '1' },
     } as unknown as Context;
   });
 
