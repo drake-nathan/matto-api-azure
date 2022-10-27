@@ -49,15 +49,16 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
               right: 0;
             }
           </style>
-          <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js" defer></script>
-          <script defer>const levelsArray = ${JSON.stringify(levelsArray)};</script>
-        </head>
-        <body>
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+          </head>
+          <body>
           <div id="canvas-container"></div>
-          <script src="https://matto-cdn.azureedge.net/scripts/chainlifeWorldAPI.js"></script>
+          <script>const levelsArray = ${JSON.stringify(levelsArray)};</script>
+          <script src="https://matto-cdn.azureedge.net/scripts/chainlifeWorld-goerli121.min.js"></script>
         </body>
       </html>
   `;
+    // NOTE: Fix script for mainnet
 
     context.res = {
       status: 200,

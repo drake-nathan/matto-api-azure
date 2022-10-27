@@ -50,10 +50,11 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
         </head>
         <body>
           <div id="canvas-container"></div>
-          <script src="https://matto-cdn.azureedge.net/scripts/chainlifeLevel.min.js"></script>
+          <script src="https://matto-cdn.azureedge.net/scripts/chainlifeLevel-goerli121.min.js"></script>
         </body>
       </html>
   `;
+    // NOTE: Fix script for mainnet
 
     context.res = {
       status: 200,
