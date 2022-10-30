@@ -87,6 +87,7 @@ export interface ITransaction {
   project_id: number;
   block_number: number;
   transaction_hash: string;
+  transaction_date: Date;
   event_type: string;
   token_id: number;
 }

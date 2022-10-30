@@ -1,10 +1,15 @@
+import Web3 from 'web3';
 import { EventData } from 'web3-eth-contract';
 import { Connection } from 'mongoose';
 import { nullAddress } from '../../constants';
 import { projects } from '../../projects/projectsInfo';
 import { ITransaction } from '../schemas/schemaTypes';
 
-export const addTransaction = async (incomingTx: EventData, conn: Connection) => {
+export const addTransaction = async (
+  incomingTx: EventData,
+  conn: Connection,
+  web3: Web3,
+) => {
   const Transaction = conn.model<ITransaction>('Transaction');
   const {
     address: contract_address,
@@ -21,10 +26,13 @@ export const addTransaction = async (incomingTx: EventData, conn: Connection) =>
 
   if (doesTxExist) return null;
 
+  const blockTime = (await web3.eth.getBlock(block_number)).timestamp as number;
+
   const parsedTx: ITransaction = {
     project_id: projects.find((p) => p.contract_address === contract_address)._id,
     block_number,
     transaction_hash,
+    transaction_date: new Date(blockTime * 1000),
     event_type: event === 'Transfer' && from === nullAddress ? 'Mint' : event,
     token_id: parseInt(tokenId),
   };

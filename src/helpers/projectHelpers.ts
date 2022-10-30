@@ -100,7 +100,7 @@ export const reconcileProject = async (
     creation_block,
   );
   const newTransactionsAdded = await Promise.all(
-    allTransactions.map((tx) => addTransaction(tx, conn)),
+    allTransactions.map((tx) => addTransaction(tx, conn, web3)),
   );
   const newTxNoNull = newTransactionsAdded.filter(Boolean);
 

@@ -19,9 +19,11 @@ import { uploadThumbnail } from '../services/azureImageUpload';
 dotenv.config();
 const rootServerUrl = process.env.ROOT_URL;
 
-const getGeneratorUrl = (project_slug: string, token_id: number) => {
+const getUrls = (project_slug: string, token_id: number) => {
   const generator_url = `${rootServerUrl}/project/${project_slug}/generator/${token_id}`;
-  return generator_url;
+  const external_url = `https://www.chainlife.xyz/token/${token_id}`;
+
+  return { generator_url, external_url };
 };
 
 export const processNewTokenMint = async (
@@ -50,7 +52,7 @@ export const processNewTokenMint = async (
 
   context.log.info('Adding token', token_id, 'to', project.project_name);
 
-  const generator_url = getGeneratorUrl(project_slug, token_id);
+  const { generator_url, external_url } = getUrls(project_slug, token_id);
 
   const { screenshot, attributes } = await runPuppeteer(generator_url, script_inputs);
 
@@ -72,7 +74,7 @@ export const processNewTokenMint = async (
     image,
     generator_url,
     animation_url: generator_url,
-    external_url: generator_url,
+    external_url,
     website,
     license,
     royalty_info,
@@ -101,7 +103,7 @@ export const processTransferEvent = async (
   context.log.info('Updating token', token_id, 'on', project.project_name);
 
   const { _id: project_id, project_slug } = project;
-  const generator_url = getGeneratorUrl(project_slug, token_id);
+  const { generator_url } = getUrls(project_slug, token_id);
 
   const { screenshot, attributes } = await runPuppeteer(generator_url, script_inputs);
 

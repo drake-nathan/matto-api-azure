@@ -73,7 +73,7 @@ export const checkForNewTransactions = async (
   const fetchedTransactions = await fetchEvents(contract, events, project_id, conn);
 
   const newTransactionsAdded = await Promise.all(
-    fetchedTransactions.map(async (tx) => addTransaction(tx, conn)),
+    fetchedTransactions.map(async (tx) => addTransaction(tx, conn, web3)),
   );
   const newTxNoNull = newTransactionsAdded.filter(Boolean);
 
