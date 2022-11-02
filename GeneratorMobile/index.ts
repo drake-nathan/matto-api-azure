@@ -72,6 +72,7 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
           <div id="canvas-container"></div>
           <script>const scriptInputs = ${scriptInputs};</script>
           <script src="https://matto-cdn.azureedge.net/scripts/chainlifeToken.min.js"></script>
+          <script src="https://matto-cdn.azureedge.net/scripts/tokenMobileMenu.min.js"></script>
         </body>
       </html>
   `;
