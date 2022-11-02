@@ -1,13 +1,10 @@
-import { AzureFunction, Context, HttpRequest } from '@azure/functions';
+import { AzureFunction, Context } from '@azure/functions';
 import { Connection } from 'mongoose';
 import { checkIfProjectExists } from '../src/db/queries/projectQueries';
 import { connectionFactory } from '../src/db/connectionFactory';
 import { getScriptInputsFromDb } from '../src/db/queries/tokenQueries';
 
-const httpTrigger: AzureFunction = async (
-  context: Context,
-  req: HttpRequest,
-): Promise<void> => {
+const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
   const { project_slug, token_id } = context.bindingData;
   let conn: Connection;
 
@@ -24,24 +21,17 @@ const httpTrigger: AzureFunction = async (
       return;
     }
 
-    let scriptInputs: string;
+    const scriptInputsDb = await getScriptInputsFromDb(project_slug, token_id, conn);
 
-    if (req.body && req.body.scriptInputs) {
-      scriptInputs = JSON.stringify(req.body.scriptInputs);
-      context.log.info('Using scriptInputs from request body.');
-    } else {
-      const scriptInputsDb = await getScriptInputsFromDb(project_slug, token_id, conn);
-
-      if (!scriptInputsDb) {
-        context.res = {
-          status: 404,
-          body: 'This token may not be minted yet.',
-        };
-        return;
-      }
-
-      scriptInputs = JSON.stringify(scriptInputsDb);
+    if (!scriptInputsDb) {
+      context.res = {
+        status: 404,
+        body: 'This token may not be minted yet.',
+      };
+      return;
     }
+
+    const scriptInputs = JSON.stringify(scriptInputsDb);
 
     if (!scriptInputs) {
       context.res = {

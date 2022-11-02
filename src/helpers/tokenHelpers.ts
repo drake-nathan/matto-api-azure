@@ -21,7 +21,7 @@ const rootServerUrl = process.env.ROOT_URL;
 
 const getUrls = (project_slug: string, token_id: number) => {
   const generator_url = `${rootServerUrl}/project/${project_slug}/generator/${token_id}`;
-  const external_url = `https://www.chainlife.xyz/token/${token_id}`;
+  const external_url = `https://chainlife.xyz/token/${token_id}`;
 
   return { generator_url, external_url };
 };
