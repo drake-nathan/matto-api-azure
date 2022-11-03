@@ -84,6 +84,8 @@ export const getLevels = async (project_slug: string, conn: Connection) => {
     return { token_id, transfer_count, level_shift };
   });
 
+  resParsed.sort((a, b) => a.token_id - b.token_id);
+
   return resParsed;
 };
 
