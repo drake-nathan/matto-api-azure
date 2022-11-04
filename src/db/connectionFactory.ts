@@ -4,6 +4,7 @@ import { Context } from '@azure/functions';
 import { projectSchema } from './schemas/project';
 import { tokenSchema } from './schemas/token';
 import { transactionSchema } from './schemas/transaction';
+import { thumbnailSchema } from './schemas/thumbnail';
 
 export const connectionFactory = async (context: Context) => {
   dotenv.config();
@@ -22,6 +23,7 @@ export const connectionFactory = async (context: Context) => {
   conn.model('Project', projectSchema);
   conn.model('Token', tokenSchema);
   conn.model('Transaction', transactionSchema);
+  conn.model('Thumbnail', thumbnailSchema);
 
   return conn;
 };

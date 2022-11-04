@@ -1,6 +1,6 @@
 import { Context } from '@azure/functions';
 import { Connection } from 'mongoose';
-import { nullAddress } from '../constants';
+import { nullAddress } from './constants';
 import { IProject } from '../db/schemas/schemaTypes';
 import {
   addProject,

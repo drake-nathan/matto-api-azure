@@ -1,0 +1,12 @@
+{
+  "bindings": [
+    {
+      "name": "myTimer",
+      "type": "timerTrigger",
+      "direction": "in",
+      "schedule": "* */60 * * * *",
+      "runOnStartup": true
+    }
+  ],
+  "scriptFile": "../dist/ArtblocksThumbnails/index.js"
+}

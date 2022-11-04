@@ -14,7 +14,7 @@ import {
   updateTokenMetadataOnTransfer,
 } from '../db/queries/tokenQueries';
 import { runPuppeteer } from '../services/puppeteer';
-import { uploadThumbnail } from '../services/azureImageUpload';
+import { uploadThumbnail } from '../services/azureStorage';
 
 dotenv.config();
 const rootServerUrl = process.env.ROOT_URL;

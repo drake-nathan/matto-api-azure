@@ -91,3 +91,13 @@ export interface ITransaction {
   event_type: string;
   token_id: number;
 }
+
+export interface IThumbnail {
+  _id?: ObjectId;
+  project_slug: 'focus' | 'enso';
+  project_id: 34 | 181;
+  token_id: number;
+  artblocks_id: string;
+  image_full: string;
+  image_thumbnail: string;
+}
