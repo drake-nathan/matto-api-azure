@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-syntax */
 import { AzureFunction, Context } from '@azure/functions';
 import { Connection } from 'mongoose';
 import { connectionFactory } from '../src/db/connectionFactory';
@@ -6,7 +5,7 @@ import {
   getThumbnailCounts,
   getThumbnailsByProject,
 } from '../src/db/queries/thumbnailQueries';
-import { processThumbnail } from '../src/helpers/thumbnailHelpers';
+import { processThumbnails } from '../src/helpers/thumbnailHelpers';
 import { fetchFocusSupply } from '../src/services/fetchArtBlocks';
 
 const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
@@ -24,26 +23,34 @@ const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
       const ensoThumbnails = await getThumbnailsByProject(conn, 'enso');
       const ensoArtBlocksId = 34000000;
 
-      let count = 0;
+      const thumbnailsAdded = await processThumbnails(
+        conn,
+        ensoSupply,
+        'enso',
+        ensoArtBlocksId,
+        ensoThumbnails,
+        context,
+      );
 
-      for await (const i100 of Array.from({ length: ensoSupply / 10 }, (_, i) => i)) {
-        const newCounts = await Promise.all(
-          Array.from({ length: 10 }, (_, i) => {
-            const i1000 = i100 * 10 + i;
-            const artblocks_id = `${ensoArtBlocksId + i1000}`;
-            return processThumbnail(conn, ensoThumbnails, 'enso', artblocks_id, context);
-          }),
-        );
-
-        count += newCounts.reduce((a, b) => a + b, 0);
-      }
-
-      context.log.info(`Created ${count} Enso thumbnails`);
-    }
+      context.log.info(`Added ${thumbnailsAdded} Enso thumbnails`);
+    } else context.log.info('Enso thumbnails up to date');
 
     if (thumbnailCount.focus < focusSupply) {
       context.log.info('Focus thumbnails missing, creating...');
-    }
+      const focusThumbnails = await getThumbnailsByProject(conn, 'focus');
+      const focusArtBlocksId = 181000000;
+
+      const thumbnailsAdded = await processThumbnails(
+        conn,
+        focusSupply,
+        'focus',
+        focusArtBlocksId,
+        focusThumbnails,
+        context,
+      );
+
+      context.log.info(`Added ${thumbnailsAdded} Focus thumbnails`);
+    } else context.log.info('Focus thumbnails up to date');
   } catch (error) {
     context.log.error('ArtBlocksThumbnails function error', error);
     context.res = {
