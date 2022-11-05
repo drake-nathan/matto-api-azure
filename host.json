@@ -17,6 +17,5 @@
       "routePrefix": ""
     }
   },
-  "functionTimeout": "00:10:00",
-  "functions": ["ArtblocksThumbnails"]
+  "functionTimeout": "00:10:00"
 }
