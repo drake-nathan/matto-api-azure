@@ -2,6 +2,7 @@
 import * as dotenv from 'dotenv';
 import { Context } from '@azure/functions';
 import { Connection } from 'mongoose';
+import sharp from 'sharp';
 import { IProject, IScriptInputs, IToken } from '../db/schemas/schemaTypes';
 import {
   getProjectCurrentSupply,
@@ -58,6 +59,15 @@ export const processNewTokenMint = async (
 
   const image = await uploadThumbnail(screenshot, project_slug, token_id);
 
+  const thumbnail = await sharp(screenshot).resize(200).toBuffer();
+
+  const thumbnail_url = await uploadThumbnail(
+    thumbnail,
+    project_slug,
+    token_id,
+    'thumbnails',
+  );
+
   const newToken: IToken = {
     token_id,
     name: `${project.project_name} ${token_id}`,
@@ -72,6 +82,7 @@ export const processNewTokenMint = async (
     script_type,
     script_inputs,
     image,
+    thumbnail_url,
     generator_url,
     animation_url: generator_url,
     external_url,
@@ -109,11 +120,21 @@ export const processTransferEvent = async (
 
   const image = await uploadThumbnail(screenshot, project_slug, token_id);
 
+  const thumbnail = await sharp(screenshot).resize(200).toBuffer();
+
+  const thumbnail_url = await uploadThumbnail(
+    thumbnail,
+    project_slug,
+    token_id,
+    'thumbnails',
+  );
+
   const updatedToken = await updateTokenMetadataOnTransfer(
     project_id,
     token_id,
     script_inputs,
     image,
+    thumbnail_url,
     attributes,
     conn,
   );

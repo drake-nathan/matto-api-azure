@@ -31,7 +31,7 @@ export const projects: IProject[] = [
     creation_block: 7729596,
   },
   // {
-  //   _id: projectIds.chainlifeMainnet,
+  //   _id: ProjectId.chainlifeMainnet,
   //   project_name: 'Chainlife',
   //   project_slug: 'chainlife',
   //   artist: 'Matto',
@@ -53,6 +53,7 @@ export const projects: IProject[] = [
   //   external_url: 'https://matto.xyz/project/chainlife',
   //   license: 'CC BY-NC 4.0',
   //   contract_address: '0x04c9E99D134565eB0F0Fef07FB70741A5b615075',
+  //   chain: Chain.mainnet,
   //   events: ['Transfer', 'CustomRule', 'ShiftLevel'],
   //   creation_block: 7729596,
   // },

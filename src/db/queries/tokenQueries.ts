@@ -94,6 +94,7 @@ export const updateTokenMetadataOnTransfer = async (
   token_id: number,
   script_inputs: IScriptInputs,
   image: string,
+  thumbnail_url: string,
   attributes: IAttribute[],
   conn: Connection,
 ) => {
@@ -101,7 +102,7 @@ export const updateTokenMetadataOnTransfer = async (
 
   const query = Token.findOneAndUpdate(
     { project_id, token_id },
-    { script_inputs, image, attributes },
+    { script_inputs, image, thumbnail_url, attributes },
     { new: true },
   );
 

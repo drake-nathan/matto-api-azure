@@ -87,11 +87,14 @@ export const processThumbnails = async (
       );
 
       count += tokenIdsProcessed.length;
-      context.log.info(
-        `${project_slug} thumbnails processed: ${tokenIdsProcessed
-          .map((id) => id)
-          .join(', ')}`,
-      );
+      if (tokenIdsProcessed.filter(Boolean).length) {
+        context.log.info(
+          `${project_slug} thumbnails processed: ${tokenIdsProcessed
+            .map((id) => id)
+            .filter(Boolean)
+            .join(', ')}`,
+        );
+      }
     } catch (error) {
       context.log.error(error);
     }
@@ -112,11 +115,14 @@ export const processThumbnails = async (
       );
 
       count += tokenIdsProcessed.length;
-      context.log.info(
-        `${project_slug} thumbnails processed: ${tokenIdsProcessed
-          .map((id) => id)
-          .join(', ')}`,
-      );
+      if (tokenIdsProcessed.filter(Boolean).length) {
+        context.log.info(
+          `${project_slug} thumbnails processed: ${tokenIdsProcessed
+            .map((id) => id)
+            .filter(Boolean)
+            .join(', ')}`,
+        );
+      }
     } catch (error) {
       context.log.error(error);
     }
