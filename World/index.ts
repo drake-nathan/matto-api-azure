@@ -54,7 +54,7 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
           <body>
           <div id="canvas-container"></div>
           <script>const levelsArray = ${JSON.stringify(levelsArray)};</script>
-          <script src="https://matto-cdn.azureedge.net/scripts/chainlifeWorld-goerli121.min.js"></script>
+          <script src="https://cdn.gengames.io/scripts/chainlifeWorld-goerli121.min.js"></script>
         </body>
       </html>
   `;
