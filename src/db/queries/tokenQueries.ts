@@ -144,3 +144,13 @@ export const removeDuplicateTokens = async (project_id: number, conn: Connection
     }),
   );
 };
+
+export const updateTokenDesc = async (conn: Connection, newDesc: string) => {
+  const Token = conn.model<IToken>('Token');
+
+  const query = Token.updateMany({}, { description: newDesc });
+
+  const result = await query.exec();
+
+  return result.modifiedCount;
+};
