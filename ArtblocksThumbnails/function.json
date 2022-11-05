@@ -4,8 +4,8 @@
       "name": "myTimer",
       "type": "timerTrigger",
       "direction": "in",
-      "schedule": "0 0 * * * *",
-      "runOnStartup": true
+      "schedule": "* */11 * * * *",
+      "runOnStartup": false
     }
   ],
   "scriptFile": "../dist/ArtblocksThumbnails/index.js"
