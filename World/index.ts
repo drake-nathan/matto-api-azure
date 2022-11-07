@@ -54,11 +54,10 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
           <body>
           <div id="canvas-container"></div>
           <script>const levelsArray = ${JSON.stringify(levelsArray)};</script>
-          <script src="https://cdn.gengames.io/scripts/chainlifeWorld-goerli121.min.js"></script>
+          <script src="https://cdn.gengames.io/scripts/chainlifeWorld.min.js"></script>
         </body>
       </html>
   `;
-    // NOTE: Fix script for mainnet
 
     context.res = {
       status: 200,
