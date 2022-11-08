@@ -1,10 +1,14 @@
 import { Connection } from 'mongoose';
 import { IToken, IScriptInputs, IAttribute } from '../schemas/schemaTypes';
 
-export const checkIfTokenExists = async (token_id: number, conn: Connection) => {
+export const checkIfTokenExists = async (
+  token_id: number,
+  project_slug: string,
+  conn: Connection,
+) => {
   const Token = conn.model<IToken>('Token');
 
-  const query = await Token.exists({ token_id });
+  const query = await Token.exists({ token_id, project_slug });
   return query;
 };
 

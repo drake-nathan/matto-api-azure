@@ -48,8 +48,11 @@ export const processNewTokenMint = async (
     royalty_info,
   } = project;
 
-  const doesTokenExist = await checkIfTokenExists(token_id, conn);
-  if (doesTokenExist) return;
+  const doesTokenExist = await checkIfTokenExists(token_id, project_slug, conn);
+  if (doesTokenExist) {
+    context.log.info(`${project_name} token ${token_id} already exists, skipping`);
+    return;
+  }
 
   context.log.info('Adding token', token_id, 'to', project.project_name);
 

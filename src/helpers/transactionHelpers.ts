@@ -33,7 +33,12 @@ export const processNewTransactions = async (
     const script_inputs = await fetchScriptInputs(contract, token_id);
 
     if (event_type === 'Mint') {
-      const doesTokenExist = await checkIfTokenExists(token_id, conn);
+      const doesTokenExist = await checkIfTokenExists(
+        token_id,
+        project.project_slug,
+        conn,
+      );
+
       if (!doesTokenExist) {
         const { newTokenId } = await processNewTokenMint(
           token_id,
@@ -59,7 +64,7 @@ export const checkForNewTransactions = async (
   conn: Connection,
 ) => {
   const { _id: project_id, contract_address, chain, events, project_name } = project;
-
+  context.log(`Checking for new transactions for ${project_name}...`);
   const web3 = getWeb3(chain);
   const contract = getContract(web3, abis[project_id], contract_address);
 
@@ -76,6 +81,9 @@ export const checkForNewTransactions = async (
     fetchedTransactions.map(async (tx) => addTransaction(tx, conn, web3)),
   );
   const newTxNoNull = newTransactionsAdded.filter(Boolean);
+
+  if (newTxNoNull.length)
+    context.log.info(`${newTxNoNull.length} missing transactions found and added.`);
 
   if (!newTxNoNull.length) {
     const currentSupply = await getProjectCurrentSupply(project._id, conn);
