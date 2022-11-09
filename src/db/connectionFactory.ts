@@ -5,6 +5,7 @@ import { projectSchema } from './schemas/project';
 import { tokenSchema } from './schemas/token';
 import { transactionSchema } from './schemas/transaction';
 import { thumbnailSchema } from './schemas/thumbnail';
+import { levelSnapshotSchema } from './schemas/levelSnapshot';
 
 export const connectionFactory = async (context: Context) => {
   dotenv.config();
@@ -24,6 +25,7 @@ export const connectionFactory = async (context: Context) => {
   conn.model('Token', tokenSchema);
   conn.model('Transaction', transactionSchema);
   conn.model('Thumbnail', thumbnailSchema);
+  conn.model('LevelSnapshot', levelSnapshotSchema);
 
   return conn;
 };

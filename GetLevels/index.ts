@@ -22,11 +22,11 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
       return;
     }
 
-    const transfers = await getLevels(project_slug, conn);
+    const levels = await getLevels(project_slug, conn);
 
     context.res = {
       status: 200,
-      body: transfers,
+      body: levels,
     };
   } catch (error) {
     context.log.error(error);

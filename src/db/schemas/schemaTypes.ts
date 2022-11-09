@@ -102,3 +102,16 @@ export interface IThumbnail {
   image_full: string;
   image_thumbnail: string;
 }
+
+interface ILevel {
+  token_id: number;
+  transfer_count: number;
+  level_shift: number;
+}
+
+export interface ILevelSnapshot {
+  _id?: ObjectId;
+  snapshot_date: Date;
+  project_slug: string;
+  levels: ILevel[];
+}
