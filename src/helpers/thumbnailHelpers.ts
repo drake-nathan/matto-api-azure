@@ -73,7 +73,6 @@ export const processThumbnails = async (
 ) => {
   let count = 0;
 
-  // TODO: loop is not processing the remainder after multiples of 10
   // processes thumbnails in batches of 10
   const batchSize = 10;
   for await (const i100 of Array.from({ length: supply / batchSize }, (_, i) => i)) {
@@ -86,7 +85,7 @@ export const processThumbnails = async (
         }),
       );
 
-      count += tokenIdsProcessed.length;
+      count += tokenIdsProcessed.filter(Boolean).length;
       if (tokenIdsProcessed.filter(Boolean).length) {
         context.log.info(
           `${project_slug} thumbnails processed: ${tokenIdsProcessed
@@ -114,7 +113,7 @@ export const processThumbnails = async (
         }),
       );
 
-      count += tokenIdsProcessed.length;
+      count += tokenIdsProcessed.filter(Boolean).length;
       if (tokenIdsProcessed.filter(Boolean).length) {
         context.log.info(
           `${project_slug} thumbnails processed: ${tokenIdsProcessed
