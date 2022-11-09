@@ -1,7 +1,7 @@
 import { AzureFunction, Context } from '@azure/functions';
 import { Connection } from 'mongoose';
 import { connectionFactory } from '../src/db/connectionFactory';
-import { addLevelSnapshot } from '../src/db/queries/levelQueries';
+import { addLevelSnapshot } from '../src/db/queries/snapshotQueries';
 import { getLevels } from '../src/db/queries/tokenQueries';
 import { ILevelSnapshot } from '../src/db/schemas/schemaTypes';
 

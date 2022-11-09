@@ -12,3 +12,11 @@ export const addLevelSnapshot = async (
 
   return query;
 };
+
+export const getLevelSnapshots = async (conn: Connection, projectSlug: string) => {
+  const LevelSnapshot = conn.model<ILevelSnapshot>('LevelSnapshot');
+
+  const query = await LevelSnapshot.find({ projectSlug }).exec();
+
+  return query;
+};
