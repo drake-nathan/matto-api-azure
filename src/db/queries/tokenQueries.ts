@@ -28,6 +28,20 @@ export const getAllTokensFromProject = (project_slug: string, conn: Connection) 
 
   const query = Token.find({ project_slug });
 
+  query.select('-_id -__v -attributes._id -script_inputs._id');
+
+  return query.lean().exec();
+};
+
+export const getAllTokensForFrontend = (project_slug: string, conn: Connection) => {
+  const Token = conn.model<IToken>('Token');
+
+  const query = Token.find({ project_slug });
+
+  query.select(
+    'token_id name project_name project_slug artist image thumbnail_url generator_url external_url',
+  );
+
   return query.lean().exec();
 };
 
