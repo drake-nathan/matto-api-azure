@@ -78,9 +78,28 @@
     "method": "GET",
     "sortNum": 0,
     "created": "2022-11-16T03:01:21.470Z",
-    "modified": "2022-11-16T03:08:29.062Z",
+    "modified": "2022-11-19T06:15:10.164Z",
     "headers": [],
-    "params": [],
+    "params": [
+      {
+        "name": "limit",
+        "value": "4",
+        "isDisabled": true,
+        "isPath": false
+      },
+      {
+        "name": "sort",
+        "value": "asc",
+        "isDisabled": true,
+        "isPath": false
+      },
+      {
+        "name": "skip",
+        "value": "100",
+        "isDisabled": true,
+        "isPath": false
+      }
+    ],
     "tests": []
   }
 ]

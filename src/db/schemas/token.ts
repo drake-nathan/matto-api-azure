@@ -46,3 +46,5 @@ export const tokenSchema = new Schema<IToken>({
     },
   ],
 });
+
+tokenSchema.index({ token_id: 1 }, { unique: true });

@@ -33,14 +33,22 @@ export const getAllTokensFromProject = (project_slug: string, conn: Connection) 
   return query.lean().exec();
 };
 
-export const getAllTokensForFrontend = (project_slug: string, conn: Connection) => {
+export const getTokensForFrontend = (
+  conn: Connection,
+  project_slug: string,
+  limit: number,
+  skip: number,
+  sort: 'asc' | 'desc',
+) => {
   const Token = conn.model<IToken>('Token');
 
-  const query = Token.find({ project_slug });
-
-  query.select(
-    'token_id name project_name project_slug artist image thumbnail_url generator_url external_url',
-  );
+  const query = Token.find({ project_slug })
+    .sort({ token_id: sort === 'asc' ? 1 : -1 })
+    .limit(Number(limit))
+    .skip(Number(skip))
+    .select(
+      'token_id name project_name project_slug artist image thumbnail_url generator_url external_url',
+    );
 
   return query.lean().exec();
 };
