@@ -14,5 +14,5 @@
       "name": "res"
     }
   ],
-  "scriptFile": "../dist/GetAllTokens/index.js"
+  "scriptFile": "../dist/GetFrontendTokens/index.js"
 }

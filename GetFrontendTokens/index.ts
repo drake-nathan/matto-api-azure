@@ -12,8 +12,6 @@ const httpTrigger: AzureFunction = async (
   const { limit: limitQuery, skip: skipQuery, sort: sortQuery } = req.query;
   let conn: Connection;
 
-  // default values
-
   // check if limit query is a number
   const limit = limitQuery && Number(limitQuery) ? Number(limitQuery) : 16;
   const skip = skipQuery && Number(skipQuery) ? Number(skipQuery) : 0;
