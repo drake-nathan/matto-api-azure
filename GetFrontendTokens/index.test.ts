@@ -30,6 +30,7 @@ describe('GetFrontendTokens', () => {
     expect(context.res.status).toEqual(200);
     expect(context.res.body).toHaveProperty('hasMore');
     expect(context.res.body).toHaveProperty('tokens');
+    expect(context.res.body).toHaveProperty('currentSupply');
     expect(context.res.body.tokens).toHaveLength(16);
     expect(context.res.body.tokens[0].token_id).toEqual(0);
   });
