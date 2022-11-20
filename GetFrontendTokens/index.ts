@@ -46,6 +46,7 @@ const httpTrigger: AzureFunction = async (
       status: 200,
       body: {
         hasMore,
+        currentSupply: project.current_supply,
         tokens,
       },
     };
