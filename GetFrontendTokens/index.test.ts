@@ -61,8 +61,8 @@ describe('GetFrontendTokens', () => {
     expect(context.res.body.tokens[0].token_id).toEqual(10);
   });
 
-  it('should sort the tokens returned if given a sort query', async () => {
-    req.query.sort = 'desc';
+  it('should sort the tokens by token id if given a sortDir query', async () => {
+    req.query.sortDir = 'desc';
 
     await httpTrigger(context, req);
 
@@ -72,6 +72,19 @@ describe('GetFrontendTokens', () => {
     expect(context.res.body).toHaveProperty('tokens');
     expect(context.res.body.tokens).toHaveLength(16);
     expect(context.res.body.tokens[0].token_id).toBeGreaterThan(0);
+  });
+
+  it('should sort the tokens by world level if given sortType query', async () => {
+    req.query.sortType = 'worldLevel';
+
+    await httpTrigger(context, req);
+
+    expect(context.log.error).toBeCalledTimes(0);
+    expect(context.res.status).toEqual(200);
+    expect(context.res.body).toHaveProperty('hasMore');
+    expect(context.res.body).toHaveProperty('tokens');
+    expect(context.res.body.tokens).toHaveLength(16);
+    expect(context.res.body.tokens[0]).toHaveProperty('world_level');
   });
 
   it('should set hasMore to true if there are more tokens to be returned', async () => {
