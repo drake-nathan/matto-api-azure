@@ -47,7 +47,7 @@ export const getTokensForFrontend = (
     .limit(Number(limit))
     .skip(Number(skip))
     .select(
-      'token_id name project_name project_slug artist image thumbnail_url generator_url external_url',
+      'token_id name project_name project_slug artist image thumbnail_url generator_url external_url script_inputs attributes',
     );
 
   return query.lean().exec();
