@@ -47,10 +47,58 @@ export const getTokensForFrontend = (
     .limit(Number(limit))
     .skip(Number(skip))
     .select(
-      'token_id name project_name project_slug artist image thumbnail_url generator_url external_url script_inputs attributes',
+      'token_id name project_name project_slug artist image thumbnail_url generator_url external_url script_inputs',
     );
 
   return query.lean().exec();
+};
+
+export const getTokensWorldLevelSort = (
+  conn: Connection,
+  project_slug: string,
+  limit: number,
+  skip: number,
+  sort: 'asc' | 'desc',
+) => {
+  const Token = conn.model<IToken>('Token');
+
+  const query = Token.aggregate([
+    {
+      $match: {
+        project_slug,
+      },
+    },
+    {
+      $project: {
+        token_id: true,
+        name: true,
+        project_name: true,
+        project_slug: true,
+        artist: true,
+        image: true,
+        thumbnail_url: true,
+        generator_url: true,
+        external_url: true,
+        script_inputs: true,
+        world_level: {
+          $add: ['$script_inputs.transfer_count', '$script_inputs.level_shift'],
+        },
+      },
+    },
+    {
+      $sort: {
+        world_level: sort === 'asc' ? 1 : -1,
+      },
+    },
+    {
+      $skip: Number(skip),
+    },
+    {
+      $limit: Number(limit),
+    },
+  ]);
+
+  return query.exec();
 };
 
 export const getScriptInputsFromDb = async (

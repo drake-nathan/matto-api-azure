@@ -2,20 +2,32 @@ import { AzureFunction, Context, HttpRequest } from '@azure/functions';
 import { Connection } from 'mongoose';
 import { connectionFactory } from '../src/db/connectionFactory';
 import { getProject } from '../src/db/queries/projectQueries';
-import { getTokensForFrontend } from '../src/db/queries/tokenQueries';
+import {
+  getTokensForFrontend,
+  getTokensWorldLevelSort,
+} from '../src/db/queries/tokenQueries';
 
 const httpTrigger: AzureFunction = async (
   context: Context,
   req: HttpRequest,
 ): Promise<void> => {
   const { project_slug } = context.bindingData;
-  const { limit: limitQuery, skip: skipQuery, sort: sortQuery } = req.query;
+  const {
+    limit: limitQuery,
+    skip: skipQuery,
+    sortDir: sortDirQuery,
+    sortType: sortTypeQuery,
+  } = req.query;
   let conn: Connection;
 
   // check if limit query is a number
   const limit = limitQuery && Number(limitQuery) ? Number(limitQuery) : 16;
   const skip = skipQuery && Number(skipQuery) ? Number(skipQuery) : 0;
-  const sort = sortQuery === 'asc' || sortQuery === 'desc' ? sortQuery : 'asc';
+  const sort = sortDirQuery === 'asc' || sortDirQuery === 'desc' ? sortDirQuery : 'asc';
+  const sortType =
+    sortTypeQuery === 'tokenId' || sortTypeQuery === 'worldLevel'
+      ? sortTypeQuery
+      : 'tokenId';
 
   try {
     conn = await connectionFactory(context);
@@ -30,7 +42,12 @@ const httpTrigger: AzureFunction = async (
       return;
     }
 
-    const tokens = await getTokensForFrontend(conn, project_slug, limit, skip, sort);
+    let tokens;
+    if (sortType === 'tokenId') {
+      tokens = await getTokensForFrontend(conn, project_slug, limit, skip, sort);
+    } else if (sortType === 'worldLevel') {
+      tokens = await getTokensWorldLevelSort(conn, project_slug, limit, skip, sort);
+    }
 
     if (!tokens) {
       context.res = {
