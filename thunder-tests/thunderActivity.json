@@ -74,31 +74,40 @@
     "colId": "history",
     "containerId": "",
     "name": "http://localhost:7071/project/chainlife-testnet/all-tokens",
-    "url": "http://localhost:7071/project/chainlife/all-tokens?limit=1&sortDir=desc&skip=1&sortType=worldLevel",
+    "url": "http://localhost:7071/project/chainlife/all-tokens?tokenId=290",
     "method": "GET",
     "sortNum": 0,
     "created": "2022-11-16T03:01:21.470Z",
-    "modified": "2022-11-24T15:45:49.875Z",
+    "modified": "2022-11-27T21:29:49.125Z",
     "headers": [],
     "params": [
       {
         "name": "limit",
         "value": "1",
+        "isDisabled": true,
         "isPath": false
       },
       {
         "name": "sortDir",
         "value": "desc",
+        "isDisabled": true,
         "isPath": false
       },
       {
         "name": "skip",
         "value": "1",
+        "isDisabled": true,
         "isPath": false
       },
       {
         "name": "sortType",
         "value": "worldLevel",
+        "isDisabled": true,
+        "isPath": false
+      },
+      {
+        "name": "tokenId",
+        "value": "290",
         "isPath": false
       }
     ],

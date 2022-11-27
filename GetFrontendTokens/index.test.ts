@@ -1,5 +1,5 @@
 import { Context, HttpRequest } from '@azure/functions';
-import httpTrigger from './index';
+import GetFrontenTokens from './index';
 
 describe('GetFrontendTokens', () => {
   let context: Context;
@@ -16,7 +16,7 @@ describe('GetFrontendTokens', () => {
   it('should return a 404 if given an incorrect project slug', async () => {
     context.bindingData.project_slug = 'cryptodickbutts';
 
-    await httpTrigger(context, req);
+    await GetFrontenTokens(context, req);
 
     expect(context.log.error).toBeCalledTimes(0);
     expect(context.res.status).toEqual(404);
@@ -24,7 +24,7 @@ describe('GetFrontendTokens', () => {
   });
 
   it('should return a response object with default values if no queries given', async () => {
-    await httpTrigger(context, req);
+    await GetFrontenTokens(context, req);
 
     expect(context.log.error).toBeCalledTimes(0);
     expect(context.res.status).toEqual(200);
@@ -38,7 +38,7 @@ describe('GetFrontendTokens', () => {
   it('should limit the number of tokens returned if given a limit query', async () => {
     req.query.limit = '10';
 
-    await httpTrigger(context, req);
+    await GetFrontenTokens(context, req);
 
     expect(context.log.error).toBeCalledTimes(0);
     expect(context.res.status).toEqual(200);
@@ -51,7 +51,7 @@ describe('GetFrontendTokens', () => {
   it('should skip the number of tokens returned if given a skip query', async () => {
     req.query.skip = '10';
 
-    await httpTrigger(context, req);
+    await GetFrontenTokens(context, req);
 
     expect(context.log.error).toBeCalledTimes(0);
     expect(context.res.status).toEqual(200);
@@ -64,7 +64,7 @@ describe('GetFrontendTokens', () => {
   it('should sort the tokens by token id if given a sortDir query', async () => {
     req.query.sortDir = 'desc';
 
-    await httpTrigger(context, req);
+    await GetFrontenTokens(context, req);
 
     expect(context.log.error).toBeCalledTimes(0);
     expect(context.res.status).toEqual(200);
@@ -77,7 +77,7 @@ describe('GetFrontendTokens', () => {
   it('should sort the tokens by world level if given sortType query', async () => {
     req.query.sortType = 'worldLevel';
 
-    await httpTrigger(context, req);
+    await GetFrontenTokens(context, req);
 
     expect(context.log.error).toBeCalledTimes(0);
     expect(context.res.status).toEqual(200);
@@ -90,11 +90,35 @@ describe('GetFrontendTokens', () => {
   it('should set hasMore to true if there are more tokens to be returned', async () => {
     req.query.limit = '3';
 
-    await httpTrigger(context, req);
+    await GetFrontenTokens(context, req);
 
     expect(context.log.error).toBeCalledTimes(0);
     expect(context.res.status).toEqual(200);
     expect(context.res.body).toHaveProperty('hasMore');
     expect(context.res.body.hasMore).toEqual(true);
+  });
+
+  it('should return one token if given valid tokenId query', async () => {
+    req.query.tokenId = '69';
+
+    await GetFrontenTokens(context, req);
+
+    expect(context.log.error).toBeCalledTimes(0);
+    expect(context.res.status).toEqual(200);
+    expect(context.res.body).toHaveProperty('hasMore');
+    expect(context.res.body.hasMore).toEqual(false);
+    expect(context.res.body).toHaveProperty('tokens');
+    expect(context.res.body.tokens).toHaveLength(1);
+    expect(context.res.body.tokens[0].token_id).toEqual(69);
+  });
+
+  it('should return 404 if given invalid tokenId query', async () => {
+    req.query.tokenId = '42069';
+
+    await GetFrontenTokens(context, req);
+
+    expect(context.log.error).toBeCalledTimes(0);
+    expect(context.res.status).toEqual(404);
+    expect(context.res.body).toEqual('Tokens not found');
   });
 });

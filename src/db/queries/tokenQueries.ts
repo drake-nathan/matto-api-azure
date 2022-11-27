@@ -1,5 +1,5 @@
 import { Connection } from 'mongoose';
-import { IToken, IScriptInputs, IAttribute } from '../schemas/schemaTypes';
+import { IToken, IScriptInputs, IAttribute, TokenAbbr } from '../schemas/schemaTypes';
 
 export const checkIfTokenExists = async (
   token_id: number,
@@ -12,7 +12,6 @@ export const checkIfTokenExists = async (
   return query;
 };
 
-// get data for script
 export const getToken = (project_slug: string, token_id: string, conn: Connection) => {
   const Token = conn.model<IToken>('Token');
 
@@ -21,6 +20,22 @@ export const getToken = (project_slug: string, token_id: string, conn: Connectio
   query.select('-_id -__v -attributes._id -script_inputs._id');
 
   return query.lean().exec();
+};
+
+export const getTokenAbbr = (
+  project_slug: string,
+  token_id: string,
+  conn: Connection,
+): Promise<TokenAbbr> => {
+  const Token = conn.model<IToken>('Token');
+
+  const query = Token.findOne({ project_slug, token_id });
+
+  query.select(
+    'token_id name project_name project_slug artist image thumbnail_url generator_url external_url script_inputs',
+  );
+
+  return query.lean().exec() as Promise<TokenAbbr>;
 };
 
 export const getAllTokensFromProject = (project_slug: string, conn: Connection) => {
@@ -33,16 +48,16 @@ export const getAllTokensFromProject = (project_slug: string, conn: Connection) 
   return query.lean().exec();
 };
 
-export const getTokensForFrontend = (
+export const getTokensTokenIdSort = (
   conn: Connection,
   project_slug: string,
   limit: number,
   skip: number,
   sort: 'asc' | 'desc',
-) => {
+): Promise<TokenAbbr[]> => {
   const Token = conn.model<IToken>('Token');
 
-  const query = Token.find({ project_slug })
+  const query = Token.find<TokenAbbr>({ project_slug })
     .sort({ token_id: sort === 'asc' ? 1 : -1 })
     .limit(Number(limit))
     .skip(Number(skip))
@@ -50,7 +65,7 @@ export const getTokensForFrontend = (
       'token_id name project_name project_slug artist image thumbnail_url generator_url external_url script_inputs',
     );
 
-  return query.lean().exec();
+  return query.lean().exec() as Promise<TokenAbbr[]>;
 };
 
 export const getTokensWorldLevelSort = (
@@ -59,10 +74,10 @@ export const getTokensWorldLevelSort = (
   limit: number,
   skip: number,
   sort: 'asc' | 'desc',
-) => {
+): Promise<TokenAbbr[]> => {
   const Token = conn.model<IToken>('Token');
 
-  const query = Token.aggregate([
+  const query = Token.aggregate<TokenAbbr>([
     {
       $match: {
         project_slug,

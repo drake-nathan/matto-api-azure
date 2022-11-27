@@ -3,9 +3,11 @@ import { Connection } from 'mongoose';
 import { connectionFactory } from '../src/db/connectionFactory';
 import { getProject } from '../src/db/queries/projectQueries';
 import {
-  getTokensForFrontend,
+  getTokenAbbr,
+  getTokensTokenIdSort,
   getTokensWorldLevelSort,
 } from '../src/db/queries/tokenQueries';
+import { TokenAbbr } from '../src/db/schemas/schemaTypes';
 
 const httpTrigger: AzureFunction = async (
   context: Context,
@@ -17,6 +19,7 @@ const httpTrigger: AzureFunction = async (
     skip: skipQuery,
     sortDir: sortDirQuery,
     sortType: sortTypeQuery,
+    tokenId: tokenIdQuery,
   } = req.query;
   let conn: Connection;
 
@@ -28,6 +31,7 @@ const httpTrigger: AzureFunction = async (
     sortTypeQuery === 'tokenId' || sortTypeQuery === 'worldLevel'
       ? sortTypeQuery
       : 'tokenId';
+  const tokenId = tokenIdQuery && !Number.isNaN(tokenIdQuery) ? tokenIdQuery : null;
 
   try {
     conn = await connectionFactory(context);
@@ -42,22 +46,27 @@ const httpTrigger: AzureFunction = async (
       return;
     }
 
-    let tokens;
-    if (sortType === 'tokenId') {
-      tokens = await getTokensForFrontend(conn, project_slug, limit, skip, sort);
+    let tokens: TokenAbbr[] = [];
+    let hasMore: boolean;
+    if (tokenId) {
+      const token = await getTokenAbbr(project_slug, tokenId, conn);
+      if (token) tokens.push(token);
+      hasMore = false;
+    } else if (sortType === 'tokenId') {
+      tokens = await getTokensTokenIdSort(conn, project_slug, limit, skip, sort);
+      hasMore = project.current_supply > skip + limit;
     } else if (sortType === 'worldLevel') {
       tokens = await getTokensWorldLevelSort(conn, project_slug, limit, skip, sort);
+      hasMore = project.current_supply > skip + limit;
     }
 
-    if (!tokens) {
+    if (!tokens.length) {
       context.res = {
         status: 404,
         body: 'Tokens not found',
       };
       return;
     }
-
-    const hasMore = project.current_supply > skip + limit;
 
     context.res = {
       status: 200,
