@@ -121,4 +121,13 @@ describe('GetFrontendTokens', () => {
     expect(context.res.status).toEqual(404);
     expect(context.res.body).toEqual('Tokens not found');
   });
+
+  it('should return 404 if given invalid tokenId query', async () => {
+    req.query.tokenId = 'not a token';
+
+    await GetFrontenTokens(context, req);
+
+    expect(context.log.error).toBeCalledTimes(1);
+    expect(context.res.status).toEqual(500);
+  });
 });

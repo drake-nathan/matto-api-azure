@@ -48,6 +48,7 @@ const httpTrigger: AzureFunction = async (
 
     let tokens: TokenAbbr[] = [];
     let hasMore: boolean;
+
     if (tokenId) {
       const token = await getTokenAbbr(project_slug, tokenId, conn);
       if (token) tokens.push(token);

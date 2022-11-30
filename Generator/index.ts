@@ -81,7 +81,7 @@ const httpTrigger: AzureFunction = async (
         <body>
           <div id="canvas-container"></div>
           <script>const scriptInputs = ${scriptInputs};</script>
-          <script src="https://cdn.gengames.io/scripts/chainlifeToken.min.js"></script>
+          <script src="https://cdn.gengames.io/scripts/chainlife/chainlifeToken.min.js"></script>
         </body>
       </html>
   `;
