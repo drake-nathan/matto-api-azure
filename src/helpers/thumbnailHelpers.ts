@@ -9,12 +9,14 @@ const fetchImageUploadThumbnail = async (
   image_full: string,
   project_slug: string,
   token_id: number,
+  context: Context,
 ) => {
   const response = await axios(image_full, { responseType: 'arraybuffer' });
 
   const thumbnail = await sharp(response.data).resize(200).toBuffer();
 
   const image_thumbnail = await uploadThumbnail(
+    context,
     thumbnail,
     project_slug,
     token_id,
@@ -29,6 +31,7 @@ const processThumbnail = async (
   existingThumbnails: IThumbnail[],
   project_slug: string,
   artblocks_id: string,
+  context: Context,
 ) => {
   const Thumbnail = conn.model<IThumbnail>('Thumbnail');
 
@@ -47,6 +50,7 @@ const processThumbnail = async (
     image_full,
     project_slug,
     token_id,
+    context,
   );
 
   const thumbnail = new Thumbnail({
@@ -81,7 +85,13 @@ export const processThumbnails = async (
         Array.from({ length: batchSize }, (_, i) => {
           const i1000 = i100 * batchSize + i;
           const artblocks_id = `${baseArtBlockId + i1000}`;
-          return processThumbnail(conn, dbThumbnails, project_slug, artblocks_id);
+          return processThumbnail(
+            conn,
+            dbThumbnails,
+            project_slug,
+            artblocks_id,
+            context,
+          );
         }),
       );
 
@@ -109,7 +119,13 @@ export const processThumbnails = async (
       const tokenIdsProcessed = await Promise.all(
         remaining.map((id) => {
           const artblocks_id = `${baseArtBlockId + id}`;
-          return processThumbnail(conn, dbThumbnails, project_slug, artblocks_id);
+          return processThumbnail(
+            conn,
+            dbThumbnails,
+            project_slug,
+            artblocks_id,
+            context,
+          );
         }),
       );
 

@@ -60,11 +60,12 @@ export const processNewTokenMint = async (
 
   const { screenshot, attributes } = await runPuppeteer(generator_url, script_inputs);
 
-  const image = await uploadThumbnail(screenshot, project_slug, token_id);
+  const image = await uploadThumbnail(context, screenshot, project_slug, token_id);
 
   const thumbnail = await sharp(screenshot).resize(200).toBuffer();
 
   const thumbnail_url = await uploadThumbnail(
+    context,
     thumbnail,
     project_slug,
     token_id,
@@ -121,11 +122,12 @@ export const processTransferEvent = async (
 
   const { screenshot, attributes } = await runPuppeteer(generator_url, script_inputs);
 
-  const image = await uploadThumbnail(screenshot, project_slug, token_id);
+  const image = await uploadThumbnail(context, screenshot, project_slug, token_id);
 
   const thumbnail = await sharp(screenshot).resize(200).toBuffer();
 
   const thumbnail_url = await uploadThumbnail(
+    context,
     thumbnail,
     project_slug,
     token_id,
