@@ -85,3 +85,19 @@ export const removeDuplicateTransactions = async (conn: Connection) => {
   // else
   return 0;
 };
+
+export const getTxCounts = async (conn: Connection, project_id: number) => {
+  const Transaction = conn.model<ITransaction>('Transaction');
+
+  const query = await Transaction.find({ project_id });
+
+  const txCounts = {
+    total: query.length,
+    mints: query.filter((tx) => tx.event_type === 'Mint').length,
+    transfers: query.filter((tx) => tx.event_type === 'Transfer').length,
+    customRules: query.filter((tx) => tx.event_type === 'CustomRule').length,
+    levelShifts: query.filter((tx) => tx.event_type === 'ShiftLevel').length,
+  };
+
+  return txCounts;
+};

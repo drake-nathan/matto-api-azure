@@ -46,11 +46,11 @@
     "colId": "history",
     "containerId": "",
     "name": "http://localhost:7071/project",
-    "url": "http://localhost:7071/project",
+    "url": "http://localhost:7071/project/chainlife/txcount",
     "method": "GET",
     "sortNum": 0,
     "created": "2022-11-16T03:01:09.302Z",
-    "modified": "2022-11-16T03:01:09.340Z",
+    "modified": "2022-12-01T21:48:32.528Z",
     "headers": [],
     "params": [],
     "tests": []
