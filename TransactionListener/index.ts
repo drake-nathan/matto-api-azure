@@ -12,7 +12,7 @@ const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
   let conn: Connection;
   let projects: IProject[];
 
-  const isDev = process.env.NODE_ENV !== 'production';
+  const isDev = process.env.NODE_ENV === 'development';
 
   // NOTE: This sets only testnet projects in dev, and mainnet projects in prod
   if (isDev) projects = allProjects.filter((p) => p.chain === Chain.goerli);
