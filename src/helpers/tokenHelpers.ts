@@ -6,7 +6,7 @@ import sharp from 'sharp';
 import { IProject, IScriptInputs, IToken } from '../db/schemas/schemaTypes';
 import {
   getProjectCurrentSupply,
-  updateProjectCurrentSupply,
+  updateProjectSupplyAndCount,
 } from '../db/queries/projectQueries';
 import {
   addToken,
@@ -46,6 +46,7 @@ export const processNewTokenMint = async (
     website,
     license,
     royalty_info,
+    tx_count,
   } = project;
 
   const doesTokenExist = await checkIfTokenExists(token_id, project_slug, conn);
@@ -99,9 +100,10 @@ export const processNewTokenMint = async (
   const { token_id: newTokenId } = await addToken(newToken, conn);
 
   const previousSupply = await getProjectCurrentSupply(project_id, conn);
-  const newSupply = await updateProjectCurrentSupply(
+  const newSupply = await updateProjectSupplyAndCount(
     project_id,
     previousSupply + 1,
+    tx_count + 1,
     conn,
   );
 

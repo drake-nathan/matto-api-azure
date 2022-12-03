@@ -5,7 +5,7 @@ import { IProject } from '../db/schemas/schemaTypes';
 import {
   addProject,
   checkIfNewProjects,
-  updateProjectCurrentSupply,
+  updateProjectSupplyAndCount,
 } from '../db/queries/projectQueries';
 import { getCurrentTokenSupply, removeDuplicateTokens } from '../db/queries/tokenQueries';
 import { addTransaction, getAllMintTransactions } from '../db/queries/transactionQueries';
@@ -92,7 +92,7 @@ export const reconcileProject = async (
   const contract = getContract(web3, abis[project_id], contract_address);
 
   // fetch all transactions from blockchain, add missing ones
-  const allTransactions = await fetchEvents(
+  const { filteredTransactions: allTransactions, totalTxCount } = await fetchEvents(
     contract,
     events,
     project_id,
@@ -116,7 +116,7 @@ export const reconcileProject = async (
 
   if (totalMintTransactions === totalTokensInDb) {
     context.log.info(`${project_name} has been fully reconciled.`);
-    await updateProjectCurrentSupply(project_id, totalTokensInDb, conn);
+    await updateProjectSupplyAndCount(project_id, totalTokensInDb, totalTxCount, conn);
   } else {
     if (totalMintTransactions < totalTokensInDb) {
       context.log.error(
@@ -133,7 +133,12 @@ export const reconcileProject = async (
     const newTotalTokensInDb = await getCurrentTokenSupply(project_id, conn);
     if (totalMintTransactions === newTotalTokensInDb) {
       context.log.info(`${project_name} has been fully reconciled.`);
-      await updateProjectCurrentSupply(project_id, newTotalTokensInDb, conn);
+      await updateProjectSupplyAndCount(
+        project_id,
+        newTotalTokensInDb,
+        totalTxCount,
+        conn,
+      );
     } else {
       context.log.error(
         `${project_name} still has a token count discrepancy, please check the database.`,

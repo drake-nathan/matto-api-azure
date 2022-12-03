@@ -10,6 +10,7 @@ export const projectSchema = new Schema<IProject>({
   description: { type: String, required: true },
   maximum_supply: { type: Number },
   current_supply: { type: Number },
+  tx_count: { type: Number },
   collection_name: { type: String, required: true },
   collection_image: { type: String, required: true },
   collection_description: { type: String, required: true },

@@ -16,7 +16,7 @@ export const fetchEvents = async (
   const allTransactions = await contract.getPastEvents('allEvents', options);
   const filteredTransactions = allTransactions.filter((tx) => events.includes(tx.event));
 
-  return filteredTransactions;
+  return { filteredTransactions, totalTxCount: allTransactions.length };
 };
 
 export const fetchScriptInputs = async (contract: Contract, token_id: number) => {

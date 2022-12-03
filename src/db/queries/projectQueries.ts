@@ -39,14 +39,15 @@ export const getProjectCurrentSupply = async (project_id: number, conn: Connecti
   return query?.current_supply || 0;
 };
 
-export const updateProjectCurrentSupply = async (
+export const updateProjectSupplyAndCount = async (
   project_id: number,
   current_supply: number,
+  tx_count: number,
   conn: Connection,
 ) => {
   const Project = conn.model<IProject>('Project');
 
-  const query = await Project.findByIdAndUpdate(project_id, { current_supply });
+  const query = await Project.findByIdAndUpdate(project_id, { current_supply, tx_count });
 
   return query.current_supply;
 };

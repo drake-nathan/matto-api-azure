@@ -5,6 +5,7 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
+    "type-check": "tsc --noEmit",
     "prestart": "npm run build",
     "start": "func start",
     "test": "jest"
