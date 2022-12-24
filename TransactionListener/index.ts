@@ -2,21 +2,25 @@ import * as dotenv from 'dotenv';
 import { AzureFunction, Context } from '@azure/functions';
 import { Connection } from 'mongoose';
 import { connectionFactory } from '../src/db/connectionFactory';
-import { Chain, IProject } from '../src/db/schemas/schemaTypes';
+import { IProject } from '../src/db/schemas/schemaTypes';
 import { checkForNewTransactions } from '../src/helpers/transactionHelpers';
-import { projects as allProjects } from '../src/projects/projectsInfo';
+import { projects as allProjects } from '../src/projects';
 
 dotenv.config();
 
 const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
   let conn: Connection;
-  let projects: IProject[];
+  const projects: IProject[] = [];
 
   const isDev = process.env.NODE_ENV === 'development';
 
-  // NOTE: This sets only testnet projects in dev, and mainnet projects in prod
-  if (isDev) projects = allProjects.filter((p) => p.chain === Chain.goerli);
-  else projects = allProjects.filter((p) => p.chain === Chain.mainnet);
+  allProjects.forEach((project) => {
+    if (isDev && project.devParams.useInDev) {
+      projects.push(project);
+    } else if (!isDev && project.devParams.useInProd) {
+      projects.push(project);
+    }
+  });
 
   try {
     conn = await connectionFactory(context);

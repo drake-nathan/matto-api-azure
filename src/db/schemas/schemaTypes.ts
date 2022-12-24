@@ -3,7 +3,7 @@ import { ObjectId } from 'mongoose';
 export enum ProjectId {
   chainlifeTestnet,
   chainlifeMainnet,
-  '100x10x1a',
+  mathare,
 }
 
 export enum Chain {
@@ -12,10 +12,18 @@ export enum Chain {
 }
 
 export interface IRoyaltyInfo {
-  artist_address: string;
+  royalty_fee_by_id: number;
+  artist_address?: string;
+  charity_address?: string;
   additional_payee?: string;
   additional_payee_bps?: number;
-  royalty_fee_by_id: number;
+}
+
+export interface IDevParams {
+  useInDev: boolean;
+  useInProd: boolean;
+  isBulkMint?: boolean;
+  usesPuppeteer?: boolean;
 }
 
 export interface IProject {
@@ -23,17 +31,19 @@ export interface IProject {
   project_name: string;
   project_slug: string;
   artist: string;
-  artist_address: string; // also RoyaltyInfo
+  artist_address: string;
   royalty_info: IRoyaltyInfo;
-  description: string;
+  description?: string;
   maximum_supply: number;
+  starting_index: number;
   current_supply?: number;
-  tx_count?: number;
+  tx_count: number;
   collection_name: string;
   collection_image: string;
   collection_description: string;
   mintable: boolean;
   script_type: string;
+  aspect_ratio: number;
   website: string;
   external_url: string;
   license: string;
@@ -41,6 +51,8 @@ export interface IProject {
   chain: Chain;
   events: string[];
   creation_block: number;
+  gen_script?: string;
+  devParams: IDevParams;
 }
 
 export interface IAttribute {
@@ -50,12 +62,14 @@ export interface IAttribute {
 
 export interface IScriptInputs {
   token_id: number;
-  token_entropy: string;
-  current_owner: string;
-  previous_owner: string;
   transfer_count: number;
-  custom_rule: string;
-  level_shift: number;
+  token_entropy?: string;
+  current_owner?: string;
+  previous_owner?: string;
+  custom_rule?: string;
+  level_shift?: number;
+  imageURI_base?: string;
+  audioURI_base?: string;
 }
 
 export interface IToken {
@@ -69,10 +83,11 @@ export interface IToken {
   artist_address: string; // project
   description: string; // project
   collection_name: string; // project
-  aspect_ratio: number;
-  script_type: string;
+  aspect_ratio: number; // project
+  script_type: string; // project
   script_inputs: IScriptInputs;
   image: string; // generation scripts
+  image_mid?: string;
   thumbnail_url?: string;
   image_data?: string; // not used for Chainlife
   animation_url: string; // generation script

@@ -1,8 +1,9 @@
 import { AzureFunction, Context, HttpRequest } from '@azure/functions';
 import { Connection } from 'mongoose';
-import { checkIfProjectExists } from '../src/db/queries/projectQueries';
+import { getProject } from '../src/db/queries/projectQueries';
 import { connectionFactory } from '../src/db/connectionFactory';
 import { getScriptInputsFromDb } from '../src/db/queries/tokenQueries';
+import { getHtml } from '../src/helpers/generatorHelpers';
 
 const httpTrigger: AzureFunction = async (
   context: Context,
@@ -14,7 +15,7 @@ const httpTrigger: AzureFunction = async (
   try {
     conn = await connectionFactory(context);
 
-    const project = await checkIfProjectExists(project_slug, conn);
+    const project = await getProject(project_slug, conn);
 
     if (!project) {
       context.res = {
@@ -24,11 +25,15 @@ const httpTrigger: AzureFunction = async (
       return;
     }
 
+    const { project_name, gen_script } = project;
+
     let scriptInputs: string;
 
     if (req.body && req.body.scriptInputs) {
       scriptInputs = JSON.stringify(req.body.scriptInputs);
-      context.log.info('Using scriptInputs from request body.');
+      context.log.info(
+        `Using scriptInputs from request body for token ${token_id} on ${project_name}.`,
+      );
     } else {
       const scriptInputsDb = await getScriptInputsFromDb(project_slug, token_id, conn);
 
@@ -51,40 +56,14 @@ const httpTrigger: AzureFunction = async (
       return;
     }
 
-    const generatorHtml = `
-      <!DOCTYPE html>
-      <html lang="en">
-        <head>
-          <meta charset="utf-8" />
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      
-          <title>Chainlife</title>
-      
-          <style type="text/css" id="Chainlife Generator">
-            body {
-              margin: 0;
-              padding: 0;
-            }
-            canvas {
-              padding: 0;
-              margin: auto;
-              display: block;
-              position: absolute;
-              top: 0;
-              bottom: 0;
-              left: 0;
-              right: 0;
-            }
-          </style>
-          <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.0.0/p5.min.js"></script>
-        </head>
-        <body>
-          <div id="canvas-container"></div>
-          <script>const scriptInputs = ${scriptInputs};</script>
-          <script src="https://cdn.gengames.io/scripts/chainlife/chainlifeToken.min.js"></script>
-        </body>
-      </html>
-  `;
+    const isMathare = project_slug === 'mathare-memories';
+    const generatorHtml = getHtml(project_name, gen_script, scriptInputs, isMathare);
+    // const generatorHtml = getHtml(
+    //   'Mathare',
+    //   'https://cdn.gengames.io/scripts/mathare/mathareMemories.min.js',
+    //   JSON.stringify({ token_id, transfer_count: 0 }),
+    //   true,
+    // );
 
     context.res = {
       status: 200,

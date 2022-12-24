@@ -1,6 +1,6 @@
-import { Contract } from 'web3-eth-contract';
-import { Connection } from 'mongoose';
-import { IScriptInputs } from '../db/schemas/schemaTypes';
+import type { Contract } from 'web3-eth-contract';
+import type { Connection } from 'mongoose';
+import type { IScriptInputs } from '../db/schemas/schemaTypes';
 import { getLastTxProcessed } from '../db/queries/transactionQueries';
 
 export const fetchEvents = async (

@@ -1,33 +1,32 @@
-/* eslint-disable no-restricted-syntax */
 import * as dotenv from 'dotenv';
 import { Context } from '@azure/functions';
 import { Connection } from 'mongoose';
 import sharp from 'sharp';
-import { IProject, IScriptInputs, IToken } from '../db/schemas/schemaTypes';
+import { IProject, IScriptInputs, IToken } from '../../db/schemas/schemaTypes';
 import {
   getProjectCurrentSupply,
   updateProjectSupplyAndCount,
-} from '../db/queries/projectQueries';
+} from '../../db/queries/projectQueries';
 import {
   addToken,
   checkIfTokenExists,
   getAllTokensFromProject,
   updateTokenMetadataOnTransfer,
-} from '../db/queries/tokenQueries';
-import { runPuppeteer } from '../services/puppeteer';
-import { uploadThumbnail } from '../services/azureStorage';
+} from '../../db/queries/tokenQueries';
+import { runPuppeteer } from '../../services/puppeteer';
+import { uploadImage } from '../../services/azureStorage';
 
 dotenv.config();
 const rootServerUrl = process.env.ROOT_URL;
 
-const getUrls = (project_slug: string, token_id: number) => {
+const getUrls = (project_slug: string, token_id: number, rootExternalUrl: string) => {
   const generator_url = `${rootServerUrl}/project/${project_slug}/generator/${token_id}`;
-  const external_url = `https://chainlife.xyz/token/${token_id}`;
+  const external_url = `${rootExternalUrl}/token/${token_id}`;
 
   return { generator_url, external_url };
 };
 
-export const processNewTokenMint = async (
+export const processChainlifeMint = async (
   token_id: number,
   project: IProject,
   script_inputs: IScriptInputs,
@@ -43,7 +42,9 @@ export const processNewTokenMint = async (
     description,
     collection_name,
     script_type,
+    aspect_ratio,
     website,
+    external_url: projectExternalUrl,
     license,
     royalty_info,
     tx_count,
@@ -57,15 +58,19 @@ export const processNewTokenMint = async (
 
   context.log.info('Adding token', token_id, 'to', project.project_name);
 
-  const { generator_url, external_url } = getUrls(project_slug, token_id);
+  const { generator_url, external_url } = getUrls(
+    project_slug,
+    token_id,
+    projectExternalUrl,
+  );
 
   const { screenshot, attributes } = await runPuppeteer(generator_url, script_inputs);
 
-  const image = await uploadThumbnail(context, screenshot, project_slug, token_id);
+  const image = await uploadImage(context, screenshot, project_slug, token_id);
 
   const thumbnail = await sharp(screenshot).resize(200).toBuffer();
 
-  const thumbnail_url = await uploadThumbnail(
+  const thumbnail_url = await uploadImage(
     context,
     thumbnail,
     project_slug,
@@ -83,7 +88,7 @@ export const processNewTokenMint = async (
     artist_address,
     description,
     collection_name,
-    aspect_ratio: 1,
+    aspect_ratio,
     script_type,
     script_inputs,
     image,
@@ -110,7 +115,7 @@ export const processNewTokenMint = async (
   return { newTokenId, newSupply };
 };
 
-export const processTransferEvent = async (
+export const processChainlifeEvent = async (
   token_id: number,
   project: IProject,
   script_inputs: IScriptInputs,
@@ -119,16 +124,16 @@ export const processTransferEvent = async (
 ) => {
   context.log.info('Updating token', token_id, 'on', project.project_name);
 
-  const { _id: project_id, project_slug } = project;
-  const { generator_url } = getUrls(project_slug, token_id);
+  const { _id: project_id, project_slug, external_url } = project;
+  const { generator_url } = getUrls(project_slug, token_id, external_url);
 
   const { screenshot, attributes } = await runPuppeteer(generator_url, script_inputs);
 
-  const image = await uploadThumbnail(context, screenshot, project_slug, token_id);
+  const image = await uploadImage(context, screenshot, project_slug, token_id);
 
   const thumbnail = await sharp(screenshot).resize(200).toBuffer();
 
-  const thumbnail_url = await uploadThumbnail(
+  const thumbnail_url = await uploadImage(
     context,
     thumbnail,
     project_slug,
@@ -171,7 +176,7 @@ export const repairBadTokens = async (
 
   for await (const token of bumTokens) {
     const { token_id, script_inputs } = token;
-    const updatedToken = await processTransferEvent(
+    const updatedToken = await processChainlifeEvent(
       token_id,
       project,
       script_inputs,

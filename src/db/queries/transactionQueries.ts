@@ -2,7 +2,7 @@ import Web3 from 'web3';
 import { EventData } from 'web3-eth-contract';
 import { Connection } from 'mongoose';
 import { nullAddress } from '../../helpers/constants';
-import { projects } from '../../projects/projectsInfo';
+import { projects } from '../../projects';
 import { ITransaction } from '../schemas/schemaTypes';
 
 export const addTransaction = async (

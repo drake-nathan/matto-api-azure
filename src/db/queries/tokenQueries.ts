@@ -12,7 +12,11 @@ export const checkIfTokenExists = async (
   return query;
 };
 
-export const getToken = (project_slug: string, token_id: string, conn: Connection) => {
+export const getToken = (
+  project_slug: string,
+  token_id: string | number,
+  conn: Connection,
+) => {
   const Token = conn.model<IToken>('Token');
 
   const query = Token.findOne({ project_slug, token_id });

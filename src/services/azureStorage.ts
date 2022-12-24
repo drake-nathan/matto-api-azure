@@ -10,7 +10,7 @@ if (!azureStorageConnectionString) {
   throw new Error('AZURE_STORAGE_CONNECTION_STRING not found');
 }
 
-export const uploadThumbnail = async (
+export const uploadImage = async (
   context: Context,
   file: Buffer,
   project_slug: string,

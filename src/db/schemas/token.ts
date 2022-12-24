@@ -16,16 +16,19 @@ export const tokenSchema = new Schema<IToken>({
   script_inputs: {
     type: {
       token_id: { type: Number, required: true },
-      token_entropy: { type: String, required: true },
       transfer_count: { type: Number, required: true },
-      current_owner: { type: String, required: true },
-      previous_owner: { type: String, required: true },
+      token_entropy: { type: String },
+      current_owner: { type: String },
+      previous_owner: { type: String },
       custom_rule: { type: String },
       level_shift: { type: Number },
+      imageURI_base: { type: String },
+      audioURI_base: { type: String },
     },
     required: true,
   },
   image: { type: String },
+  image_mid: { type: String },
   thumbnail_url: { type: String },
   image_data: { type: String },
   animation_url: { type: String },
@@ -34,10 +37,11 @@ export const tokenSchema = new Schema<IToken>({
   external_url: { type: String, required: true },
   license: { type: String, required: true },
   royalty_info: {
-    artist_address: { type: String, required: true },
+    royalty_fee_by_id: { type: Number, required: true },
+    artist_address: { type: String },
+    charity_address: { type: String },
     additional_payee: { type: String },
     additional_payee_bps: { type: Number },
-    royalty_fee_by_id: { type: Number, required: true },
   },
   attributes: [
     {
@@ -47,4 +51,4 @@ export const tokenSchema = new Schema<IToken>({
   ],
 });
 
-tokenSchema.index({ token_id: 1 }, { unique: true });
+tokenSchema.index({ token_id: 1 });

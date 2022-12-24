@@ -1,16 +1,20 @@
+/* eslint-disable no-continue */
 /* eslint-disable no-restricted-syntax */
-import { Context } from '@azure/functions';
-import { Contract } from 'web3-eth-contract';
-import { Connection } from 'mongoose';
-import { IProject, ITransaction } from '../db/schemas/schemaTypes';
+import { type Context } from '@azure/functions';
+import { type Contract } from 'web3-eth-contract';
+import { type Connection } from 'mongoose';
+import type { IProject, ITransaction } from '../db/schemas/schemaTypes';
 import { getProjectCurrentSupply } from '../db/queries/projectQueries';
 import { checkIfTokenExists } from '../db/queries/tokenQueries';
 import { addTransaction } from '../db/queries/transactionQueries';
-import { abis } from '../projects/projectsInfo';
+import { abis } from '../projects';
 import { fetchEvents, fetchScriptInputs } from '../web3/blockchainFetches';
 import { getContract } from '../web3/contract';
-import { processNewTokenMint, processTransferEvent } from './tokenHelpers';
 import { getWeb3 } from '../web3/provider';
+import {
+  getProcessMintFunction,
+  getProcessEventFunction,
+} from './tokenHelpers/tokenHelpers';
 
 export interface ILogValues {
   project_name: string;
@@ -26,6 +30,10 @@ export const processNewTransactions = async (
   context: Context,
   conn: Connection,
 ) => {
+  const {
+    project_slug,
+    devParams: { isBulkMint },
+  } = project;
   const newTokenIds: number[] = [];
 
   for await (const tx of newTxs) {
@@ -33,14 +41,13 @@ export const processNewTransactions = async (
     const script_inputs = await fetchScriptInputs(contract, token_id);
 
     if (event_type === 'Mint') {
-      const doesTokenExist = await checkIfTokenExists(
-        token_id,
-        project.project_slug,
-        conn,
-      );
+      if (isBulkMint) continue;
+
+      const doesTokenExist = await checkIfTokenExists(token_id, project_slug, conn);
 
       if (!doesTokenExist) {
-        const { newTokenId } = await processNewTokenMint(
+        const processMint = getProcessMintFunction(project);
+        const { newTokenId } = await processMint(
           token_id,
           project,
           script_inputs,
@@ -51,7 +58,8 @@ export const processNewTransactions = async (
       }
     } else {
       // this handles all other events events besides Mints
-      await processTransferEvent(token_id, project, script_inputs, context, conn);
+      const processEvent = getProcessEventFunction(project);
+      await processEvent(token_id, project, script_inputs, context, conn);
     }
   }
 

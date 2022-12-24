@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Connection } from 'mongoose';
 import sharp from 'sharp';
 import { IThumbnail } from '../db/schemas/schemaTypes';
-import { uploadThumbnail } from '../services/azureStorage';
+import { uploadImage } from '../services/azureStorage';
 
 const fetchImageUploadThumbnail = async (
   image_full: string,
@@ -15,7 +15,7 @@ const fetchImageUploadThumbnail = async (
 
   const thumbnail = await sharp(response.data).resize(200).toBuffer();
 
-  const image_thumbnail = await uploadThumbnail(
+  const image_thumbnail = await uploadImage(
     context,
     thumbnail,
     project_slug,

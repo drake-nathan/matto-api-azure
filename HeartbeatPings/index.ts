@@ -2,12 +2,10 @@ import { AzureFunction, Context } from '@azure/functions';
 import axios from 'axios';
 
 const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
-  const url = 'https://chainlife.xyz/';
+  const urls = ['https://chainlife.xyz/', 'https://substratum.art/'];
 
   try {
-    const res = axios.get(url);
-
-    if (res) context.log.info('Frontend heartbeat successful');
+    await Promise.allSettled(urls.map((url) => axios.get(url)));
   } catch (error) {
     context.log.error(error);
     context.res = {
