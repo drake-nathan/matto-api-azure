@@ -36,7 +36,7 @@ export const getTokenAbbr = (
   const query = Token.findOne({ project_slug, token_id });
 
   query.select(
-    'token_id name project_name project_slug artist image thumbnail_url generator_url external_url script_inputs',
+    'token_id name project_name project_slug artist image image_mid thumbnail_url generator_url external_url script_inputs',
   );
 
   return query.lean().exec() as Promise<TokenAbbr>;
@@ -66,7 +66,7 @@ export const getTokensTokenIdSort = (
     .limit(Number(limit))
     .skip(Number(skip))
     .select(
-      'token_id name project_name project_slug artist image thumbnail_url generator_url external_url script_inputs',
+      'token_id name project_name project_slug artist image image_mid thumbnail_url generator_url external_url script_inputs',
     );
 
   return query.lean().exec() as Promise<TokenAbbr[]>;
@@ -95,6 +95,7 @@ export const getTokensWorldLevelSort = (
         project_slug: true,
         artist: true,
         image: true,
+        image_mid: true,
         thumbnail_url: true,
         generator_url: true,
         external_url: true,

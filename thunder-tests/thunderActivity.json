@@ -74,11 +74,11 @@
     "colId": "history",
     "containerId": "",
     "name": "http://localhost:7071/project/chainlife-testnet/all-tokens",
-    "url": "http://localhost:7071/project/chainlife/all-tokens?tokenId=290",
+    "url": "http://localhost:7071/project/chainlife/all-tokens?tokenId=5",
     "method": "GET",
     "sortNum": 0,
     "created": "2022-11-16T03:01:21.470Z",
-    "modified": "2022-11-27T21:29:49.125Z",
+    "modified": "2022-12-27T03:44:00.705Z",
     "headers": [],
     "params": [
       {
@@ -107,7 +107,7 @@
       },
       {
         "name": "tokenId",
-        "value": "290",
+        "value": "5",
         "isPath": false
       }
     ],

@@ -139,6 +139,7 @@ export interface TokenAbbr {
   project_slug: string;
   artist: string;
   image: string;
+  image_mid?: string;
   thumbnail_url: string;
   generator_url: string;
   external_url: string;
