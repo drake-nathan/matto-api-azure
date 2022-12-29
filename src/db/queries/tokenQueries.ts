@@ -1,5 +1,11 @@
 import { Connection } from 'mongoose';
-import { IToken, IScriptInputs, IAttribute, TokenAbbr } from '../schemas/schemaTypes';
+import {
+  IToken,
+  IScriptInputs,
+  IAttribute,
+  TokenAbbr,
+  ProjectId,
+} from '../schemas/schemaTypes';
 
 export const checkIfTokenExists = async (
   token_id: number,
@@ -239,10 +245,14 @@ export const removeDuplicateTokens = async (project_id: number, conn: Connection
   );
 };
 
-export const updateTokenDesc = async (conn: Connection, newDesc: string) => {
+export const updateTokenDesc = async (
+  conn: Connection,
+  project_id: ProjectId,
+  newDesc: string,
+) => {
   const Token = conn.model<IToken>('Token');
 
-  const query = Token.updateMany({}, { description: newDesc });
+  const query = Token.updateMany({ project_id }, { description: newDesc });
 
   const result = await query.exec();
 

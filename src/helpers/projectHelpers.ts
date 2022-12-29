@@ -7,12 +7,16 @@ import { IProject } from '../db/schemas/schemaTypes';
 import {
   addProject,
   checkIfNewProjects,
+  getProject,
+  updateCollectionDescription,
   updateProjectSupplyAndCount,
+  updateTokenDescription,
 } from '../db/queries/projectQueries';
 import {
   checkIfTokenExists,
   getCurrentTokenSupply,
   removeDuplicateTokens,
+  updateTokenDesc,
 } from '../db/queries/tokenQueries';
 import { addTransaction, getAllMintTransactions } from '../db/queries/transactionQueries';
 import { abis } from '../projects';
@@ -212,6 +216,60 @@ const reconcileBulkMint = async (
   context.log.info(`Added ${newTokens.length} new tokens to ${project_name}.`);
 };
 
+const reconcileDescriptions = async (
+  conn: Connection,
+  context: Context,
+  projectLocal: IProject,
+) => {
+  const {
+    _id: project_id,
+    project_slug,
+    collection_description: collDescLocal,
+    description: tokenDescLocal,
+  } = projectLocal;
+
+  const projectDb = await getProject(project_slug, conn);
+  const { collection_description: collDescDb, description: tokenDesc } = projectDb;
+
+  // if needed, update collection description on project in db
+  if (collDescLocal !== collDescDb) {
+    const updatedProject = await updateCollectionDescription(
+      conn,
+      project_slug,
+      collDescLocal,
+    );
+
+    const { collection_description: updatedDescription } = updatedProject;
+
+    if (updatedDescription === collDescLocal) {
+      context.log.info(`Updated ${project_slug} collection description.`);
+    } else {
+      context.log.error(`Failed to update ${project_slug} collection description.`);
+    }
+  }
+
+  // if needed, update token description on project AND tokens in db
+  if (tokenDescLocal !== tokenDesc) {
+    const updatedProject = await updateTokenDescription(
+      conn,
+      project_slug,
+      tokenDescLocal,
+    );
+
+    const numOfTokensUpdate = await updateTokenDesc(conn, project_id, tokenDescLocal);
+
+    const { description: updatedDescription } = updatedProject;
+
+    if (updatedDescription === tokenDescLocal && numOfTokensUpdate) {
+      context.log.info(
+        `Updated ${project_slug} token description, ${numOfTokensUpdate} tokens updated.`,
+      );
+    } else {
+      context.log.error(`Failed to update ${project_slug} token description.`);
+    }
+  }
+};
+
 export const reconcileProject = async (
   context: Context,
   project: IProject,
@@ -261,4 +319,6 @@ export const reconcileProject = async (
   } else {
     await updateProjectSupplyAndCount(project_id, totalTokensInDb, totalTxCount, conn);
   }
+
+  await reconcileDescriptions(conn, context, project);
 };

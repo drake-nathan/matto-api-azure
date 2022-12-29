@@ -68,3 +68,35 @@ export const checkIfProjectExists = async (project_slug: string, conn: Connectio
   const query = await Project.exists({ project_slug });
   return !!query;
 };
+
+export const updateCollectionDescription = (
+  conn: Connection,
+  project_slug: string,
+  newDescription: string,
+) => {
+  const Project = conn.model<IProject>('Project');
+
+  const query = Project.findOneAndUpdate(
+    { project_slug },
+    { collection_description: newDescription },
+    { new: true },
+  );
+
+  return query.exec();
+};
+
+export const updateTokenDescription = (
+  conn: Connection,
+  project_slug: string,
+  newDescription: string,
+) => {
+  const Project = conn.model<IProject>('Project');
+
+  const query = Project.findOneAndUpdate(
+    { project_slug },
+    { description: newDescription },
+    { new: true },
+  );
+
+  return query.exec();
+};
