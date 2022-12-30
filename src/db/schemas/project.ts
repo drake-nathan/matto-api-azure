@@ -8,6 +8,7 @@ export const projectSchema = new Schema<IProject>({
   artist: { type: String, required: true },
   artist_address: { type: String, required: true },
   description: { type: String },
+  appended_description: { type: String },
   maximum_supply: { type: Number, required: true },
   starting_index: { type: Number, required: true },
   current_supply: { type: Number },

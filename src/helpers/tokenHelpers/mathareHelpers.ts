@@ -9,10 +9,11 @@ import {
 import {
   addToken,
   getToken,
+  updateOneTokenDesc,
   updateTokenMetadataOnTransfer,
 } from '../../db/queries/tokenQueries';
 import { attributes as mathareStartingAttr } from '../../projects/mathareData/attributes';
-import descriptionsJson from '../../projects/mathareData/descriptions.json';
+import mathareDescriptionsJson from '../../projects/mathareData/descriptions.json';
 
 dotenv.config();
 const rootServerUrl = process.env.ROOT_URL;
@@ -48,6 +49,7 @@ export const processMathareMint = async (
     license,
     royalty_info,
     tx_count,
+    appended_description,
   } = project;
 
   context.log.info('Adding token', token_id, 'to', project_name);
@@ -58,8 +60,6 @@ export const processMathareMint = async (
     projectExternalUrl,
   );
 
-  const appendedDesc = `\n\n**Interactivity:**\n\nPress 'P' or long press/click & release on an image to play a short audio recording of Matto reading the token's description. Press 'N' or double-click to display the next token in the collection, and press 'R' to return to the token's starting content. Press '<' or '>' to change the brightness of the matte displayed behind the image.`;
-
   const newToken: IToken = {
     token_id,
     name: `${project.project_name} ${token_id}`,
@@ -68,7 +68,7 @@ export const processMathareMint = async (
     project_slug,
     artist,
     artist_address,
-    description: `${descriptionsJson[token_id - 1]}${appendedDesc}`,
+    description: `${mathareDescriptionsJson[token_id - 1]}${appended_description}`,
     collection_name,
     aspect_ratio,
     script_type,
@@ -127,4 +127,21 @@ export const processMathareEvent = async (
   );
 
   return updatedToken;
+};
+
+export const updateMathareDescriptions = async (conn: Connection, project: IProject) => {
+  const { _id: project_id, maximum_supply, appended_description } = project;
+
+  // create array of token ids starting from 1 to maximum_supply
+  const tokenIds = Array.from(Array(maximum_supply).keys()).map((i) => i + 1);
+
+  await Promise.all(
+    tokenIds.map(async (token_id) => {
+      const newDescription = `${
+        mathareDescriptionsJson[token_id - 1]
+      }${appended_description}`;
+
+      await updateOneTokenDesc(conn, project_id, token_id, newDescription);
+    }),
+  );
 };

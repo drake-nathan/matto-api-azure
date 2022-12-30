@@ -34,6 +34,7 @@ export interface IProject {
   artist_address: string;
   royalty_info: IRoyaltyInfo;
   description?: string;
+  appended_description?: string;
   maximum_supply: number;
   starting_index: number;
   current_supply?: number;

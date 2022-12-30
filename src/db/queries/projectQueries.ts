@@ -100,3 +100,19 @@ export const updateTokenDescription = (
 
   return query.exec();
 };
+
+export const updateAppendedDescription = (
+  conn: Connection,
+  project_slug: string,
+  newDescription: string,
+) => {
+  const Project = conn.model<IProject>('Project');
+
+  const query = Project.findOneAndUpdate(
+    { project_slug },
+    { appended_description: newDescription },
+    { new: true },
+  );
+
+  return query.exec();
+};

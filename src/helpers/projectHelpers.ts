@@ -3,11 +3,12 @@ import type { Connection } from 'mongoose';
 import type { Contract, EventData } from 'web3-eth-contract';
 import type Web3 from 'web3';
 import { nullAddress } from './constants';
-import { IProject } from '../db/schemas/schemaTypes';
+import type { IProject } from '../db/schemas/schemaTypes';
 import {
   addProject,
   checkIfNewProjects,
   getProject,
+  updateAppendedDescription,
   updateCollectionDescription,
   updateProjectSupplyAndCount,
   updateTokenDescription,
@@ -16,7 +17,7 @@ import {
   checkIfTokenExists,
   getCurrentTokenSupply,
   removeDuplicateTokens,
-  updateTokenDesc,
+  updateAllTokenDesc,
 } from '../db/queries/tokenQueries';
 import { addTransaction, getAllMintTransactions } from '../db/queries/transactionQueries';
 import { abis } from '../projects';
@@ -29,6 +30,7 @@ import {
 } from './tokenHelpers/chainlifeHelpers';
 import { getWeb3 } from '../web3/provider';
 import { getProcessMintFunction } from './tokenHelpers/tokenHelpers';
+import { updateMathareDescriptions } from './tokenHelpers/mathareHelpers';
 
 const processNewProjects = async (projects: IProject[], conn: Connection) => {
   // try to add all projects to db, duplicates removed
@@ -226,10 +228,15 @@ const reconcileDescriptions = async (
     project_slug,
     collection_description: collDescLocal,
     description: tokenDescLocal,
+    appended_description: appendedDescLocal,
   } = projectLocal;
 
   const projectDb = await getProject(project_slug, conn);
-  const { collection_description: collDescDb, description: tokenDesc } = projectDb;
+  const {
+    collection_description: collDescDb,
+    description: tokenDescDb,
+    appended_description: appendedDescDb,
+  } = projectDb;
 
   // if needed, update collection description on project in db
   if (collDescLocal !== collDescDb) {
@@ -249,14 +256,14 @@ const reconcileDescriptions = async (
   }
 
   // if needed, update token description on project AND tokens in db
-  if (tokenDescLocal !== tokenDesc) {
+  if (tokenDescLocal !== tokenDescDb) {
     const updatedProject = await updateTokenDescription(
       conn,
       project_slug,
       tokenDescLocal,
     );
 
-    const numOfTokensUpdate = await updateTokenDesc(conn, project_id, tokenDescLocal);
+    const numOfTokensUpdate = await updateAllTokenDesc(conn, project_id, tokenDescLocal);
 
     const { description: updatedDescription } = updatedProject;
 
@@ -267,6 +274,18 @@ const reconcileDescriptions = async (
     } else {
       context.log.error(`Failed to update ${project_slug} token description.`);
     }
+  }
+
+  if (appendedDescLocal && appendedDescLocal !== appendedDescDb) {
+    const updatedProject = await updateAppendedDescription(
+      conn,
+      project_slug,
+      tokenDescLocal,
+    );
+
+    const { appended_description: updatedDescription } = updatedProject;
+
+    await updateMathareDescriptions(conn, projectLocal);
   }
 };
 

@@ -245,7 +245,7 @@ export const removeDuplicateTokens = async (project_id: number, conn: Connection
   );
 };
 
-export const updateTokenDesc = async (
+export const updateAllTokenDesc = async (
   conn: Connection,
   project_id: ProjectId,
   newDesc: string,
@@ -257,4 +257,21 @@ export const updateTokenDesc = async (
   const result = await query.exec();
 
   return result.modifiedCount;
+};
+
+export const updateOneTokenDesc = (
+  conn: Connection,
+  project_id: ProjectId,
+  token_id: string | number,
+  newDesc: string,
+) => {
+  const Token = conn.model<IToken>('Token');
+
+  const filter = { project_id, token_id };
+  const update = { description: newDesc };
+  const options = { new: true };
+
+  const query = Token.updateOne(filter, update, options);
+
+  return query.exec();
 };
