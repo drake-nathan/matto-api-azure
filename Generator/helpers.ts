@@ -68,8 +68,8 @@ export const altScriptCheck = (
 
   if (!genScripts.alt) return false;
 
-  if (req.query.alt && req.query.alt === 'true') return true;
-  if (req.query.esoterra && req.query.esoterra === 'true') return true;
+  if (req.query?.alt && req.query.alt === 'true') return true;
+  if (req.query?.esoterra && req.query.esoterra === 'true') return true;
 
   if (projectSlug === 'chainlife' || projectSlug === 'chainlife-testnet') {
     const scriptInputs: IScriptInputs = JSON.parse(scriptInputsJson);
