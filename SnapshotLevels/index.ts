@@ -6,7 +6,7 @@ import { getLevels } from '../src/db/queries/tokenQueries';
 import { ILevelSnapshot } from '../src/db/schemas/schemaTypes';
 
 const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
-  let conn: Connection;
+  let conn: Connection | undefined;
 
   try {
     conn = await connectionFactory(context);
@@ -30,7 +30,7 @@ const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
   } catch (error) {
     context.log.error('SnapshotLevels function error', error);
   } finally {
-    await conn.close();
+    if (conn) await conn.close();
   }
 };
 

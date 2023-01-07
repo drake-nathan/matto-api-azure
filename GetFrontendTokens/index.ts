@@ -21,7 +21,7 @@ const httpTrigger: AzureFunction = async (
     sortType: sortTypeQuery,
     tokenId: tokenIdQuery,
   } = req.query;
-  let conn: Connection;
+  let conn: Connection | undefined;
 
   // check if limit query is a number
   const limit = limitQuery && Number(limitQuery) ? Number(limitQuery) : 16;
@@ -31,7 +31,18 @@ const httpTrigger: AzureFunction = async (
     sortTypeQuery === 'tokenId' || sortTypeQuery === 'worldLevel'
       ? sortTypeQuery
       : 'tokenId';
-  const tokenId = tokenIdQuery && !Number.isNaN(tokenIdQuery) ? tokenIdQuery : null;
+
+  // validate tokenId query, hard code 0 since Number('0') is falsy
+  const tokenIdNum = tokenIdQuery && Number(tokenIdQuery) ? Number(tokenIdQuery) : null;
+  const tokenId = tokenIdQuery === '0' ? 0 : tokenIdNum;
+
+  if (tokenIdQuery && !tokenId) {
+    context.res = {
+      status: 404,
+      body: 'Invalid tokenId query',
+    };
+    return;
+  }
 
   try {
     conn = await connectionFactory(context);
@@ -47,7 +58,7 @@ const httpTrigger: AzureFunction = async (
     }
 
     let tokens: TokenAbbr[] = [];
-    let hasMore: boolean;
+    let hasMore = false;
 
     if (tokenId) {
       const token = await getTokenAbbr(project_slug, tokenId, conn);
@@ -55,10 +66,10 @@ const httpTrigger: AzureFunction = async (
       hasMore = false;
     } else if (sortType === 'tokenId') {
       tokens = await getTokensTokenIdSort(conn, project_slug, limit, skip, sort);
-      hasMore = project.current_supply > skip + limit;
+      hasMore = project.current_supply ? project.current_supply > skip + limit : false;
     } else if (sortType === 'worldLevel') {
       tokens = await getTokensWorldLevelSort(conn, project_slug, limit, skip, sort);
-      hasMore = project.current_supply > skip + limit;
+      hasMore = project.current_supply ? project.current_supply > skip + limit : false;
     }
 
     if (!tokens.length) {
@@ -80,12 +91,13 @@ const httpTrigger: AzureFunction = async (
     };
   } catch (error) {
     context.log.error(error);
+    if (process.env.NODE_ENV === 'test') console.error(error);
     context.res = {
       status: 500,
       body: 'Internal Server Error',
     };
   } finally {
-    await conn.close();
+    if (conn) await conn.close();
   }
 };
 

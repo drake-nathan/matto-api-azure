@@ -86,7 +86,7 @@ export const processChainlifeMint = async (
     project_slug,
     artist,
     artist_address,
-    description,
+    description: description || '',
     collection_name,
     aspect_ratio,
     script_type,
@@ -183,6 +183,12 @@ export const repairBadTokens = async (
       context,
       conn,
     );
+
+    if (!updatedToken) {
+      context.log.error('Failed to update token', token_id);
+      continue;
+    }
+
     updatedTokens.push(updatedToken);
   }
 

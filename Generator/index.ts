@@ -10,7 +10,7 @@ const httpTrigger: AzureFunction = async (
   req: HttpRequest,
 ): Promise<void> => {
   const { project_slug, token_id } = context.bindingData;
-  let conn: Connection;
+  let conn: Connection | undefined;
 
   try {
     conn = await connectionFactory(context);
@@ -93,7 +93,7 @@ const httpTrigger: AzureFunction = async (
       body: 'Something went wrong, ngmi.',
     };
   } finally {
-    await conn.close();
+    if (conn) await conn.close();
   }
 };
 

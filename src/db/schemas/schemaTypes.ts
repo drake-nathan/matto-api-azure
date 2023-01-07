@@ -112,7 +112,7 @@ export interface IToken {
 
 export interface ITransaction {
   _id?: ObjectId;
-  project_id: number;
+  project_id: ProjectId;
   block_number: number;
   transaction_hash: string;
   transaction_date: Date;
@@ -130,7 +130,7 @@ export interface IThumbnail {
   image_thumbnail: string;
 }
 
-interface ILevel {
+export interface ILevel {
   token_id: number;
   transfer_count: number;
   level_shift: number;

@@ -17,14 +17,14 @@ describe('GetProject', () => {
     await httpTrigger(context);
 
     expect(context.log.error).toBeCalledTimes(0);
-    expect(context.res.status).toEqual(404);
+    expect(context?.res?.status).toEqual(404);
   });
 
   it('should return a 200 with a real project slug', async () => {
     await httpTrigger(context);
 
     expect(context.log.error).toBeCalledTimes(0);
-    expect(context.res.status).toEqual(200);
-    expect(typeof context.res.body).toBe('object');
+    expect(context?.res?.status).toEqual(200);
+    expect(typeof context?.res?.body).toBe('object');
   });
 });

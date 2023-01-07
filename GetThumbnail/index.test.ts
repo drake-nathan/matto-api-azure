@@ -17,15 +17,15 @@ describe('GetThumbnail', () => {
     await httpTrigger(context);
 
     expect(context.log.error).toBeCalledTimes(0);
-    expect(context.res.status).toEqual(404);
-    expect(context.res.body).toEqual('Thumbnail not found');
+    expect(context?.res?.status).toEqual(404);
+    expect(context?.res?.body).toEqual('Thumbnail not found');
   });
 
   it('should return a 200 with a real artblocks id', async () => {
     await httpTrigger(context);
 
     expect(context.log.error).toBeCalledTimes(0);
-    expect(context.res.status).toEqual(200);
-    expect(typeof context.res.body).toBe('object');
+    expect(context?.res?.status).toEqual(200);
+    expect(typeof context?.res?.body).toBe('object');
   });
 });

@@ -13,8 +13,8 @@ describe('Random Chainlife', () => {
   it('should return a 200', async () => {
     await httpTrigger(context);
 
-    expect(context.res.status).toEqual(200);
+    expect(context?.res?.status).toEqual(200);
     expect(context.log.error).toBeCalledTimes(0);
-    expect(typeof context.res.body).toBe('string');
+    expect(typeof context?.res?.body).toBe('string');
   });
 });

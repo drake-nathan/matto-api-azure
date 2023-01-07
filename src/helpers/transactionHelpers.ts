@@ -24,7 +24,7 @@ export interface ILogValues {
 }
 
 export const processNewTransactions = async (
-  newTxs: ITransaction[],
+  newTxs: (ITransaction | null)[],
   project: IProject,
   contract: Contract,
   context: Context,
@@ -37,6 +37,8 @@ export const processNewTransactions = async (
   const newTokenIds: number[] = [];
 
   for await (const tx of newTxs) {
+    if (!tx) continue;
+
     const { event_type, token_id } = tx;
     const script_inputs = await fetchScriptInputs(contract, token_id);
 
@@ -46,15 +48,21 @@ export const processNewTransactions = async (
       const doesTokenExist = await checkIfTokenExists(token_id, project_slug, conn);
 
       if (!doesTokenExist) {
-        const processMint = getProcessMintFunction(project);
-        const { newTokenId } = await processMint(
+        const processMint = getProcessMintFunction(project._id);
+        const newMint = await processMint(
           token_id,
           project,
           script_inputs,
           context,
           conn,
         );
-        newTokenIds.push(newTokenId);
+
+        if (!newMint) {
+          context.log.error(`Error processing new mint for ${project.project_name}`);
+          continue;
+        }
+
+        newTokenIds.push(newMint.newTokenId);
       }
     } else {
       // this handles all other events events besides Mints
@@ -69,9 +77,16 @@ export const processNewTransactions = async (
 export const checkForNewTransactions = async (
   project: IProject,
   context: Context,
-  conn: Connection,
+  conn: Connection | undefined,
 ) => {
-  const { _id: project_id, contract_address, chain, events, project_name } = project;
+  const {
+    _id: project_id,
+    contract_address,
+    chain,
+    events,
+    project_name,
+    creation_block,
+  } = project;
   context.log(`Checking for new transactions for ${project_name}...`);
   const web3 = getWeb3(chain);
   const contract = getContract(web3, abis[project_id], contract_address);
@@ -83,15 +98,18 @@ export const checkForNewTransactions = async (
     currentSupply: 0,
   };
 
+  if (!conn) throw new Error('No connection to database. (checkForNewTransactions)');
+
   const { filteredTransactions: fetchedTransactions } = await fetchEvents(
     contract,
     events,
     project_id,
     conn,
+    creation_block,
   );
 
   const newTransactionsAdded = await Promise.all(
-    fetchedTransactions.map(async (tx) => addTransaction(tx, conn, web3)),
+    fetchedTransactions.map(async (tx) => addTransaction(tx, project_id, conn, web3)),
   );
   const newTxNoNull = newTransactionsAdded.filter(Boolean);
 

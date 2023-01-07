@@ -11,6 +11,7 @@
     "radix": "off",
     "no-console": ["warn", { "allow": ["error"] }],
     "no-debugger": "warn",
+    "no-continue": "off",
     "implicit-arrow-linebreak": "off",
     "function-paren-newline": "off",
     "no-underscore-dangle": "off",

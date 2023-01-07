@@ -8,9 +8,9 @@ export const fetchEvents = async (
   events: string[],
   project_id: number,
   conn: Connection,
-  startingBlock?: number,
+  creationBlock: number,
 ) => {
-  const fromBlock = startingBlock || (await getLastTxProcessed(project_id, conn));
+  const fromBlock = (await getLastTxProcessed(project_id, conn)) || creationBlock;
   const options = { fromBlock };
 
   const allTransactions = await contract.getPastEvents('allEvents', options);

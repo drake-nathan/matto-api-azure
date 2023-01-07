@@ -1,23 +1,17 @@
-import Web3 from 'web3';
-import { EventData } from 'web3-eth-contract';
-import { Connection } from 'mongoose';
+import type Web3 from 'web3';
+import { type EventData } from 'web3-eth-contract';
+import { type Connection } from 'mongoose';
+import { ProjectId, type ITransaction } from '../schemas/schemaTypes';
 import { nullAddress } from '../../helpers/constants';
-import { projects } from '../../projects';
-import { ITransaction } from '../schemas/schemaTypes';
 
 export const addTransaction = async (
   incomingTx: EventData,
+  project_id: ProjectId,
   conn: Connection,
   web3: Web3,
 ) => {
   const Transaction = conn.model<ITransaction>('Transaction');
-  const {
-    address: contract_address,
-    blockNumber: block_number,
-    transactionHash,
-    returnValues,
-    event,
-  } = incomingTx;
+  const { blockNumber: block_number, transactionHash, returnValues, event } = incomingTx;
   const { tokenId, from } = returnValues;
 
   const transaction_hash = transactionHash.toLowerCase();
@@ -29,7 +23,7 @@ export const addTransaction = async (
   const blockTime = (await web3.eth.getBlock(block_number)).timestamp as number;
 
   const parsedTx: ITransaction = {
-    project_id: projects.find((p) => p.contract_address === contract_address)._id,
+    project_id,
     block_number,
     transaction_hash,
     transaction_date: new Date(blockTime * 1000),

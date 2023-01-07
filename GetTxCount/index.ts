@@ -6,7 +6,7 @@ import { getTxCounts } from '../src/db/queries/transactionQueries';
 
 const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
   const { project_slug } = context.bindingData;
-  let conn: Connection;
+  let conn: Connection | undefined;
 
   try {
     conn = await connectionFactory(context);
@@ -29,12 +29,13 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
     };
   } catch (error) {
     context.log.error(error);
+    if (process.env.NODE_ENV === 'test') console.error(error);
     context.res = {
       status: 500,
       body: "Can't get tx counts right now",
     };
   } finally {
-    await conn.close();
+    if (conn) await conn.close();
   }
 };
 

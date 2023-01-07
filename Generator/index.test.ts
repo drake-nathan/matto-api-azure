@@ -21,9 +21,9 @@ describe('Generator', () => {
 
     await httpTrigger(context, req);
 
-    expect(context.res.status).toEqual(404);
+    expect(context?.res?.status).toEqual(404);
     expect(context.log.error).toBeCalledTimes(0);
-    expect(typeof context.res.body).toBe('string');
+    expect(typeof context?.res?.body).toBe('string');
   });
 
   it('should return a 404 if given nonexistant token', async () => {
@@ -31,17 +31,17 @@ describe('Generator', () => {
 
     await httpTrigger(context, req);
 
-    expect(context.res.status).toEqual(404);
+    expect(context?.res?.status).toEqual(404);
     expect(context.log.error).toBeCalledTimes(0);
-    expect(typeof context.res.body).toBe('string');
+    expect(typeof context?.res?.body).toBe('string');
   });
 
   it('should return a 200 with correct info', async () => {
     await httpTrigger(context, req);
 
-    expect(context.res.status).toEqual(200);
+    expect(context?.res?.status).toEqual(200);
     expect(context.log.error).toBeCalledTimes(0);
-    expect(typeof context.res.body).toBe('string');
+    expect(typeof context?.res?.body).toBe('string');
   });
 
   it('should return a 200 if given body scriptInputs', async () => {
@@ -56,9 +56,9 @@ describe('Generator', () => {
 
     await httpTrigger(context, req);
 
-    expect(context.res.status).toEqual(200);
+    expect(context?.res?.status).toEqual(200);
     expect(context.log.info).toBeCalledTimes(1);
     expect(context.log.error).toBeCalledTimes(0);
-    expect(typeof context.res.body).toBe('string');
+    expect(typeof context?.res?.body).toBe('string');
   });
 });

@@ -10,10 +10,13 @@ type ProcessMintFunction = (
   script_inputs: IScriptInputs,
   context: Context,
   conn: Connection,
-) => Promise<{
-  newTokenId: number;
-  newSupply: number;
-}>;
+) => Promise<
+  | {
+      newTokenId: number;
+      newSupply: number | undefined;
+    }
+  | undefined
+>;
 
 type ProcessEventFunction = (
   token_id: number,
@@ -21,41 +24,29 @@ type ProcessEventFunction = (
   script_inputs: IScriptInputs,
   context: Context,
   conn: Connection,
-) => Promise<
-  LeanDocument<
-    IToken &
-      Required<{
-        _id: Schema.Types.ObjectId;
-      }>
-  >
->;
+) => Promise<LeanDocument<
+  IToken &
+    Required<{
+      _id: Schema.Types.ObjectId;
+    }>
+> | null>;
 
-export const getProcessMintFunction = (project: IProject): ProcessMintFunction => {
-  const { _id: project_id } = project;
+export const getProcessMintFunction = (projectId: ProjectId): ProcessMintFunction => {
+  const processMintFunctions = {
+    [ProjectId.chainlifeMainnet]: processChainlifeMint,
+    [ProjectId.chainlifeTestnet]: processChainlifeMint,
+    [ProjectId.mathare]: processMathareMint,
+  };
 
-  if (
-    project_id === ProjectId.chainlifeMainnet ||
-    project_id === ProjectId.chainlifeTestnet
-  ) {
-    return processChainlifeMint;
-  }
-
-  if (project_id === ProjectId.mathare) {
-    return processMathareMint;
-  }
+  return processMintFunctions[projectId];
 };
 
 export const getProcessEventFunction = (project: IProject): ProcessEventFunction => {
-  const { _id: project_id } = project;
+  const processEventFunctions = {
+    [ProjectId.chainlifeMainnet]: processChainlifeEvent,
+    [ProjectId.chainlifeTestnet]: processChainlifeEvent,
+    [ProjectId.mathare]: processMathareEvent,
+  };
 
-  if (
-    project_id === ProjectId.chainlifeMainnet ||
-    project_id === ProjectId.chainlifeTestnet
-  ) {
-    return processChainlifeEvent;
-  }
-
-  if (project_id === ProjectId.mathare) {
-    return processMathareEvent;
-  }
+  return processEventFunctions[project._id];
 };

@@ -32,6 +32,12 @@ export const runPuppeteer = async (url: string, scriptInputs: IScriptInputs) => 
   const attributes = await page.evaluate(() => {
     const newAttributes = sessionStorage.getItem('attributes');
 
+    if (!newAttributes) {
+      throw new Error(
+        `No attributes found in sessionStorage for token ${scriptInputs.token_id}}`,
+      );
+    }
+
     return JSON.parse(newAttributes) as IAttribute[];
   });
 

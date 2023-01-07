@@ -8,6 +8,7 @@ const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
     await Promise.allSettled(urls.map((url) => axios.get(url)));
   } catch (error) {
     context.log.error(error);
+    if (process.env.NODE_ENV === 'test') console.error(error);
     context.res = {
       status: 500,
       body: error,

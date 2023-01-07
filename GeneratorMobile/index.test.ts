@@ -16,9 +16,9 @@ describe('Mobile Generator', () => {
 
     await httpTrigger(context);
 
-    expect(context.res.status).toEqual(404);
+    expect(context?.res?.status).toEqual(404);
     expect(context.log.error).toBeCalledTimes(0);
-    expect(typeof context.res.body).toBe('string');
+    expect(typeof context?.res?.body).toBe('string');
   });
 
   it('should return a 404 if given nonexistant token', async () => {
@@ -26,16 +26,16 @@ describe('Mobile Generator', () => {
 
     await httpTrigger(context);
 
-    expect(context.res.status).toEqual(404);
+    expect(context?.res?.status).toEqual(404);
     expect(context.log.error).toBeCalledTimes(0);
-    expect(typeof context.res.body).toBe('string');
+    expect(typeof context?.res?.body).toBe('string');
   });
 
   it('should return a 200 with correct info', async () => {
     await httpTrigger(context);
 
-    expect(context.res.status).toEqual(200);
+    expect(context?.res?.status).toEqual(200);
     expect(context.log.error).toBeCalledTimes(0);
-    expect(typeof context.res.body).toBe('string');
+    expect(typeof context?.res?.body).toBe('string');
   });
 });

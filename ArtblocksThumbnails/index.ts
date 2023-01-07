@@ -9,7 +9,7 @@ import { processThumbnails } from '../src/helpers/thumbnailHelpers';
 import { fetchFocusSupply } from '../src/services/fetchArtBlocks';
 
 const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
-  let conn: Connection;
+  let conn: Connection | undefined;
 
   try {
     conn = await connectionFactory(context);
@@ -53,12 +53,13 @@ const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
     } else context.log.info('Focus thumbnails up to date');
   } catch (error) {
     context.log.error('ArtBlocksThumbnails function error', error);
+    if (process.env.NODE_ENV === 'test') console.error(error);
     context.res = {
       status: 500,
       body: error,
     };
   } finally {
-    await conn.close();
+    if (conn) await conn.close();
   }
 };
 

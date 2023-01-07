@@ -49,7 +49,7 @@ export const updateProjectSupplyAndCount = async (
 
   const query = await Project.findByIdAndUpdate(project_id, { current_supply, tx_count });
 
-  return query.current_supply;
+  return query?.current_supply;
 };
 
 export const checkIfNewProjects = async (projects: IProject[], conn: Connection) => {

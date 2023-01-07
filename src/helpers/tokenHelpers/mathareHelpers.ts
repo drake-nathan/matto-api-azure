@@ -109,6 +109,11 @@ export const processMathareEvent = async (
   const { _id: project_id, project_slug } = project;
 
   const token = await getToken(project_slug, token_id, conn);
+
+  if (!token) {
+    throw new Error('Token not found');
+  }
+
   const { image, thumbnail_url, attributes } = token;
 
   const transferAttrIndex = attributes.findIndex(

@@ -17,7 +17,6 @@ import {
   checkIfTokenExists,
   getCurrentTokenSupply,
   removeDuplicateTokens,
-  updateAllTokenDesc,
 } from '../db/queries/tokenQueries';
 import { addTransaction, getAllMintTransactions } from '../db/queries/transactionQueries';
 import { abis } from '../projects';
@@ -39,7 +38,7 @@ const processNewProjects = async (projects: IProject[], conn: Connection) => {
   );
 
   const projectsAdded = resultArr.filter(Boolean);
-  const namesOfProjectsAdded = projectsAdded.map((project) => project.project_name);
+  const namesOfProjectsAdded = projectsAdded.map((project) => project?.project_name);
 
   return { projectsAdded, namesOfProjectsAdded };
 };
@@ -113,11 +112,10 @@ const reconcileTransactions = async (
     creation_block,
   );
   const newTransactionsAdded = await Promise.all(
-    allTransactions.map((tx) => addTransaction(tx, conn, web3)),
+    allTransactions.map((tx) => addTransaction(tx, project_id, conn, web3)),
   );
-  const newTxNoNull = newTransactionsAdded.filter(Boolean);
 
-  await processNewTransactions(newTxNoNull, project, contract, context, conn);
+  await processNewTransactions(newTransactionsAdded, project, contract, context, conn);
 
   return { allTransactions, totalTxCount };
 };
@@ -199,8 +197,8 @@ const reconcileBulkMint = async (
 
       try {
         const script_inputs = await fetchScriptInputs(contract, token_id);
-        const processMint = getProcessMintFunction(project);
-        const { newTokenId } = await processMint(
+        const processMint = getProcessMintFunction(project._id);
+        const newMint = await processMint(
           token_id,
           project,
           script_inputs,
@@ -208,7 +206,12 @@ const reconcileBulkMint = async (
           conn,
         );
 
-        return newTokenId;
+        if (!newMint) {
+          context.log.error(`Failed to mint token_id ${token_id} for ${project_name}.`);
+          return;
+        }
+
+        return newMint.newTokenId;
       } catch (err) {
         context.log.error(err);
       }
@@ -224,7 +227,6 @@ const reconcileDescriptions = async (
   projectLocal: IProject,
 ) => {
   const {
-    _id: project_id,
     project_slug,
     collection_description: collDescLocal,
     description: tokenDescLocal,
@@ -232,6 +234,12 @@ const reconcileDescriptions = async (
   } = projectLocal;
 
   const projectDb = await getProject(project_slug, conn);
+
+  if (!projectDb) {
+    context.log.error(`Failed to find ${project_slug} in db.`);
+    return;
+  }
+
   const {
     collection_description: collDescDb,
     description: tokenDescDb,
@@ -246,6 +254,11 @@ const reconcileDescriptions = async (
       collDescLocal,
     );
 
+    if (!updatedProject) {
+      context.log.info(`Failed to update ${project_slug} collection description.`);
+      return;
+    }
+
     const { collection_description: updatedDescription } = updatedProject;
 
     if (updatedDescription === collDescLocal) {
@@ -256,23 +269,16 @@ const reconcileDescriptions = async (
   }
 
   // if needed, update token description on project AND tokens in db
-  if (tokenDescLocal !== tokenDescDb) {
+  if (tokenDescLocal && tokenDescLocal !== tokenDescDb) {
     const updatedProject = await updateTokenDescription(
       conn,
       project_slug,
       tokenDescLocal,
     );
 
-    const numOfTokensUpdate = await updateAllTokenDesc(conn, project_id, tokenDescLocal);
-
-    const { description: updatedDescription } = updatedProject;
-
-    if (updatedDescription === tokenDescLocal && numOfTokensUpdate) {
-      context.log.info(
-        `Updated ${project_slug} token description, ${numOfTokensUpdate} tokens updated.`,
-      );
-    } else {
-      context.log.error(`Failed to update ${project_slug} token description.`);
+    if (!updatedProject) {
+      context.log.info(`Failed to update ${project_slug} token description.`);
+      return;
     }
   }
 
@@ -280,10 +286,13 @@ const reconcileDescriptions = async (
     const updatedProject = await updateAppendedDescription(
       conn,
       project_slug,
-      tokenDescLocal,
+      appendedDescLocal,
     );
 
-    const { appended_description: updatedDescription } = updatedProject;
+    if (!updatedProject) {
+      context.log.info(`Failed to update ${project_slug} appended description.`);
+      return;
+    }
 
     await updateMathareDescriptions(conn, projectLocal);
   }
@@ -292,7 +301,7 @@ const reconcileDescriptions = async (
 export const reconcileProject = async (
   context: Context,
   project: IProject,
-  conn: Connection,
+  conn: Connection | undefined,
 ) => {
   const {
     _id: project_id,
@@ -302,6 +311,11 @@ export const reconcileProject = async (
     devParams: { isBulkMint, usesPuppeteer },
   } = project;
   context.log.info(`Reconciling ${project_name} database to blockchain.`);
+
+  if (!conn) {
+    context.log.error(`Failed to connect to database while reconciling ${project_name}.`);
+    return;
+  }
 
   const totalTokensInDb = await getCurrentTokenSupply(project_id, conn);
 

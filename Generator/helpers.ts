@@ -7,14 +7,14 @@ export const getHtml = (
   projectName: string,
   genScripts: GenScripts,
   scriptInputs: string | null,
-  options: { mobile?: boolean; alt?: boolean },
+  options: { mobile: boolean; alt: boolean },
 ): string => {
-  const { main, mobileControls, alt, preMainScript } = genScripts;
+  const { main, mobileControls, alt: altScript, preMainScript } = genScripts;
 
   const scripts = `
     ${scriptInputs ? `<script>const scriptInputs = ${scriptInputs};</script>` : ''}
     ${preMainScript ? getScriptTag(preMainScript) : ''}
-    ${!options.alt ? getScriptTag(main) : getScriptTag(alt)}
+    ${options.alt && altScript ? getScriptTag(altScript) : getScriptTag(main)}
     ${
       options.mobile && mobileControls && !options.alt ? getScriptTag(mobileControls) : ''
     }

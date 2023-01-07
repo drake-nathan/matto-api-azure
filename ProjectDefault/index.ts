@@ -5,7 +5,7 @@ import { getAllProjects } from '../src/db/queries/projectQueries';
 import { connectionFactory } from '../src/db/connectionFactory';
 
 const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
-  let conn: Connection;
+  let conn: Connection | undefined;
 
   dotenv.config();
   const rootUrl = process.env.ROOT_URL;
@@ -81,12 +81,13 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
     };
   } catch (error) {
     context.log.error(error);
+    if (process.env.NODE_ENV === 'test') console.error(error);
     context.res = {
       status: 500,
       body: 'Something went wrong, ngmi.',
     };
   } finally {
-    await conn.close();
+    if (conn) await conn.close();
   }
 };
 

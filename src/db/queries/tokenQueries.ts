@@ -1,10 +1,11 @@
-import { Connection } from 'mongoose';
+import { type Connection } from 'mongoose';
 import {
-  IToken,
-  IScriptInputs,
-  IAttribute,
-  TokenAbbr,
+  type IToken,
+  type IScriptInputs,
+  type IAttribute,
+  type TokenAbbr,
   ProjectId,
+  type ILevel,
 } from '../schemas/schemaTypes';
 
 export const checkIfTokenExists = async (
@@ -34,7 +35,7 @@ export const getToken = (
 
 export const getTokenAbbr = (
   project_slug: string,
-  token_id: string,
+  token_id: string | number,
   conn: Connection,
 ): Promise<TokenAbbr> => {
   const Token = conn.model<IToken>('Token');
@@ -165,7 +166,10 @@ export const getCurrentTokenSupply = async (project_id: number, conn: Connection
   return currentTokenSupply;
 };
 
-export const getLevels = async (project_slug: string, conn: Connection) => {
+export const getLevels = async (
+  project_slug: string,
+  conn: Connection,
+): Promise<ILevel[]> => {
   const Token = conn.model<IToken>('Token');
 
   const query = Token.find({ project_slug });
@@ -181,7 +185,7 @@ export const getLevels = async (project_slug: string, conn: Connection) => {
       script_inputs: { level_shift },
     } = token;
 
-    return { token_id, transfer_count, level_shift };
+    return { token_id, transfer_count, level_shift: level_shift || 0 };
   });
 
   resParsed.sort((a, b) => a.token_id - b.token_id);
@@ -194,7 +198,7 @@ export const updateTokenMetadataOnTransfer = async (
   token_id: number,
   script_inputs: IScriptInputs,
   image: string,
-  thumbnail_url: string,
+  thumbnail_url: string | undefined,
   attributes: IAttribute[],
   conn: Connection,
 ) => {
