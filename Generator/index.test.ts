@@ -44,7 +44,7 @@ describe('Generator', () => {
     expect(typeof context.res.body).toBe('string');
   });
 
-  it('should return a 200 with correct info', async () => {
+  it('should return a 200 if given body scriptInputs', async () => {
     req.body.scriptInputs = {
       token_id: '0',
       token_entropy: '0x6061425B6961DE47961752967C51AD163519BF0BF90409D1E1ADF30D3134F00D',

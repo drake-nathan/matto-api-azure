@@ -1,9 +1,9 @@
-import { AzureFunction, Context, HttpRequest } from '@azure/functions';
-import { Connection } from 'mongoose';
+import type { AzureFunction, Context, HttpRequest } from '@azure/functions';
+import type { Connection } from 'mongoose';
 import { getProject } from '../src/db/queries/projectQueries';
 import { connectionFactory } from '../src/db/connectionFactory';
 import { getScriptInputsFromDb } from '../src/db/queries/tokenQueries';
-import { getHtml } from '../src/helpers/generatorHelpers';
+import { altScriptCheck, getHtml } from './helpers';
 
 const httpTrigger: AzureFunction = async (
   context: Context,
@@ -25,12 +25,15 @@ const httpTrigger: AzureFunction = async (
       return;
     }
 
-    const { project_name, gen_script } = project;
+    const { project_name, gen_scripts } = project;
 
-    let scriptInputs: string;
+    let scriptInputsJson: string;
+    let usingScriptInputsFromBody = false;
+    // will be true when puppeteer is running snapshot
 
     if (req.body && req.body.scriptInputs) {
-      scriptInputs = JSON.stringify(req.body.scriptInputs);
+      scriptInputsJson = JSON.stringify(req.body.scriptInputs);
+      usingScriptInputsFromBody = true;
       context.log.info(
         `Using scriptInputs from request body for token ${token_id} on ${project_name}.`,
       );
@@ -45,10 +48,10 @@ const httpTrigger: AzureFunction = async (
         return;
       }
 
-      scriptInputs = JSON.stringify(scriptInputsDb);
+      scriptInputsJson = JSON.stringify(scriptInputsDb);
     }
 
-    if (!scriptInputs) {
+    if (!scriptInputsJson) {
       context.res = {
         status: 400,
         body: 'Something went wrong, ngmi.',
@@ -56,14 +59,24 @@ const httpTrigger: AzureFunction = async (
       return;
     }
 
-    const isMathare = project_slug === 'mathare-memories';
-    const generatorHtml = getHtml(project_name, gen_script, scriptInputs, isMathare);
-    // const generatorHtml = getHtml(
-    //   'Mathare',
-    //   'https://cdn.gengames.io/scripts/mathare/mathareMemories.min.js',
-    //   JSON.stringify({ token_id, transfer_count: 0 }),
-    //   true,
-    // );
+    // disables alt script for puppeteer, otherwise will run alt check
+    const alt = usingScriptInputsFromBody
+      ? false
+      : altScriptCheck(project_slug, gen_scripts, scriptInputsJson, req);
+    const genOptions = {
+      mobile: false,
+      alt,
+    };
+
+    // adds mobile controls script if query param ?mobile=true
+    if (req.query.mobile && req.query.mobile === 'true') genOptions.mobile = true;
+
+    const generatorHtml = getHtml(
+      project_name,
+      gen_scripts,
+      scriptInputsJson,
+      genOptions,
+    );
 
     context.res = {
       status: 200,

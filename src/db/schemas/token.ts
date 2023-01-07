@@ -33,6 +33,8 @@ export const tokenSchema = new Schema<IToken>({
   image_data: { type: String },
   animation_url: { type: String },
   generator_url: { type: String },
+  generator_mobile: { type: String },
+  generator_alt: { type: String },
   website: { type: String, required: true },
   external_url: { type: String, required: true },
   license: { type: String, required: true },

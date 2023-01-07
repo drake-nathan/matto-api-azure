@@ -1,6 +1,5 @@
-/* eslint-disable no-useless-escape */
-import { AbiItem } from 'web3-utils';
-import { Chain, IProject, ProjectId } from '../db/schemas/schemaTypes';
+import { type AbiItem } from 'web3-utils';
+import { Chain, type IProject, ProjectId } from '../db/schemas/schemaTypes';
 import chainlifeGoerliAbi from './abis/ChainlifeGoerli.abi.json';
 import chainlifeMainnetAbi from './abis/ChainlifeMainnet.abi.json';
 import mathareAbi from './abis/Mathare.abi.json';
@@ -35,10 +34,16 @@ export const projects: IProject[] = [
     chain: Chain.goerli,
     events: ['Transfer', 'CustomRule', 'ShiftLevel'],
     creation_block: 7729596,
-    gen_script: 'https://cdn.gengames.io/scripts/chainlife/chainlifeToken.min.js',
+    gen_scripts: {
+      main: 'https://cdn.substratum.art/scripts/chainlife/chainlifeToken.min.js',
+      alt: 'https://cdn.substratum.art/scripts/chainlife/chainlifeEsoterra.min.js',
+      mobileControls:
+        'https://cdn.substratum.art/scripts/chainlife/tokenMobileMenu.min.js',
+      world: 'https://cdn.substratum.art/scripts/chainlife/chainlifeWorld.min.js',
+    },
     devParams: {
       useInDev: true,
-      useInProd: false,
+      useInProd: true,
       usesPuppeteer: true,
       isBulkMint: false,
     },
@@ -72,7 +77,13 @@ export const projects: IProject[] = [
     chain: Chain.mainnet,
     events: ['Transfer', 'CustomRule', 'ShiftLevel'],
     creation_block: 15908912,
-    gen_script: 'https://cdn.gengames.io/scripts/chainlife/chainlifeToken.min.js',
+    gen_scripts: {
+      main: 'https://cdn.substratum.art/scripts/chainlife/chainlifeToken.min.js',
+      alt: 'https://cdn.substratum.art/scripts/chainlife/chainlifeEsoterra.min.js',
+      mobileControls:
+        'https://cdn.substratum.art/scripts/chainlife/tokenMobileMenu.min.js',
+      world: 'https://cdn.substratum.art/scripts/chainlife/chainlifeWorld.min.js',
+    },
     devParams: {
       useInDev: false,
       useInProd: true,
@@ -111,7 +122,10 @@ export const projects: IProject[] = [
     contract_address: '0x2eEa9f8eb2a3365175c7cb25Db9ae277bE218806',
     events: ['Transfer'],
     creation_block: 16215143,
-    gen_script: 'https://cdn.gengames.io/scripts/mathare/mathareMemories.min.js',
+    gen_scripts: {
+      main: 'https://cdn.substratum.art/scripts/mathare/mathareMemories.min.js',
+      preMainScript: 'https://cdn.substratum.art/scripts/mathare/descriptions.min.js',
+    },
     devParams: {
       useInDev: true,
       useInProd: true,

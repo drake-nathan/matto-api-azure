@@ -32,7 +32,16 @@ export const projectSchema = new Schema<IProject>({
     additional_payee: { type: String },
     additional_payee_bps: { type: Number },
   },
-  gen_script: { type: String },
+  gen_scripts: {
+    type: {
+      main: { type: String, required: true },
+      alt: { type: String },
+      world: { type: String },
+      mobileControls: { type: String },
+      preMainScript: { type: String },
+    },
+    required: true,
+  },
   devParams: {
     useInDev: { type: Boolean, required: true },
     useInProd: { type: Boolean, required: true },

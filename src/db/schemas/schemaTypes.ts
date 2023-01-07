@@ -19,6 +19,14 @@ export interface IRoyaltyInfo {
   additional_payee_bps?: number;
 }
 
+export interface GenScripts {
+  main: string;
+  alt?: string;
+  world?: string;
+  mobileControls?: string;
+  preMainScript?: string;
+}
+
 export interface IDevParams {
   useInDev: boolean;
   useInProd: boolean;
@@ -52,7 +60,7 @@ export interface IProject {
   chain: Chain;
   events: string[];
   creation_block: number;
-  gen_script?: string;
+  gen_scripts: GenScripts;
   devParams: IDevParams;
 }
 
@@ -93,6 +101,8 @@ export interface IToken {
   image_data?: string; // not used for Chainlife
   animation_url: string; // generation script
   generator_url: string; // same as animation_url
+  generator_mobile?: string;
+  generator_alt?: string;
   website: string; // project
   external_url: string; // project
   license: string; // project*
