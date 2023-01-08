@@ -15,10 +15,15 @@ import {
 } from '../db/queries/projectQueries';
 import {
   checkIfTokenExists,
+  getAllTokensFromProject,
   getCurrentTokenSupply,
   removeDuplicateTokens,
 } from '../db/queries/tokenQueries';
-import { addTransaction, getAllMintTransactions } from '../db/queries/transactionQueries';
+import {
+  addTransaction,
+  getAllMintTransactions,
+  getTxCounts,
+} from '../db/queries/transactionQueries';
 import { abis } from '../projects';
 import { fetchEvents, fetchScriptInputs } from '../web3/blockchainFetches';
 import { getContract } from '../web3/contract';
@@ -34,7 +39,14 @@ import { updateMathareDescriptions } from './tokenHelpers/mathareHelpers';
 const processNewProjects = async (projects: IProject[], conn: Connection) => {
   // try to add all projects to db, duplicates removed
   const resultArr = await Promise.all(
-    projects.map((project) => addProject(project, conn)),
+    projects.map(async (project) => {
+      const { total } = await getTxCounts(conn, project._id);
+      const tokens = await getAllTokensFromProject(project.project_slug, conn);
+      return addProject(
+        { ...project, tx_count: total, current_supply: tokens.length },
+        conn,
+      );
+    }),
   );
 
   const projectsAdded = resultArr.filter(Boolean);
@@ -110,7 +122,9 @@ const reconcileTransactions = async (
     project_id,
     conn,
     creation_block,
+    true,
   );
+
   const newTransactionsAdded = await Promise.all(
     allTransactions.map((tx) => addTransaction(tx, project_id, conn, web3)),
   );

@@ -18,6 +18,7 @@ export const projectSchema = new Schema<IProject>({
   collection_description: { type: String, required: true },
   mintable: { type: Boolean, required: true },
   script_type: { type: String, required: true },
+  aspect_ratio: { type: Number, required: true },
   website: { type: String, required: true },
   external_url: { type: String, required: true },
   license: { type: String, required: true },

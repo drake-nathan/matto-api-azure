@@ -9,8 +9,11 @@ export const fetchEvents = async (
   project_id: number,
   conn: Connection,
   creationBlock: number,
+  fetchAll = false,
 ) => {
-  const fromBlock = (await getLastTxProcessed(project_id, conn)) || creationBlock;
+  const fromBlock = fetchAll
+    ? creationBlock
+    : (await getLastTxProcessed(project_id, conn)) || creationBlock;
   const options = { fromBlock };
 
   const allTransactions = await contract.getPastEvents('allEvents', options);
