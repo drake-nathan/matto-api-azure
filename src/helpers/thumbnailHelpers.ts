@@ -13,7 +13,7 @@ const fetchImageUploadThumbnail = async (
 ) => {
   const response = await axios(image_full, { responseType: 'arraybuffer' });
 
-  const thumbnail = await sharp(response.data).resize(200).toBuffer();
+  const thumbnail = await sharp(response.data).resize(200).sharpen().toBuffer();
 
   const image_thumbnail = await uploadImage(
     context,
