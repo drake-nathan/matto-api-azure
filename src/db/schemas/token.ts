@@ -21,6 +21,7 @@ export const tokenSchema = new Schema<IToken>({
       current_owner: { type: String },
       previous_owner: { type: String },
       custom_rule: { type: String },
+      custom_data: { type: [Schema.Types.Mixed] },
       level_shift: { type: Number },
       imageURI_base: { type: String },
       audioURI_base: { type: String },

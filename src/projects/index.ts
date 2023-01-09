@@ -3,6 +3,7 @@ import { Chain, type IProject, ProjectId } from '../db/schemas/schemaTypes';
 import chainlifeGoerliAbi from './abis/ChainlifeGoerli.abi.json';
 import chainlifeMainnetAbi from './abis/ChainlifeMainnet.abi.json';
 import mathareAbi from './abis/Mathare.abi.json';
+import negativeCarbonAbi from './abis/NegativeCarbon.abi.json';
 
 export const projects: IProject[] = [
   {
@@ -133,10 +134,48 @@ export const projects: IProject[] = [
       isBulkMint: true,
     },
   },
+  {
+    _id: ProjectId.negativeCarbon,
+    chain: Chain.mainnet,
+    project_name: 'Negative Carbon',
+    project_slug: 'negative-carbon',
+    artist: 'Matto',
+    artist_address: '0xA6a4Fe416F8Bf46bc3bCA068aC8b1fC4DF760653',
+    collection_name: 'Negative Carbon',
+    royalty_info: {
+      artist_address: '0xA6a4Fe416F8Bf46bc3bCA068aC8b1fC4DF760653',
+      royalty_fee_by_id: 10,
+    },
+    maximum_supply: 68,
+    current_supply: 68,
+    starting_index: 0,
+    tx_count: 0,
+    collection_image: 'https://media.matto.xyz/gengames/chainlife_multicolor.png',
+    collection_description: 'Negative Carbon',
+    mintable: false,
+    script_type: 'p5.js',
+    aspect_ratio: 1,
+    website: 'https://www.matto.xyz',
+    external_url: 'https://www.substratum.art/project/negative-carbon',
+    license: 'All Rights Reserved',
+    contract_address: '0xa9132D23886b63D29858Fe541214fEad5815d64A',
+    events: ['Transfer', 'TokenUpdated'],
+    creation_block: 16312447,
+    gen_scripts: {
+      main: 'https://cdn.substratum.art/scripts/negativeCarbon/negativeCarbon.min.js',
+    },
+    devParams: {
+      useInDev: true,
+      useInProd: true,
+      usesPuppeteer: true,
+      isBulkMint: false,
+    },
+  },
 ];
 
 export const abis = {
   [projects[ProjectId.chainlifeTestnet]._id]: chainlifeGoerliAbi as AbiItem[],
   [projects[ProjectId.chainlifeMainnet]._id]: chainlifeMainnetAbi as AbiItem[],
   [projects[ProjectId.mathare]._id]: mathareAbi as AbiItem[],
+  [projects[ProjectId.negativeCarbon]._id]: negativeCarbonAbi as AbiItem[],
 };

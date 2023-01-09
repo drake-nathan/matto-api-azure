@@ -279,3 +279,20 @@ export const updateOneTokenDesc = (
 
   return query.exec();
 };
+
+export const updateScriptInputs = (
+  conn: Connection,
+  project_id: number,
+  token_id: number,
+  script_inputs: IScriptInputs,
+) => {
+  const Token = conn.model<IToken>('Token');
+
+  const filter = { project_id, token_id };
+  const update = { script_inputs };
+  const options = { new: true };
+
+  const query = Token.findOneAndUpdate(filter, update, options);
+
+  return query.lean().exec();
+};

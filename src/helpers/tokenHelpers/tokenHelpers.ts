@@ -3,6 +3,10 @@ import { Connection, LeanDocument, Schema } from 'mongoose';
 import { IProject, IScriptInputs, IToken, ProjectId } from '../../db/schemas/schemaTypes';
 import { processChainlifeEvent, processChainlifeMint } from './chainlifeHelpers';
 import { processMathareEvent, processMathareMint } from './mathareHelpers';
+import {
+  processNegativeCarbonEvent,
+  processNegativeCarbonMint,
+} from './NegativeCarbonHelpers';
 
 type ProcessMintFunction = (
   token_id: number,
@@ -36,17 +40,19 @@ export const getProcessMintFunction = (projectId: ProjectId): ProcessMintFunctio
     [ProjectId.chainlifeMainnet]: processChainlifeMint,
     [ProjectId.chainlifeTestnet]: processChainlifeMint,
     [ProjectId.mathare]: processMathareMint,
+    [ProjectId.negativeCarbon]: processNegativeCarbonMint,
   };
 
   return processMintFunctions[projectId];
 };
 
-export const getProcessEventFunction = (project: IProject): ProcessEventFunction => {
+export const getProcessEventFunction = (projectId: ProjectId): ProcessEventFunction => {
   const processEventFunctions = {
     [ProjectId.chainlifeMainnet]: processChainlifeEvent,
     [ProjectId.chainlifeTestnet]: processChainlifeEvent,
     [ProjectId.mathare]: processMathareEvent,
+    [ProjectId.negativeCarbon]: processNegativeCarbonEvent,
   };
 
-  return processEventFunctions[project._id];
+  return processEventFunctions[projectId];
 };

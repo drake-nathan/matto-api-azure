@@ -4,6 +4,7 @@ export enum ProjectId {
   chainlifeTestnet,
   chainlifeMainnet,
   mathare,
+  negativeCarbon,
 }
 
 export enum Chain {
@@ -76,6 +77,7 @@ export interface IScriptInputs {
   current_owner?: string;
   previous_owner?: string;
   custom_rule?: string;
+  custom_data?: (string | number)[];
   level_shift?: number;
   imageURI_base?: string;
   audioURI_base?: string;

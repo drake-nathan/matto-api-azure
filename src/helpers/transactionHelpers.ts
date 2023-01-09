@@ -66,7 +66,7 @@ export const processNewTransactions = async (
       }
     } else {
       // this handles all other events events besides Mints
-      const processEvent = getProcessEventFunction(project);
+      const processEvent = getProcessEventFunction(project._id);
       await processEvent(token_id, project, script_inputs, context, conn);
     }
   }
