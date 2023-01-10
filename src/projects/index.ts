@@ -216,5 +216,5 @@ export const abis = {
   [projects[ProjectId.chainlifeMainnet]._id]: chainlifeMainnetAbi as AbiItem[],
   [projects[ProjectId.mathare]._id]: mathareAbi as AbiItem[],
   [projects[ProjectId.negativeCarbon]._id]: negativeCarbonAbi as AbiItem[],
-  [projects[ProjectId.crystallizedIllusions]._id]: crystallizedIllusionsAbi as AbiItem[],
+  // [projects[ProjectId.crystallizedIllusions]._id]: crystallizedIllusionsAbi as AbiItem[],
 };
