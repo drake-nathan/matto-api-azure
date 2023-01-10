@@ -5,6 +5,7 @@ export enum ProjectId {
   chainlifeMainnet,
   mathare,
   negativeCarbon,
+  crystallizedIllusions,
 }
 
 export enum Chain {
@@ -49,7 +50,7 @@ export interface IProject {
   current_supply?: number;
   tx_count: number;
   collection_name: string;
-  collection_image: string;
+  collection_image?: string;
   collection_description: string;
   mintable: boolean;
   script_type: string;

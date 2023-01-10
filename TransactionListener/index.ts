@@ -26,17 +26,25 @@ const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
     conn = await connectionFactory(context);
 
     const arrOfLogValues = await Promise.all(
-      projects.map((project) => checkForNewTransactions(project, context, conn)),
+      projects.map((project) => {
+        // this coniditional skips projects that don't store transactions
+        if (project.events.length) {
+          return checkForNewTransactions(project, context, conn);
+        }
+        return null;
+      }),
     );
 
     arrOfLogValues.forEach((logValues) => {
-      const tokenMsg = logValues.newTokens.length
-        ? `New tokens: ${logValues.newTokens.join(', ')}.`
-        : 'No new tokens.';
+      if (logValues) {
+        const tokenMsg = logValues.newTokens.length
+          ? `New tokens: ${logValues.newTokens.join(', ')}.`
+          : 'No new tokens.';
 
-      const logMsg = `${logValues.project_name}: ${logValues.numOfTxsAdded} new transactions. ${tokenMsg} Current supply: ${logValues.currentSupply}`;
+        const logMsg = `${logValues.project_name}: ${logValues.numOfTxsAdded} new transactions. ${tokenMsg} Current supply: ${logValues.currentSupply}`;
 
-      context.log.info(logMsg);
+        context.log.info(logMsg);
+      }
     });
   } catch (error) {
     context.res = {

@@ -14,7 +14,7 @@ export const projectSchema = new Schema<IProject>({
   current_supply: { type: Number },
   tx_count: { type: Number, required: true },
   collection_name: { type: String, required: true },
-  collection_image: { type: String, required: true },
+  collection_image: { type: String },
   collection_description: { type: String, required: true },
   mintable: { type: Boolean, required: true },
   script_type: { type: String, required: true },

@@ -322,6 +322,7 @@ export const reconcileProject = async (
     project_name,
     chain,
     contract_address,
+    events,
     devParams: { isBulkMint, usesPuppeteer },
   } = project;
   context.log.info(`Reconciling ${project_name} database to blockchain.`);
@@ -343,6 +344,11 @@ export const reconcileProject = async (
   if (usesPuppeteer) {
     await checkForMissingAttributes(conn, context, project);
   }
+
+  await reconcileDescriptions(conn, context, project);
+
+  // if no events to listen for, no need to store transactions at all, so we can skip the blockchain pings
+  if (!events.length) return;
 
   // fetch all transactions from blockchain, add missing ones
   const { allTransactions, totalTxCount } = await reconcileTransactions(
@@ -366,6 +372,4 @@ export const reconcileProject = async (
   } else {
     await updateProjectSupplyAndCount(project_id, totalTokensInDb, totalTxCount, conn);
   }
-
-  await reconcileDescriptions(conn, context, project);
 };

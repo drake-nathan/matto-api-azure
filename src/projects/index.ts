@@ -4,6 +4,7 @@ import chainlifeGoerliAbi from './abis/ChainlifeGoerli.abi.json';
 import chainlifeMainnetAbi from './abis/ChainlifeMainnet.abi.json';
 import mathareAbi from './abis/Mathare.abi.json';
 import negativeCarbonAbi from './abis/NegativeCarbon.abi.json';
+import crystallizedIllusionsAbi from './abis/CrystallizedIllusions.abi.json';
 
 export const projects: IProject[] = [
   {
@@ -139,23 +140,23 @@ export const projects: IProject[] = [
     chain: Chain.mainnet,
     project_name: 'Negative Carbon',
     project_slug: 'negative-carbon',
-    artist: 'Matto',
-    artist_address: '0xA6a4Fe416F8Bf46bc3bCA068aC8b1fC4DF760653',
-    collection_name: 'Negative Carbon',
+    artist: 'Immutable Computer',
+    artist_address: '0x18120f6064de06afb42bc89a980c4d80267683ac',
+    collection_name: 'Negative Carbon NFT',
     royalty_info: {
-      artist_address: '0xA6a4Fe416F8Bf46bc3bCA068aC8b1fC4DF760653',
-      royalty_fee_by_id: 10,
+      artist_address: '0xa9132D23886b63D29858Fe541214fEad5815d64A',
+      royalty_fee_by_id: 7,
     },
-    maximum_supply: 68,
-    current_supply: 68,
+    maximum_supply: 128,
+    current_supply: 1,
     starting_index: 0,
     tx_count: 0,
-    collection_image: 'https://media.matto.xyz/gengames/chainlife_multicolor.png',
-    collection_description: 'Negative Carbon',
+    collection_description:
+      "Each Negative Carbon NFT (NCNFT) offsets more than its carbon footprint using rigorously validated, third-party audited, retired, carbon offsets. Each token is assigned an offset certificate and mint, and that certificate's serial number becomes the token's generative art's entropy. For more information, visit http://immutablecomputer.com/carbon.html.",
     mintable: false,
     script_type: 'p5.js',
-    aspect_ratio: 1,
-    website: 'https://www.matto.xyz',
+    aspect_ratio: 1.77,
+    website: 'http://immutablecomputer.com/carbon.html',
     external_url: 'https://www.substratum.art/project/negative-carbon',
     license: 'All Rights Reserved',
     contract_address: '0xa9132D23886b63D29858Fe541214fEad5815d64A',
@@ -171,6 +172,43 @@ export const projects: IProject[] = [
       isBulkMint: false,
     },
   },
+  // {
+  //   _id: ProjectId.crystallizedIllusions,
+  //   chain: Chain.mainnet,
+  //   project_name: 'Crystallized Illusions',
+  //   project_slug: 'crystallized-illusions',
+  //   artist: 'Matto',
+  //   artist_address: '0xA6a4Fe416F8Bf46bc3bCA068aC8b1fC4DF760653',
+  //   collection_name: 'Crystallized Illusions',
+  //   royalty_info: {
+  //     artist_address: '0xA6a4Fe416F8Bf46bc3bCA068aC8b1fC4DF760653',
+  //     royalty_fee_by_id: 10,
+  //   },
+  //   maximum_supply: 99,
+  //   current_supply: 99,
+  //   starting_index: 0,
+  //   tx_count: 0,
+  //   collection_description:
+  //     "Inspired by Buddhist philosophy, Crystallized Illusions is a collection of 99 pieces created through a generative process. Three variations of this process were made to correspond to the categories of illusions as described by Zhiyi (538-597 CE), the fourth patriarch of the T'ien-t'ai (or Tí Taî) Buddhist tradition. Each process was used to created 33 distinct images.",
+  //   mintable: false,
+  //   script_type: 'p5',
+  //   aspect_ratio: 1,
+  //   website: 'https://matto.xyz/project/crystallized-illusions/',
+  //   external_url: 'https://www.substratum.art/project/crystallized-illusions',
+  //   license: 'All Rights Reserved',
+  //   contract_address: '0x5B17395A9699D2819a9d009bA375a0825b077385',
+  //   events: [],
+  //   creation_block: 16313758,
+  //   gen_scripts: {
+  //     main: 'https://cdn.substratum.art/scripts/crystallizedIllusions/crystallizedIllusions.min.js',
+  //   },
+  //   devParams: {
+  //     useInDev: true,
+  //     useInProd: true,
+  //     usesPuppeteer: false,
+  //     isBulkMint: true,
+  //   },
+  // },
 ];
 
 export const abis = {
@@ -178,4 +216,5 @@ export const abis = {
   [projects[ProjectId.chainlifeMainnet]._id]: chainlifeMainnetAbi as AbiItem[],
   [projects[ProjectId.mathare]._id]: mathareAbi as AbiItem[],
   [projects[ProjectId.negativeCarbon]._id]: negativeCarbonAbi as AbiItem[],
+  [projects[ProjectId.crystallizedIllusions]._id]: crystallizedIllusionsAbi as AbiItem[],
 };

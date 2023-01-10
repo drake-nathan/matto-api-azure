@@ -6,7 +6,11 @@ import { processMathareEvent, processMathareMint } from './mathareHelpers';
 import {
   processNegativeCarbonEvent,
   processNegativeCarbonMint,
-} from './NegativeCarbonHelpers';
+} from './negativeCarbonHelpers';
+import {
+  processCrystallizedIllusionsEvent,
+  processCrystallizedIllusionsMint,
+} from './crystallizedIllusionsHelpers';
 
 type ProcessMintFunction = (
   token_id: number,
@@ -41,6 +45,7 @@ export const getProcessMintFunction = (projectId: ProjectId): ProcessMintFunctio
     [ProjectId.chainlifeTestnet]: processChainlifeMint,
     [ProjectId.mathare]: processMathareMint,
     [ProjectId.negativeCarbon]: processNegativeCarbonMint,
+    [ProjectId.crystallizedIllusions]: processCrystallizedIllusionsMint,
   };
 
   return processMintFunctions[projectId];
@@ -52,6 +57,7 @@ export const getProcessEventFunction = (projectId: ProjectId): ProcessEventFunct
     [ProjectId.chainlifeTestnet]: processChainlifeEvent,
     [ProjectId.mathare]: processMathareEvent,
     [ProjectId.negativeCarbon]: processNegativeCarbonEvent,
+    [ProjectId.crystallizedIllusions]: processCrystallizedIllusionsEvent,
   };
 
   return processEventFunctions[projectId];

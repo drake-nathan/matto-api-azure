@@ -7,7 +7,7 @@ import { transactionSchema } from './schemas/transaction';
 import { thumbnailSchema } from './schemas/thumbnail';
 import { levelSnapshotSchema } from './schemas/levelSnapshot';
 
-export const connectionFactory = async (context: Context) => {
+export const connectionFactory = async (context?: Context) => {
   dotenv.config();
   const dbConnectionString = process.env.DB_CONNECTION_STRING as string;
 
@@ -17,9 +17,11 @@ export const connectionFactory = async (context: Context) => {
 
   const conn = await createConnection(dbConnectionString).asPromise();
 
-  conn.addListener('error', (err) => {
-    context.log.error('Error connecting to database', err);
-  });
+  if (context) {
+    conn.addListener('error', (err) => {
+      context.log.error('Error connecting to database', err);
+    });
+  }
 
   conn.model('Project', projectSchema);
   conn.model('Token', tokenSchema);

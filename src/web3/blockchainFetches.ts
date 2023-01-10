@@ -1,6 +1,6 @@
 import type { Contract } from 'web3-eth-contract';
 import type { Connection } from 'mongoose';
-import type { IScriptInputs } from '../db/schemas/schemaTypes';
+import { type IScriptInputs } from '../db/schemas/schemaTypes';
 import { getLastTxProcessed } from '../db/queries/transactionQueries';
 
 export const fetchEvents = async (
@@ -42,3 +42,22 @@ export const fetchScriptInputs = async (contract: Contract, token_id: number) =>
     return parsedScriptInputs;
   }
 };
+
+// const testFetchEvents = async () => {
+//   const project = projects.find((p) => p._id === ProjectId.crystallizedIllusions);
+
+//   const conn = await connectionFactory();
+
+//   if (!project) {
+//     throw new Error('Project not found');
+//   }
+
+//   const web3 = getWeb3(Chain.mainnet);
+//   const contract = getContract(web3, abis[project._id], project.contract_address);
+
+//   return fetchEvents(contract, [], project._id, conn, project.creation_block, true);
+// };
+
+// testFetchEvents()
+//   .then((res) => console.log(res.allTransactions))
+//   .catch(console.error);
