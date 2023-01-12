@@ -1,16 +1,36 @@
 import { type AbiItem } from 'web3-utils';
-import { Chain, type IProject, ProjectId } from '../db/schemas/schemaTypes';
+import type { IProject, ProjectSizes } from '../db/schemas/schemaTypes';
 import chainlifeGoerliAbi from './abis/ChainlifeGoerli.abi.json';
 import chainlifeMainnetAbi from './abis/ChainlifeMainnet.abi.json';
 import mathareAbi from './abis/Mathare.abi.json';
 import negativeCarbonAbi from './abis/NegativeCarbon.abi.json';
 import crystallizedIllusionsAbi from './abis/CrystallizedIllusions.abi.json';
 
+export enum Chain {
+  mainnet = 'mainnet',
+  goerli = 'goerli',
+}
+export enum ProjectId {
+  chainlifeTestnet,
+  chainlifeMainnet,
+  mathare,
+  negativeCarbon,
+  crystallizedIllusions,
+}
+
+export enum ProjectSlug {
+  chainlifeTestnet = 'chainlife-testnet',
+  chainlifeMainnet = 'chainlife',
+  mathare = 'mathare',
+  negativeCarbon = 'negative-carbon',
+  crystallizedIllusions = 'crystallized-illusions',
+}
+
 export const projects: IProject[] = [
   {
     _id: ProjectId.chainlifeTestnet,
     project_name: 'Chainlife Testnet',
-    project_slug: 'chainlife-testnet',
+    project_slug: ProjectSlug.chainlifeTestnet,
     artist: 'Matto',
     artist_address: '0x318c7370927287a7d03fa659848C25db88213DbA',
     royalty_info: {
@@ -53,7 +73,7 @@ export const projects: IProject[] = [
   {
     _id: ProjectId.chainlifeMainnet,
     project_name: 'Chainlife',
-    project_slug: 'chainlife',
+    project_slug: ProjectSlug.chainlifeMainnet,
     artist: 'Matto',
     artist_address: '0xF8d9056db2C2189155bc25A30269dc5dDeD15d46',
     royalty_info: {
@@ -97,7 +117,7 @@ export const projects: IProject[] = [
     _id: ProjectId.mathare,
     chain: Chain.mainnet,
     project_name: 'Mathare Memories',
-    project_slug: 'mathare-memories',
+    project_slug: ProjectSlug.mathare,
     artist: 'Matto',
     artist_address: '0xA6a4Fe416F8Bf46bc3bCA068aC8b1fC4DF760653',
     collection_name: 'Mathare Memories',
@@ -139,7 +159,7 @@ export const projects: IProject[] = [
     _id: ProjectId.negativeCarbon,
     chain: Chain.mainnet,
     project_name: 'Negative Carbon',
-    project_slug: 'negative-carbon',
+    project_slug: ProjectSlug.negativeCarbon,
     artist: 'Immutable Computer',
     artist_address: '0x18120f6064de06afb42bc89a980c4d80267683ac',
     collection_name: 'Negative Carbon NFT',
@@ -217,4 +237,25 @@ export const abis = {
   [projects[ProjectId.mathare]._id]: mathareAbi as AbiItem[],
   [projects[ProjectId.negativeCarbon]._id]: negativeCarbonAbi as AbiItem[],
   // [projects[ProjectId.crystallizedIllusions]._id]: crystallizedIllusionsAbi as AbiItem[],
+};
+
+// only matters for puppeteer
+export const projectSizes: ProjectSizes = {
+  [ProjectId.chainlifeTestnet]: {
+    full: { width: 2160, height: 2160 },
+    mid: { width: 1080, height: 1080 },
+    thumb: { width: 300, height: 300 },
+  },
+  [ProjectId.chainlifeMainnet]: {
+    full: { width: 2160, height: 2160 },
+    mid: { width: 1080, height: 1080 },
+    thumb: { width: 300, height: 300 },
+  },
+  [ProjectId.mathare]: null,
+  [ProjectId.negativeCarbon]: {
+    full: { width: 3840, height: 2160 },
+    mid: { width: 1920, height: 1080 },
+    thumb: { width: 540, height: 304 },
+  },
+  [ProjectId.crystallizedIllusions]: null,
 };

@@ -67,7 +67,11 @@ export const processCrystallizedIllusionsMint = async (
     projectExternalUrl,
   );
 
-  const { screenshot, attributes } = await runPuppeteer(generator_url, script_inputs);
+  const { screenshot, attributes } = await runPuppeteer(
+    generator_url,
+    script_inputs,
+    project_id,
+  );
 
   const image = await uploadImage(context, screenshot, project_slug, token_id);
 

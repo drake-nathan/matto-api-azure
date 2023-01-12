@@ -19,6 +19,7 @@
     "no-return-assign": "off",
     "object-curly-newline": "off",
     "no-restricted-syntax": "off",
+    "no-promise-executor-return": "off",
     "@typescript-eslint/naming-convention": [
       "error",
       {

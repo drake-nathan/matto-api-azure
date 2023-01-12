@@ -35,6 +35,11 @@ export const getHtml = (
               padding: 0;
             }
             canvas {
+              ${
+                projectName === 'Negative Carbon'
+                  ? 'width:100% !important; height:100% !important;'
+                  : ''
+              }
               padding: 0;
               margin: auto;
               display: block;

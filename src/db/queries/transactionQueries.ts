@@ -1,8 +1,9 @@
 import type Web3 from 'web3';
 import { type EventData } from 'web3-eth-contract';
 import { type Connection } from 'mongoose';
-import { ProjectId, type ITransaction } from '../schemas/schemaTypes';
+import type { ITransaction } from '../schemas/schemaTypes';
 import { nullAddress } from '../../helpers/constants';
+import { ProjectId } from '../../projects';
 
 export const addTransaction = async (
   incomingTx: EventData,

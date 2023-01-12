@@ -1,9 +1,15 @@
-import puppeteer from 'puppeteer';
-import { IAttribute, IScriptInputs } from '../db/schemas/schemaTypes';
+import puppeteer, { type Viewport } from 'puppeteer';
+import type { IAttribute, IScriptInputs } from '../db/schemas/schemaTypes';
+import { ProjectId } from '../projects';
 
-export const runPuppeteer = async (url: string, scriptInputs: IScriptInputs) => {
+export const runPuppeteer = async (
+  url: string,
+  scriptInputs: IScriptInputs,
+  projectId: ProjectId,
+  size: Viewport,
+) => {
   const browser = await puppeteer.launch({
-    defaultViewport: { width: 2160, height: 2160 },
+    defaultViewport: size,
   });
 
   const page = await browser.newPage();
@@ -26,6 +32,10 @@ export const runPuppeteer = async (url: string, scriptInputs: IScriptInputs) => 
   });
 
   await page.goto(url, { waitUntil: 'networkidle0' });
+
+  if (projectId === ProjectId.negativeCarbon) {
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+  }
 
   const screenshot = (await page.screenshot({ encoding: 'binary' })) as Buffer;
 
