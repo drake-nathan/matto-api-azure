@@ -37,7 +37,7 @@ export const getHtml = (
             canvas {
               ${
                 projectName === 'Negative Carbon'
-                  ? 'width:100% !important; height:100% !important;'
+                  ? 'width: 100% !important; height: auto !important;'
                   : ''
               }
               padding: 0;
