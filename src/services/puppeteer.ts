@@ -89,7 +89,7 @@ export const getPuppeteerImageSet = async (
     screenshotMid,
     projectSlug,
     tokenId,
-    'images_mid',
+    'images-mid',
   );
 
   const { screenshot: thumbnail } = await getScreenshot(sizes.thumb);

@@ -8,5 +8,5 @@
       "runOnStartup": false
     }
   ],
-  "scriptFile": "../dist/FrontendHeartbeat/index.js"
+  "scriptFile": "../dist/HeartbeatPings/index.js"
 }
