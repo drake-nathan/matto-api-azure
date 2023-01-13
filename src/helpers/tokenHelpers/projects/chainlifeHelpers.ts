@@ -1,22 +1,18 @@
 import * as dotenv from 'dotenv';
 import { type Context } from '@azure/functions';
 import { type Connection } from 'mongoose';
-import sharp from 'sharp';
-import type { Viewport } from 'puppeteer';
-import type { IProject, IScriptInputs, IToken } from '../../db/schemas/schemaTypes';
+import type { IProject, IScriptInputs, IToken } from '../../../db/schemas/schemaTypes';
 import {
   getProjectCurrentSupply,
   updateProjectSupplyAndCount,
-} from '../../db/queries/projectQueries';
+} from '../../../db/queries/projectQueries';
 import {
   addToken,
   checkIfTokenExists,
   getAllTokensFromProject,
   updateTokenMetadataOnTransfer,
-} from '../../db/queries/tokenQueries';
-import { runPuppeteer } from '../../services/puppeteer';
-import { uploadImage } from '../../services/azureStorage';
-import { projectSizes } from '../../projects';
+} from '../../../db/queries/tokenQueries';
+import { getPuppeteerImageSet } from '../../../services/puppeteer';
 
 dotenv.config();
 const rootServerUrl = process.env.ROOT_URL;
@@ -66,40 +62,13 @@ export const processChainlifeMint = async (
     projectExternalUrl,
   );
 
-  const sizes = projectSizes[project_id];
-
-  if (!sizes) throw new Error('No sizes found for project');
-
-  const getScreenshot = async (size: Viewport) => {
-    const { screenshot, attributes } = await runPuppeteer(
-      generator_url,
-      script_inputs,
-      project_id,
-      size,
-    );
-
-    return { screenshot, attributes };
-  };
-
-  const { screenshot: screenshotFull, attributes } = await getScreenshot(sizes.full);
-  const image = await uploadImage(context, screenshotFull, project_slug, token_id);
-
-  const { screenshot: screenshotMid } = await getScreenshot(sizes.mid);
-  const image_mid = await uploadImage(
+  const { image, image_mid, thumbnail_url, attributes } = await getPuppeteerImageSet(
     context,
-    screenshotMid,
+    project_id,
     project_slug,
     token_id,
-    'images_mid',
-  );
-
-  const { screenshot: thumbnail } = await getScreenshot(sizes.thumb);
-  const thumbnail_url = await uploadImage(
-    context,
-    thumbnail,
-    project_slug,
-    token_id,
-    'thumbnails',
+    generator_url,
+    script_inputs,
   );
 
   const newToken: IToken = {
@@ -152,22 +121,13 @@ export const processChainlifeEvent = async (
   const { _id: project_id, project_slug, external_url } = project;
   const { generator_url } = getUrls(project_slug, token_id, external_url);
 
-  const { screenshot, attributes } = await runPuppeteer(
-    generator_url,
-    script_inputs,
-    project_id,
-  );
-
-  const image = await uploadImage(context, screenshot, project_slug, token_id);
-
-  const thumbnail = await sharp(screenshot).resize(200).toBuffer();
-
-  const thumbnail_url = await uploadImage(
+  const { image, image_mid, thumbnail_url, attributes } = await getPuppeteerImageSet(
     context,
-    thumbnail,
+    project_id,
     project_slug,
     token_id,
-    'thumbnails',
+    generator_url,
+    script_inputs,
   );
 
   const updatedToken = await updateTokenMetadataOnTransfer(
@@ -175,6 +135,7 @@ export const processChainlifeEvent = async (
     token_id,
     script_inputs,
     image,
+    image_mid,
     thumbnail_url,
     attributes,
     conn,

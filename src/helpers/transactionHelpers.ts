@@ -11,10 +11,7 @@ import { abis } from '../projects';
 import { fetchEvents, fetchScriptInputs } from '../web3/blockchainFetches';
 import { getContract } from '../web3/contract';
 import { getWeb3 } from '../web3/provider';
-import {
-  getProcessMintFunction,
-  getProcessEventFunction,
-} from './tokenHelpers/tokenHelpers';
+import { getProcessMintFunction, getProcessEventFunction } from './tokenHelpers';
 
 export interface ILogValues {
   project_name: string;

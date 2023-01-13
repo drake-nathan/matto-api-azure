@@ -1,8 +1,10 @@
+import type { Context } from '@azure/functions';
 import puppeteer, { type Viewport } from 'puppeteer';
 import type { IAttribute, IScriptInputs } from '../db/schemas/schemaTypes';
-import { ProjectId } from '../projects';
+import { ProjectId, projectSizes, ProjectSlug } from '../projects';
+import { uploadImage } from './azureStorage';
 
-export const runPuppeteer = async (
+const runPuppeteer = async (
   url: string,
   scriptInputs: IScriptInputs,
   projectId: ProjectId,
@@ -53,4 +55,51 @@ export const runPuppeteer = async (
 
   await browser.close();
   return { screenshot, attributes };
+};
+
+export const getPuppeteerImageSet = async (
+  context: Context,
+  projectId: ProjectId,
+  projectSlug: ProjectSlug,
+  tokenId: number,
+  generatorUrl: string,
+  scriptInputs: IScriptInputs,
+) => {
+  const sizes = projectSizes[projectId];
+
+  if (!sizes) throw new Error('No sizes found for project');
+
+  const getScreenshot = async (size: Viewport) => {
+    const { screenshot, attributes } = await runPuppeteer(
+      generatorUrl,
+      scriptInputs,
+      projectId,
+      size,
+    );
+
+    return { screenshot, attributes };
+  };
+
+  const { screenshot: screenshotFull, attributes } = await getScreenshot(sizes.full);
+  const image = await uploadImage(context, screenshotFull, projectSlug, tokenId);
+
+  const { screenshot: screenshotMid } = await getScreenshot(sizes.mid);
+  const image_mid = await uploadImage(
+    context,
+    screenshotMid,
+    projectSlug,
+    tokenId,
+    'images_mid',
+  );
+
+  const { screenshot: thumbnail } = await getScreenshot(sizes.thumb);
+  const thumbnail_url = await uploadImage(
+    context,
+    thumbnail,
+    projectSlug,
+    tokenId,
+    'thumbnails',
+  );
+
+  return { image, image_mid, thumbnail_url, attributes };
 };

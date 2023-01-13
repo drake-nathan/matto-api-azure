@@ -31,10 +31,10 @@ import { processNewTransactions } from './transactionHelpers';
 import {
   checkIfTokensMissingAttributes,
   repairBadTokens,
-} from './tokenHelpers/chainlifeHelpers';
+} from './tokenHelpers/projects/chainlifeHelpers';
 import { getWeb3 } from '../web3/provider';
-import { getProcessMintFunction } from './tokenHelpers/tokenHelpers';
-import { updateMathareDescriptions } from './tokenHelpers/mathareHelpers';
+import { getProcessMintFunction } from './tokenHelpers';
+import { updateMathareDescriptions } from './tokenHelpers/projects/mathareHelpers';
 
 const processNewProjects = async (projects: IProject[], conn: Connection) => {
   // try to add all projects to db, duplicates removed

@@ -1,6 +1,6 @@
 import Web3 from 'web3';
 import * as dotenv from 'dotenv';
-import { Chain } from '../db/schemas/schemaTypes';
+import { Chain } from '../projects';
 
 dotenv.config();
 

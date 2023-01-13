@@ -1,19 +1,18 @@
 import * as dotenv from 'dotenv';
 import { Context } from '@azure/functions';
 import { Connection } from 'mongoose';
-import { IProject, IScriptInputs, IToken } from '../../db/schemas/schemaTypes';
+import { IProject, IScriptInputs, IToken } from 'src/db/schemas/schemaTypes';
 import {
   getProjectCurrentSupply,
   updateProjectSupplyAndCount,
-} from '../../db/queries/projectQueries';
+} from 'src/db/queries/projectQueries';
 import {
   addToken,
-  getToken,
   updateOneTokenDesc,
-  updateTokenMetadataOnTransfer,
-} from '../../db/queries/tokenQueries';
-import { attributes as mathareStartingAttr } from '../../projects/mathareData/attributes';
-import mathareDescriptionsJson from '../../projects/mathareData/descriptions.json';
+  updateScriptInputs,
+} from 'src/db/queries/tokenQueries';
+import { attributes as mathareStartingAttr } from 'src/projects/mathareData/attributes';
+import mathareDescriptionsJson from 'src/projects/mathareData/descriptions.json';
 
 dotenv.config();
 const rootServerUrl = process.env.ROOT_URL;
@@ -105,30 +104,15 @@ export const processMathareEvent = async (
   context: Context,
   conn: Connection,
 ) => {
-  context.log.info('Updating token', token_id, 'on', project.project_name);
-  const { _id: project_id, project_slug } = project;
+  const { _id: project_id, project_name } = project;
 
-  const token = await getToken(project_slug, token_id, conn);
+  context.log.info('Updating token', token_id, 'on', project_name);
 
-  if (!token) {
-    throw new Error('Token not found');
-  }
-
-  const { image, thumbnail_url, attributes } = token;
-
-  const transferAttrIndex = attributes.findIndex(
-    (attr) => attr.trait_type === 'Transfer Count',
-  );
-  attributes[transferAttrIndex].value = script_inputs.transfer_count;
-
-  const updatedToken = await updateTokenMetadataOnTransfer(
+  const updatedToken = await updateScriptInputs(
+    conn,
     project_id,
     token_id,
     script_inputs,
-    image,
-    thumbnail_url,
-    attributes,
-    conn,
   );
 
   return updatedToken;

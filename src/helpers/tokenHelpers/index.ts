@@ -1,20 +1,17 @@
 import type { Context } from '@azure/functions';
 import type { Connection, LeanDocument, Schema } from 'mongoose';
-import type { Viewport } from 'puppeteer';
 import type { IProject, IScriptInputs, IToken } from '../../db/schemas/schemaTypes';
-import { processChainlifeEvent, processChainlifeMint } from './chainlifeHelpers';
-import { processMathareEvent, processMathareMint } from './mathareHelpers';
+import { processChainlifeEvent, processChainlifeMint } from './projects/chainlifeHelpers';
+import { processMathareEvent, processMathareMint } from './projects/mathareHelpers';
 import {
   processNegativeCarbonEvent,
   processNegativeCarbonMint,
-} from './negativeCarbonHelpers';
+} from './projects/negativeCarbonHelpers';
 import {
   processCrystallizedIllusionsEvent,
   processCrystallizedIllusionsMint,
-} from './crystallizedIllusionsHelpers';
-import { ProjectId, projectSizes, ProjectSlug } from '../../projects';
-import { runPuppeteer } from '../../services/puppeteer';
-import { uploadImage } from '../../services/azureStorage';
+} from './projects/crystallizedIllusionsHelpers';
+import { ProjectId } from '../../projects';
 
 type ProcessMintFunction = (
   token_id: number,
@@ -65,51 +62,4 @@ export const getProcessEventFunction = (projectId: ProjectId): ProcessEventFunct
   };
 
   return processEventFunctions[projectId];
-};
-
-export const getImageSet = async (
-  context: Context,
-  projectId: ProjectId,
-  projectSlug: ProjectSlug,
-  tokenId: number,
-  generatorUrl: string,
-  scriptInputs: IScriptInputs,
-) => {
-  const sizes = projectSizes[projectId];
-
-  if (!sizes) throw new Error('No sizes found for project');
-
-  const getScreenshot = async (size: Viewport) => {
-    const { screenshot, attributes } = await runPuppeteer(
-      generatorUrl,
-      scriptInputs,
-      projectId,
-      size,
-    );
-
-    return { screenshot, attributes };
-  };
-
-  const { screenshot: screenshotFull, attributes } = await getScreenshot(sizes.full);
-  const image = await uploadImage(context, screenshotFull, projectSlug, tokenId);
-
-  const { screenshot: screenshotMid } = await getScreenshot(sizes.mid);
-  const image_mid = await uploadImage(
-    context,
-    screenshotMid,
-    projectSlug,
-    tokenId,
-    'images_mid',
-  );
-
-  const { screenshot: thumbnail } = await getScreenshot(sizes.thumb);
-  const thumbnail_url = await uploadImage(
-    context,
-    thumbnail,
-    projectSlug,
-    tokenId,
-    'thumbnails',
-  );
-
-  return { image, image_mid, thumbnail_url, attributes };
 };
