@@ -4,9 +4,6 @@
     "target": "es6",
     "outDir": "dist",
     "rootDir": ".",
-    "paths": {
-      "src/*": ["./src/*"]
-    },
     "sourceMap": true,
     "strict": true,
     "allowSyntheticDefaultImports": true,

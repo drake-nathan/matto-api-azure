@@ -1,17 +1,17 @@
 import * as dotenv from 'dotenv';
 import type { Context } from '@azure/functions';
 import type { Connection } from 'mongoose';
-import type { IProject, IScriptInputs, IToken } from 'src/db/schemas/schemaTypes';
+import type { IProject, IScriptInputs, IToken } from '../../../db/schemas/schemaTypes';
 import {
   getProjectCurrentSupply,
   updateProjectSupplyAndCount,
-} from 'src/db/queries/projectQueries';
+} from '../../../db/queries/projectQueries';
 import {
   checkIfTokenExists,
   addToken,
   updateScriptInputs,
-} from 'src/db/queries/tokenQueries';
-import { getPuppeteerImageSet } from 'src/services/puppeteer';
+} from '../../../db/queries/tokenQueries';
+import { getPuppeteerImageSet } from '../../../services/puppeteer';
 
 dotenv.config();
 const rootServerUrl = process.env.ROOT_URL;

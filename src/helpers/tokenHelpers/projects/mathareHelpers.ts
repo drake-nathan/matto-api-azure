@@ -1,18 +1,18 @@
 import * as dotenv from 'dotenv';
 import { Context } from '@azure/functions';
 import { Connection } from 'mongoose';
-import { IProject, IScriptInputs, IToken } from 'src/db/schemas/schemaTypes';
+import { IProject, IScriptInputs, IToken } from '../../../db/schemas/schemaTypes';
 import {
   getProjectCurrentSupply,
   updateProjectSupplyAndCount,
-} from 'src/db/queries/projectQueries';
+} from '../../../db/queries/projectQueries';
 import {
   addToken,
   updateOneTokenDesc,
   updateScriptInputs,
-} from 'src/db/queries/tokenQueries';
-import { attributes as mathareStartingAttr } from 'src/projects/mathareData/attributes';
-import mathareDescriptionsJson from 'src/projects/mathareData/descriptions.json';
+} from '../../../db/queries/tokenQueries';
+import { attributes as mathareStartingAttr } from '../../../projects/mathareData/attributes';
+import mathareDescriptionsJson from '../../../projects/mathareData/descriptions.json';
 
 dotenv.config();
 const rootServerUrl = process.env.ROOT_URL;
