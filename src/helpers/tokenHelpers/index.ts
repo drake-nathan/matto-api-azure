@@ -44,7 +44,7 @@ export const getProcessMintFunction = (projectId: ProjectId): ProcessMintFunctio
   const processMintFunctions = {
     [ProjectId.chainlifeMainnet]: processChainlifeMint,
     [ProjectId.chainlifeTestnet]: processChainlifeMint,
-    [ProjectId.mathare]: processMathareMint,
+    [ProjectId.mathareMemories]: processMathareMint,
     [ProjectId.negativeCarbon]: processNegativeCarbonMint,
     [ProjectId.crystallizedIllusions]: processCrystallizedIllusionsMint,
   };
@@ -56,7 +56,7 @@ export const getProcessEventFunction = (projectId: ProjectId): ProcessEventFunct
   const processEventFunctions = {
     [ProjectId.chainlifeMainnet]: processChainlifeEvent,
     [ProjectId.chainlifeTestnet]: processChainlifeEvent,
-    [ProjectId.mathare]: processMathareEvent,
+    [ProjectId.mathareMemories]: processMathareEvent,
     [ProjectId.negativeCarbon]: processNegativeCarbonEvent,
     [ProjectId.crystallizedIllusions]: processCrystallizedIllusionsEvent,
   };

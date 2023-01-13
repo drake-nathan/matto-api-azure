@@ -13,7 +13,7 @@ export enum Chain {
 export enum ProjectId {
   chainlifeTestnet,
   chainlifeMainnet,
-  mathare,
+  mathareMemories,
   negativeCarbon,
   crystallizedIllusions,
 }
@@ -21,7 +21,7 @@ export enum ProjectId {
 export enum ProjectSlug {
   chainlifeTestnet = 'chainlife-testnet',
   chainlifeMainnet = 'chainlife',
-  mathare = 'mathare',
+  mathareMemories = 'mathare-memories',
   negativeCarbon = 'negative-carbon',
   crystallizedIllusions = 'crystallized-illusions',
 }
@@ -114,10 +114,10 @@ export const projects: IProject[] = [
     },
   },
   {
-    _id: ProjectId.mathare,
+    _id: ProjectId.mathareMemories,
     chain: Chain.mainnet,
     project_name: 'Mathare Memories',
-    project_slug: ProjectSlug.mathare,
+    project_slug: ProjectSlug.mathareMemories,
     artist: 'Matto',
     artist_address: '0xA6a4Fe416F8Bf46bc3bCA068aC8b1fC4DF760653',
     collection_name: 'Mathare Memories',
@@ -149,7 +149,7 @@ export const projects: IProject[] = [
       preMainScript: 'https://cdn.substratum.art/scripts/mathare/descriptions.min.js',
     },
     devParams: {
-      useInDev: true,
+      useInDev: false,
       useInProd: true,
       usesPuppeteer: false,
       isBulkMint: true,
@@ -234,7 +234,7 @@ export const projects: IProject[] = [
 export const abis = {
   [projects[ProjectId.chainlifeTestnet]._id]: chainlifeGoerliAbi as AbiItem[],
   [projects[ProjectId.chainlifeMainnet]._id]: chainlifeMainnetAbi as AbiItem[],
-  [projects[ProjectId.mathare]._id]: mathareAbi as AbiItem[],
+  [projects[ProjectId.mathareMemories]._id]: mathareAbi as AbiItem[],
   [projects[ProjectId.negativeCarbon]._id]: negativeCarbonAbi as AbiItem[],
   // [projects[ProjectId.crystallizedIllusions]._id]: crystallizedIllusionsAbi as AbiItem[],
 };
@@ -244,18 +244,18 @@ export const projectSizes: ProjectSizes = {
   [ProjectId.chainlifeTestnet]: {
     full: { width: 2160, height: 2160 },
     mid: { width: 1080, height: 1080 },
-    thumb: { width: 300, height: 300 },
+    thumb: { width: 600, height: 600 },
   },
   [ProjectId.chainlifeMainnet]: {
     full: { width: 2160, height: 2160 },
     mid: { width: 1080, height: 1080 },
-    thumb: { width: 300, height: 300 },
+    thumb: { width: 600, height: 600 },
   },
-  [ProjectId.mathare]: null,
+  [ProjectId.mathareMemories]: null,
   [ProjectId.negativeCarbon]: {
     full: { width: 3840, height: 2160 },
     mid: { width: 1920, height: 1080 },
-    thumb: { width: 540, height: 304 },
+    thumb: { width: 600, height: 338 },
   },
   [ProjectId.crystallizedIllusions]: null,
 };

@@ -22,7 +22,7 @@ const getNegativeCarbonUrls = (
   rootExternalUrl: string,
 ) => {
   const generator_url = `${rootServerUrl}/project/${project_slug}/generator/${token_id}`;
-  const external_url = `${rootExternalUrl}/project/${project_slug}/token/${token_id}`;
+  const external_url = `${rootExternalUrl}/token/${token_id}`;
 
   return { generator_url, external_url };
 };
@@ -40,7 +40,7 @@ export const processNegativeCarbonMint = async (
     project_slug,
     artist,
     artist_address,
-    description,
+    collection_description,
     collection_name,
     script_type,
     aspect_ratio,
@@ -82,7 +82,7 @@ export const processNegativeCarbonMint = async (
     project_slug,
     artist,
     artist_address,
-    description: description || `${project_name} ${token_id}`,
+    description: collection_description,
     collection_name,
     aspect_ratio,
     script_type,
