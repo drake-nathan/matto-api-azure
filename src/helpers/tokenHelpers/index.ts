@@ -1,16 +1,17 @@
-import { Context } from '@azure/functions';
-import { Connection, LeanDocument, Schema } from 'mongoose';
-import { IProject, IScriptInputs, IToken, ProjectId } from '../../db/schemas/schemaTypes';
-import { processChainlifeEvent, processChainlifeMint } from './chainlifeHelpers';
-import { processMathareEvent, processMathareMint } from './mathareHelpers';
+import type { Context } from '@azure/functions';
+import type { Connection, LeanDocument, Schema } from 'mongoose';
+import type { IProject, IScriptInputs, IToken } from '../../db/schemas/schemaTypes';
+import { processChainlifeEvent, processChainlifeMint } from './projects/chainlifeHelpers';
+import { processMathareEvent, processMathareMint } from './projects/mathareHelpers';
 import {
   processNegativeCarbonEvent,
   processNegativeCarbonMint,
-} from './negativeCarbonHelpers';
+} from './projects/negativeCarbonHelpers';
 import {
   processCrystallizedIllusionsEvent,
   processCrystallizedIllusionsMint,
-} from './crystallizedIllusionsHelpers';
+} from './projects/crystallizedIllusionsHelpers';
+import { ProjectId } from '../../projects';
 
 type ProcessMintFunction = (
   token_id: number,
@@ -43,7 +44,7 @@ export const getProcessMintFunction = (projectId: ProjectId): ProcessMintFunctio
   const processMintFunctions = {
     [ProjectId.chainlifeMainnet]: processChainlifeMint,
     [ProjectId.chainlifeTestnet]: processChainlifeMint,
-    [ProjectId.mathare]: processMathareMint,
+    [ProjectId.mathareMemories]: processMathareMint,
     [ProjectId.negativeCarbon]: processNegativeCarbonMint,
     [ProjectId.crystallizedIllusions]: processCrystallizedIllusionsMint,
   };
@@ -55,7 +56,7 @@ export const getProcessEventFunction = (projectId: ProjectId): ProcessEventFunct
   const processEventFunctions = {
     [ProjectId.chainlifeMainnet]: processChainlifeEvent,
     [ProjectId.chainlifeTestnet]: processChainlifeEvent,
-    [ProjectId.mathare]: processMathareEvent,
+    [ProjectId.mathareMemories]: processMathareEvent,
     [ProjectId.negativeCarbon]: processNegativeCarbonEvent,
     [ProjectId.crystallizedIllusions]: processCrystallizedIllusionsEvent,
   };

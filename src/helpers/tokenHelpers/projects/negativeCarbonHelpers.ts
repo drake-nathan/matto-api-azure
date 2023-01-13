@@ -1,19 +1,17 @@
 import * as dotenv from 'dotenv';
-import { Context } from '@azure/functions';
-import { Connection } from 'mongoose';
-import sharp from 'sharp';
-import { IProject, IScriptInputs, IToken } from '../../db/schemas/schemaTypes';
+import type { Context } from '@azure/functions';
+import type { Connection } from 'mongoose';
+import type { IProject, IScriptInputs, IToken } from '../../../db/schemas/schemaTypes';
 import {
   getProjectCurrentSupply,
   updateProjectSupplyAndCount,
-} from '../../db/queries/projectQueries';
+} from '../../../db/queries/projectQueries';
 import {
-  addToken,
   checkIfTokenExists,
+  addToken,
   updateScriptInputs,
-} from '../../db/queries/tokenQueries';
-import { runPuppeteer } from '../../services/puppeteer';
-import { uploadImage } from '../../services/azureStorage';
+} from '../../../db/queries/tokenQueries';
+import { getPuppeteerImageSet } from '../../../services/puppeteer';
 
 dotenv.config();
 const rootServerUrl = process.env.ROOT_URL;
@@ -24,7 +22,7 @@ const getNegativeCarbonUrls = (
   rootExternalUrl: string,
 ) => {
   const generator_url = `${rootServerUrl}/project/${project_slug}/generator/${token_id}`;
-  const external_url = `${rootExternalUrl}/project/${project_slug}/token/${token_id}`;
+  const external_url = `${rootExternalUrl}/token/${token_id}`;
 
   return { generator_url, external_url };
 };
@@ -42,7 +40,7 @@ export const processNegativeCarbonMint = async (
     project_slug,
     artist,
     artist_address,
-    description,
+    collection_description,
     collection_name,
     script_type,
     aspect_ratio,
@@ -67,18 +65,13 @@ export const processNegativeCarbonMint = async (
     projectExternalUrl,
   );
 
-  const { screenshot, attributes } = await runPuppeteer(generator_url, script_inputs);
-
-  const image = await uploadImage(context, screenshot, project_slug, token_id);
-
-  const thumbnail = await sharp(screenshot).resize(200).toBuffer();
-
-  const thumbnail_url = await uploadImage(
+  const { image, image_mid, thumbnail_url, attributes } = await getPuppeteerImageSet(
     context,
-    thumbnail,
+    project_id,
     project_slug,
     token_id,
-    'thumbnails',
+    generator_url,
+    script_inputs,
   );
 
   const newToken: IToken = {
@@ -89,12 +82,13 @@ export const processNegativeCarbonMint = async (
     project_slug,
     artist,
     artist_address,
-    description: description || `${project_name} ${token_id}`,
+    description: collection_description,
     collection_name,
     aspect_ratio,
     script_type,
     script_inputs,
     image,
+    image_mid,
     thumbnail_url,
     generator_url,
     animation_url: generator_url,
@@ -125,9 +119,9 @@ export const processNegativeCarbonEvent = async (
   context: Context,
   conn: Connection,
 ) => {
-  context.log.info('Updating token', token_id, 'on', project.project_name);
+  const { _id: project_id, project_name } = project;
 
-  const { _id: project_id } = project;
+  context.log.info('Updating token', token_id, 'on', project_name);
 
   const updatedToken = await updateScriptInputs(
     conn,

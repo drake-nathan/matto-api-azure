@@ -1,9 +1,18 @@
-import puppeteer from 'puppeteer';
-import { IAttribute, IScriptInputs } from '../db/schemas/schemaTypes';
+import type { Context } from '@azure/functions';
+import puppeteer, { type Viewport } from 'puppeteer';
+import sharp from 'sharp';
+import type { IAttribute, IScriptInputs } from '../db/schemas/schemaTypes';
+import { ProjectId, projectSizes, ProjectSlug } from '../projects';
+import { uploadImage } from './azureStorage';
 
-export const runPuppeteer = async (url: string, scriptInputs: IScriptInputs) => {
+const runPuppeteer = async (
+  url: string,
+  scriptInputs: IScriptInputs,
+  projectId: ProjectId,
+  size: Viewport,
+) => {
   const browser = await puppeteer.launch({
-    defaultViewport: { width: 2160, height: 2160 },
+    defaultViewport: size,
   });
 
   const page = await browser.newPage();
@@ -27,6 +36,10 @@ export const runPuppeteer = async (url: string, scriptInputs: IScriptInputs) => 
 
   await page.goto(url, { waitUntil: 'networkidle0' });
 
+  if (projectId === ProjectId.negativeCarbon) {
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+  }
+
   const screenshot = (await page.screenshot({ encoding: 'binary' })) as Buffer;
 
   const attributes = await page.evaluate(() => {
@@ -43,4 +56,45 @@ export const runPuppeteer = async (url: string, scriptInputs: IScriptInputs) => 
 
   await browser.close();
   return { screenshot, attributes };
+};
+
+export const getPuppeteerImageSet = async (
+  context: Context,
+  projectId: ProjectId,
+  projectSlug: ProjectSlug,
+  tokenId: number,
+  generatorUrl: string,
+  scriptInputs: IScriptInputs,
+) => {
+  const sizes = projectSizes[projectId];
+
+  if (!sizes) throw new Error('No sizes found for project');
+
+  const { screenshot, attributes } = await runPuppeteer(
+    generatorUrl,
+    scriptInputs,
+    projectId,
+    sizes.full,
+  );
+
+  const imageMidBuffer = await sharp(screenshot).resize(sizes.mid).toBuffer();
+  const thumbnailBuffer = await sharp(screenshot).resize(sizes.thumb).toBuffer();
+
+  const image = await uploadImage(context, screenshot, projectSlug, tokenId);
+  const image_mid = await uploadImage(
+    context,
+    imageMidBuffer,
+    projectSlug,
+    tokenId,
+    'images-mid',
+  );
+  const thumbnail_url = await uploadImage(
+    context,
+    thumbnailBuffer,
+    projectSlug,
+    tokenId,
+    'thumbnails',
+  );
+
+  return { image, image_mid, thumbnail_url, attributes };
 };

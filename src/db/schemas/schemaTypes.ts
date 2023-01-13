@@ -1,17 +1,6 @@
-import { ObjectId } from 'mongoose';
-
-export enum ProjectId {
-  chainlifeTestnet,
-  chainlifeMainnet,
-  mathare,
-  negativeCarbon,
-  crystallizedIllusions,
-}
-
-export enum Chain {
-  mainnet = 'mainnet',
-  goerli = 'goerli',
-}
+import { type ObjectId } from 'mongoose';
+import { type Viewport } from 'puppeteer';
+import type { ProjectSlug, ProjectId, Chain } from '../../projects';
 
 export interface IRoyaltyInfo {
   royalty_fee_by_id: number;
@@ -39,7 +28,7 @@ export interface IDevParams {
 export interface IProject {
   _id: ProjectId;
   project_name: string;
-  project_slug: string;
+  project_slug: ProjectSlug;
   artist: string;
   artist_address: string;
   royalty_info: IRoyaltyInfo;
@@ -167,3 +156,7 @@ export interface CollectionResponse {
   currentSupply: number;
   tokens: TokenAbbr[];
 }
+
+export type ProjectSizes = {
+  [key in ProjectId]: { full: Viewport; mid: Viewport; thumb: Viewport } | null;
+};

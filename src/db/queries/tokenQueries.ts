@@ -1,11 +1,11 @@
 import { type Connection } from 'mongoose';
-import {
-  type IToken,
-  type IScriptInputs,
-  type IAttribute,
-  type TokenAbbr,
-  ProjectId,
-  type ILevel,
+import { ProjectId } from '../../projects';
+import type {
+  IToken,
+  IScriptInputs,
+  IAttribute,
+  TokenAbbr,
+  ILevel,
 } from '../schemas/schemaTypes';
 
 export const checkIfTokenExists = async (
@@ -198,6 +198,7 @@ export const updateTokenMetadataOnTransfer = async (
   token_id: number,
   script_inputs: IScriptInputs,
   image: string,
+  image_mid: string,
   thumbnail_url: string | undefined,
   attributes: IAttribute[],
   conn: Connection,
@@ -206,7 +207,7 @@ export const updateTokenMetadataOnTransfer = async (
 
   const query = Token.findOneAndUpdate(
     { project_id, token_id },
-    { script_inputs, image, thumbnail_url, attributes },
+    { script_inputs, image, image_mid, thumbnail_url, attributes },
     { new: true },
   );
 
