@@ -67,12 +67,17 @@ export const processChainlifeMint = async (
     projectExternalUrl,
   );
 
+  const regex = /esoterra/gi;
+  const puppeteerGenUrl = script_inputs.custom_rule?.match(regex)
+    ? `${generator_url}?esoterra=true`
+    : generator_url;
+
   const { image, image_mid, thumbnail_url, attributes } = await getPuppeteerImageSet(
     context,
     project_id,
     project_slug,
     token_id,
-    generator_url,
+    puppeteerGenUrl,
     script_inputs,
   );
 
@@ -126,12 +131,17 @@ export const processChainlifeEvent = async (
   const { _id: project_id, project_slug, external_url } = project;
   const { generator_url } = getUrls(project_slug, token_id, external_url);
 
+  const regex = /esoterra/gi;
+  const puppeteerGenUrl = script_inputs.custom_rule?.match(regex)
+    ? `${generator_url}?esoterra=true`
+    : generator_url;
+
   const { image, image_mid, thumbnail_url, attributes } = await getPuppeteerImageSet(
     context,
     project_id,
     project_slug,
     token_id,
-    generator_url,
+    puppeteerGenUrl,
     script_inputs,
   );
 

@@ -28,9 +28,9 @@ const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
 
     await checkForNewProjects(context, projects, conn);
 
-    await Promise.all(
-      projects.map((project) => reconcileProject(context, project, conn)),
-    );
+    for await (const project of projects) {
+      await reconcileProject(context, project, conn);
+    }
 
     const numOfDuplicateTransactions = await removeDuplicateTransactions(conn);
 

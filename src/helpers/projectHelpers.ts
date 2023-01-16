@@ -202,12 +202,16 @@ const reconcileBulkMint = async (
   } = project;
 
   if (totalTokensInDb === maxSupply) {
-    context.log.info(`${projectName} has been fully reconciled.`);
+    context.log.info(`${projectName} has been reconciled.`);
     return;
   }
 
   const processMint = getProcessMintFunction(projectId);
-  const tokenIterator = [...Array(maxSupply + startingIndex).keys()].slice(startingIndex);
+
+  const iterateFrom = Math.max(startingIndex, totalTokensInDb);
+  const iteratorSize = maxSupply + startingIndex - iterateFrom;
+
+  const tokenIterator = [...Array(iteratorSize + iterateFrom).keys()].slice(iterateFrom);
 
   const newTokens: number[] = [];
 
