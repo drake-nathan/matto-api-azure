@@ -62,15 +62,16 @@ export interface IAttribute {
 
 export interface IScriptInputs {
   token_id: number;
-  transfer_count: number;
+  transfer_count?: number;
   token_entropy?: string;
   current_owner?: string;
   previous_owner?: string;
   custom_rule?: string;
-  custom_data?: (string | number)[];
+  custom_data?: string;
   level_shift?: number;
   imageURI_base?: string;
   audioURI_base?: string;
+  media_URI?: string;
 }
 
 export interface IToken {
@@ -79,7 +80,7 @@ export interface IToken {
   name: string; // projectname + tokenId 'Chainlife 9'
   project_id: number; // project
   project_name: string; // project
-  project_slug: string; // project
+  project_slug: ProjectSlug; // project
   artist: string; // project
   artist_address: string; // project
   description: string; // project
@@ -124,14 +125,14 @@ export interface IThumbnail {
 
 export interface ILevel {
   token_id: number;
-  transfer_count: number;
+  transfer_count: number | undefined;
   level_shift: number;
 }
 
 export interface ILevelSnapshot {
   _id?: ObjectId;
   snapshot_date: Date;
-  project_slug: string;
+  project_slug: ProjectSlug;
   levels: ILevel[];
 }
 
@@ -139,7 +140,7 @@ export interface TokenAbbr {
   token_id: number;
   name: string;
   project_name: string;
-  project_slug: string;
+  project_slug: ProjectSlug;
   artist: string;
   image: string;
   image_mid?: string;
@@ -158,5 +159,10 @@ export interface CollectionResponse {
 }
 
 export type ProjectSizes = {
-  [key in ProjectId]: { full: Viewport; mid: Viewport; thumb: Viewport } | null;
+  [key in ProjectId]: {
+    full: Viewport;
+    mid: Viewport;
+    small: Viewport;
+    thumb?: Viewport;
+  };
 };

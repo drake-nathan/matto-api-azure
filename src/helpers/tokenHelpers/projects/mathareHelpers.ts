@@ -1,7 +1,7 @@
 import * as dotenv from 'dotenv';
-import { Context } from '@azure/functions';
-import { Connection } from 'mongoose';
-import { IProject, IScriptInputs, IToken } from '../../../db/schemas/schemaTypes';
+import type { Context } from '@azure/functions';
+import type { Connection } from 'mongoose';
+import type { IProject, IScriptInputs, IToken } from '../../../db/schemas/schemaTypes';
 import {
   getProjectCurrentSupply,
   updateProjectSupplyAndCount,
@@ -13,11 +13,16 @@ import {
 } from '../../../db/queries/tokenQueries';
 import { attributes as mathareStartingAttr } from '../../../projects/mathareData/attributes';
 import mathareDescriptionsJson from '../../../projects/mathareData/descriptions.json';
+import { ProjectSlug } from '../../../projects';
 
 dotenv.config();
 const rootServerUrl = process.env.ROOT_URL;
 
-const getUrls = (project_slug: string, token_id: number, rootExternalUrl: string) => {
+const getUrls = (
+  project_slug: ProjectSlug,
+  token_id: number,
+  rootExternalUrl: string,
+) => {
   const generator_url = `${rootServerUrl}/project/${project_slug}/generator/${token_id}`;
   const external_url = `${rootExternalUrl}/token/${token_id}`;
   const image = `https://arweave.net/dtEayxAD2Aknd8g8WWyErEX37kesMRsJhbopwDYPhdo/${token_id}.png`;

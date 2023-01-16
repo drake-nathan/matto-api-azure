@@ -1,5 +1,3 @@
-/* eslint-disable no-continue */
-/* eslint-disable no-restricted-syntax */
 import { type Context } from '@azure/functions';
 import { type Contract } from 'web3-eth-contract';
 import { type Connection } from 'mongoose';
@@ -30,6 +28,7 @@ export const processNewTransactions = async (
   const {
     project_slug,
     devParams: { isBulkMint },
+    events,
   } = project;
   const newTokenIds: number[] = [];
 
@@ -64,7 +63,10 @@ export const processNewTransactions = async (
     } else {
       // this handles all other events events besides Mints
       const processEvent = getProcessEventFunction(project._id);
-      await processEvent(token_id, project, script_inputs, context, conn);
+
+      if (events.length && processEvent) {
+        await processEvent(token_id, project, script_inputs, context, conn);
+      }
     }
   }
 

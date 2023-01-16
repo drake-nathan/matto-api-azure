@@ -12,12 +12,13 @@ import {
   updateScriptInputs,
 } from '../../../db/queries/tokenQueries';
 import { getPuppeteerImageSet } from '../../../services/puppeteer';
+import { ProjectSlug } from '../../../projects';
 
 dotenv.config();
 const rootServerUrl = process.env.ROOT_URL;
 
 const getNegativeCarbonUrls = (
-  project_slug: string,
+  project_slug: ProjectSlug,
   token_id: number,
   rootExternalUrl: string,
 ) => {

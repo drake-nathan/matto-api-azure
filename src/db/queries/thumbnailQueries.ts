@@ -1,5 +1,6 @@
-import { Connection } from 'mongoose';
-import { IThumbnail } from '../schemas/schemaTypes';
+import type { Connection } from 'mongoose';
+import type { IThumbnail } from '../schemas/schemaTypes';
+import { ProjectSlug } from '../../projects';
 
 export const getThumbnailCounts = async (conn: Connection) => {
   const Thumbnail = conn.model<IThumbnail>('Thumbnail');
@@ -16,7 +17,10 @@ export const getThumbnail = async (conn: Connection, artblocks_id: number) => {
   return Thumbnail.findOne({ artblocks_id });
 };
 
-export const getThumbnailsByProject = async (conn: Connection, project_slug: string) => {
+export const getThumbnailsByProject = async (
+  conn: Connection,
+  project_slug: ProjectSlug,
+) => {
   const Thumbnail = conn.model<IThumbnail>('Thumbnail');
 
   return Thumbnail.find({ project_slug });

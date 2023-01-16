@@ -6,7 +6,7 @@ import { uploadImage } from '../services/azureStorage';
 
 // const fetchImageUploadThumbnail = async (
 //   image_full: string,
-//   project_slug: string,
+//   project_slug: ProjectSlug,
 //   token_id: number,
 //   context: Context,
 // ) => {
@@ -28,7 +28,7 @@ import { uploadImage } from '../services/azureStorage';
 // const processThumbnail = async (
 //   conn: Connection,
 //   existingThumbnails: IThumbnail[],
-//   project_slug: string,
+//   project_slug: ProjectSlug,
 //   artblocks_id: string,
 //   context: Context,
 // ) => {
@@ -69,7 +69,7 @@ import { uploadImage } from '../services/azureStorage';
 // export const processThumbnails = async (
 //   conn: Connection,
 //   supply: number,
-//   project_slug: string,
+//   project_slug: ProjectSlug,
 //   baseArtBlockId: number,
 //   dbThumbnails: IThumbnail[],
 //   context: Context,

@@ -193,46 +193,44 @@ const reconcileBulkMint = async (
   contract: Contract,
   totalTokensInDb: number,
 ) => {
-  const { project_name, project_slug, maximum_supply, starting_index } = project;
+  const {
+    _id: projectId,
+    project_name: projectName,
+    project_slug,
+    maximum_supply: maxSupply,
+    starting_index: startingIndex,
+  } = project;
 
-  if (totalTokensInDb === maximum_supply) {
-    context.log.info(`${project_name} has been fully reconciled.`);
+  if (totalTokensInDb === maxSupply) {
+    context.log.info(`${projectName} has been fully reconciled.`);
     return;
   }
 
-  const tokenIterator = [...Array(maximum_supply + starting_index).keys()].slice(
-    starting_index,
-  );
+  const processMint = getProcessMintFunction(projectId);
+  const tokenIterator = [...Array(maxSupply + startingIndex).keys()].slice(startingIndex);
 
-  const newTokens = await Promise.all(
-    tokenIterator.map(async (token_id) => {
-      const doesTokenExist = await checkIfTokenExists(token_id, project_slug, conn);
-      if (doesTokenExist) return;
+  const newTokens: number[] = [];
 
-      try {
-        const script_inputs = await fetchScriptInputs(contract, token_id);
-        const processMint = getProcessMintFunction(project._id);
-        const newMint = await processMint(
-          token_id,
-          project,
-          script_inputs,
-          context,
-          conn,
-        );
+  for await (const tokenId of tokenIterator) {
+    const doesTokenExist = await checkIfTokenExists(tokenId, project_slug, conn);
+    if (doesTokenExist) return;
 
-        if (!newMint) {
-          context.log.error(`Failed to mint token_id ${token_id} for ${project_name}.`);
-          return;
-        }
+    try {
+      const scriptInputs = await fetchScriptInputs(contract, tokenId);
+      const newMint = await processMint(tokenId, project, scriptInputs, context, conn);
 
-        return newMint.newTokenId;
-      } catch (err) {
-        context.log.error(err);
+      if (!newMint) {
+        context.log.error(`Failed to mint token_id ${tokenId} for ${projectName}.`);
+        return;
       }
-    }),
-  );
 
-  context.log.info(`Added ${newTokens.length} new tokens to ${project_name}.`);
+      newTokens.push(newMint.newTokenId);
+    } catch (err) {
+      context.log.error(err);
+    }
+  }
+
+  context.log.info(`Added ${newTokens.length} new tokens to ${projectName}.`);
 };
 
 const reconcileDescriptions = async (

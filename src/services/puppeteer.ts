@@ -3,7 +3,7 @@ import puppeteer, { type Viewport } from 'puppeteer';
 import sharp from 'sharp';
 import type { IAttribute, IScriptInputs } from '../db/schemas/schemaTypes';
 import { ProjectId, projectSizes, ProjectSlug } from '../projects';
-import { uploadImage } from './azureStorage';
+import { BlobFolder, uploadImage } from './azureStorage';
 
 const runPuppeteer = async (
   url: string,
@@ -68,8 +68,6 @@ export const getPuppeteerImageSet = async (
 ) => {
   const sizes = projectSizes[projectId];
 
-  if (!sizes) throw new Error('No sizes found for project');
-
   const { screenshot, attributes } = await runPuppeteer(
     generatorUrl,
     scriptInputs,
@@ -78,7 +76,7 @@ export const getPuppeteerImageSet = async (
   );
 
   const imageMidBuffer = await sharp(screenshot).resize(sizes.mid).toBuffer();
-  const thumbnailBuffer = await sharp(screenshot).resize(sizes.thumb).toBuffer();
+  const thumbnailBuffer = await sharp(screenshot).resize(sizes.small).toBuffer();
 
   const image = await uploadImage(context, screenshot, projectSlug, tokenId);
   const image_mid = await uploadImage(
@@ -86,15 +84,58 @@ export const getPuppeteerImageSet = async (
     imageMidBuffer,
     projectSlug,
     tokenId,
-    'images-mid',
+    BlobFolder.mid,
   );
   const thumbnail_url = await uploadImage(
     context,
     thumbnailBuffer,
     projectSlug,
     tokenId,
-    'thumbnails',
+    BlobFolder.small,
   );
 
   return { image, image_mid, thumbnail_url, attributes };
+};
+
+export const getAttributes = async (
+  url: string,
+  scriptInputs: IScriptInputs,
+): Promise<IAttribute[]> => {
+  const browser = await puppeteer.launch();
+
+  const page = await browser.newPage();
+
+  await page.setRequestInterception(true);
+
+  page.once('request', (request) => {
+    const data = {
+      method: 'POST',
+      postData: JSON.stringify({ scriptInputs }),
+      headers: {
+        ...request.headers(),
+        'Content-Type': 'application/json',
+      },
+    };
+
+    request.continue(data);
+
+    page.setRequestInterception(false);
+  });
+
+  await page.goto(url, { waitUntil: 'networkidle0' });
+
+  const attributes = await page.evaluate(() => {
+    const newAttributes = sessionStorage.getItem('attributes');
+
+    if (!newAttributes) {
+      throw new Error(
+        `No attributes found in sessionStorage for token ${scriptInputs.token_id}}`,
+      );
+    }
+
+    return JSON.parse(newAttributes) as IAttribute[];
+  });
+
+  await browser.close();
+  return attributes;
 };

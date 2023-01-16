@@ -10,6 +10,16 @@ export enum Chain {
   mainnet = 'mainnet',
   goerli = 'goerli',
 }
+
+/**
+ * ProjectId is used to identify the project in the database.
+ *
+ * 0 = Chainlife Testnet
+ * 1 = Chainlife Mainnet
+ * 2 = Mathare
+ * 3 = Negative Carbon
+ * 4 = Crystallized Illusions
+ */
 export enum ProjectId {
   chainlifeTestnet,
   chainlifeMainnet,
@@ -18,6 +28,15 @@ export enum ProjectId {
   crystallizedIllusions,
 }
 
+/**
+ * ProjectSlug is used to identify the project in the API.
+ *
+ * chainlife-testnet = Chainlife Testnet
+ * chainlife = Chainlife Mainnet
+ * mathare-memories = Mathare
+ * negative-carbon = Negative Carbon
+ * crystallized-illusions = Crystallized Illusions
+ */
 export enum ProjectSlug {
   chainlifeTestnet = 'chainlife-testnet',
   chainlifeMainnet = 'chainlife',
@@ -149,7 +168,7 @@ export const projects: IProject[] = [
       preMainScript: 'https://cdn.substratum.art/scripts/mathare/descriptions.min.js',
     },
     devParams: {
-      useInDev: false,
+      useInDev: true,
       useInProd: true,
       usesPuppeteer: false,
       isBulkMint: true,
@@ -192,70 +211,77 @@ export const projects: IProject[] = [
       isBulkMint: false,
     },
   },
-  // {
-  //   _id: ProjectId.crystallizedIllusions,
-  //   chain: Chain.mainnet,
-  //   project_name: 'Crystallized Illusions',
-  //   project_slug: 'crystallized-illusions',
-  //   artist: 'Matto',
-  //   artist_address: '0xA6a4Fe416F8Bf46bc3bCA068aC8b1fC4DF760653',
-  //   collection_name: 'Crystallized Illusions',
-  //   royalty_info: {
-  //     artist_address: '0xA6a4Fe416F8Bf46bc3bCA068aC8b1fC4DF760653',
-  //     royalty_fee_by_id: 10,
-  //   },
-  //   maximum_supply: 99,
-  //   current_supply: 99,
-  //   starting_index: 0,
-  //   tx_count: 0,
-  //   collection_description:
-  //     "Inspired by Buddhist philosophy, Crystallized Illusions is a collection of 99 pieces created through a generative process. Three variations of this process were made to correspond to the categories of illusions as described by Zhiyi (538-597 CE), the fourth patriarch of the T'ien-t'ai (or Tí Taî) Buddhist tradition. Each process was used to created 33 distinct images.",
-  //   mintable: false,
-  //   script_type: 'p5',
-  //   aspect_ratio: 1,
-  //   website: 'https://matto.xyz/project/crystallized-illusions/',
-  //   external_url: 'https://www.substratum.art/project/crystallized-illusions',
-  //   license: 'All Rights Reserved',
-  //   contract_address: '0x5B17395A9699D2819a9d009bA375a0825b077385',
-  //   events: [],
-  //   creation_block: 16313758,
-  //   gen_scripts: {
-  //     main: 'https://cdn.substratum.art/scripts/crystallizedIllusions/crystallizedIllusions.min.js',
-  //   },
-  //   devParams: {
-  //     useInDev: true,
-  //     useInProd: true,
-  //     usesPuppeteer: false,
-  //     isBulkMint: true,
-  //   },
-  // },
+  {
+    _id: ProjectId.crystallizedIllusions,
+    chain: Chain.mainnet,
+    project_name: 'Crystallized Illusions',
+    project_slug: ProjectSlug.crystallizedIllusions,
+    artist: 'Matto',
+    artist_address: '0xA6a4Fe416F8Bf46bc3bCA068aC8b1fC4DF760653',
+    collection_name: 'Crystallized Illusions',
+    royalty_info: {
+      artist_address: '0xA6a4Fe416F8Bf46bc3bCA068aC8b1fC4DF760653',
+      royalty_fee_by_id: 10,
+    },
+    maximum_supply: 99,
+    current_supply: 99,
+    starting_index: 0,
+    tx_count: 0,
+    collection_description:
+      "Inspired by Buddhist philosophy, Crystallized Illusions is a collection of 99 pieces created through a generative process. Three variations of this process were made to correspond to the categories of illusions as described by Zhiyi (538-597 CE), the fourth patriarch of the T'ien-t'ai (or Tí Taî) Buddhist tradition. Each process was used to created 33 distinct images.",
+    mintable: false,
+    script_type: 'p5',
+    aspect_ratio: 1,
+    website: 'https://matto.xyz/project/crystallized-illusions/',
+    external_url: 'https://substratum.art/project/crystallized-illusions',
+    license: 'All Rights Reserved',
+    contract_address: '0x5B17395A9699D2819a9d009bA375a0825b077385',
+    events: [],
+    creation_block: 16313758,
+    gen_scripts: {
+      main: 'https://cdn.substratum.art/scripts/crystallizedIllusions/crystallizedIllusions.min.js',
+    },
+    devParams: {
+      useInDev: true,
+      useInProd: true,
+      usesPuppeteer: true,
+      isBulkMint: true,
+    },
+  },
 ];
 
 export const abis = {
-  [projects[ProjectId.chainlifeTestnet]._id]: chainlifeGoerliAbi as AbiItem[],
-  [projects[ProjectId.chainlifeMainnet]._id]: chainlifeMainnetAbi as AbiItem[],
-  [projects[ProjectId.mathareMemories]._id]: mathareAbi as AbiItem[],
-  [projects[ProjectId.negativeCarbon]._id]: negativeCarbonAbi as AbiItem[],
-  // [projects[ProjectId.crystallizedIllusions]._id]: crystallizedIllusionsAbi as AbiItem[],
+  [ProjectId.chainlifeTestnet]: chainlifeGoerliAbi as AbiItem[],
+  [ProjectId.chainlifeMainnet]: chainlifeMainnetAbi as AbiItem[],
+  [ProjectId.mathareMemories]: mathareAbi as AbiItem[],
+  [ProjectId.negativeCarbon]: negativeCarbonAbi as AbiItem[],
+  [ProjectId.crystallizedIllusions]: crystallizedIllusionsAbi as AbiItem[],
 };
 
-// only matters for puppeteer
 export const projectSizes: ProjectSizes = {
   [ProjectId.chainlifeTestnet]: {
     full: { width: 2160, height: 2160 },
     mid: { width: 1080, height: 1080 },
-    thumb: { width: 600, height: 600 },
+    small: { width: 600, height: 600 },
   },
   [ProjectId.chainlifeMainnet]: {
     full: { width: 2160, height: 2160 },
     mid: { width: 1080, height: 1080 },
-    thumb: { width: 600, height: 600 },
+    small: { width: 600, height: 600 },
   },
-  [ProjectId.mathareMemories]: null,
+  [ProjectId.mathareMemories]: {
+    full: { width: 2160, height: 2160 },
+    mid: { width: 1080, height: 1080 },
+    small: { width: 600, height: 600 },
+  },
   [ProjectId.negativeCarbon]: {
     full: { width: 3840, height: 2160 },
     mid: { width: 1920, height: 1080 },
-    thumb: { width: 600, height: 338 },
+    small: { width: 600, height: 338 },
   },
-  [ProjectId.crystallizedIllusions]: null,
+  [ProjectId.crystallizedIllusions]: {
+    full: { width: 2160, height: 2160 },
+    mid: { width: 1080, height: 1080 },
+    small: { width: 600, height: 600 },
+  },
 };

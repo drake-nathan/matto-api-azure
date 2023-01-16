@@ -16,15 +16,16 @@ export const tokenSchema = new Schema<IToken>({
   script_inputs: {
     type: {
       token_id: { type: Number, required: true },
-      transfer_count: { type: Number, required: true },
+      transfer_count: { type: Number },
       token_entropy: { type: String },
       current_owner: { type: String },
       previous_owner: { type: String },
       custom_rule: { type: String },
-      custom_data: { type: [Schema.Types.Mixed] },
+      custom_data: { type: String },
       level_shift: { type: Number },
       imageURI_base: { type: String },
       audioURI_base: { type: String },
+      media_URI: { type: String },
     },
     required: true,
   },

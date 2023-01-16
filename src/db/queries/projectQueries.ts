@@ -1,5 +1,6 @@
 import { Connection } from 'mongoose';
-import { IProject } from '../schemas/schemaTypes';
+import { ProjectSlug } from '../../projects';
+import type { IProject } from '../schemas/schemaTypes';
 
 export const addProject = async (projectToAdd: IProject, conn: Connection) => {
   const { _id } = projectToAdd;
@@ -14,7 +15,7 @@ export const addProject = async (projectToAdd: IProject, conn: Connection) => {
   return query;
 };
 
-export const getProject = (project_slug: string, conn: Connection) => {
+export const getProject = (project_slug: ProjectSlug, conn: Connection) => {
   const Project = conn.model<IProject>('Project');
 
   const query = Project.findOne({ project_slug });
@@ -62,7 +63,10 @@ export const checkIfNewProjects = async (projects: IProject[], conn: Connection)
   return doAllProjectsExist.includes(null);
 };
 
-export const checkIfProjectExists = async (project_slug: string, conn: Connection) => {
+export const checkIfProjectExists = async (
+  project_slug: ProjectSlug,
+  conn: Connection,
+) => {
   const Project = conn.model<IProject>('Project');
 
   const query = await Project.exists({ project_slug });
@@ -71,7 +75,7 @@ export const checkIfProjectExists = async (project_slug: string, conn: Connectio
 
 export const updateCollectionDescription = (
   conn: Connection,
-  project_slug: string,
+  project_slug: ProjectSlug,
   newDescription: string,
 ) => {
   const Project = conn.model<IProject>('Project');
@@ -87,7 +91,7 @@ export const updateCollectionDescription = (
 
 export const updateTokenDescription = (
   conn: Connection,
-  project_slug: string,
+  project_slug: ProjectSlug,
   newDescription: string,
 ) => {
   const Project = conn.model<IProject>('Project');
@@ -103,7 +107,7 @@ export const updateTokenDescription = (
 
 export const updateAppendedDescription = (
   conn: Connection,
-  project_slug: string,
+  project_slug: ProjectSlug,
   newDescription: string,
 ) => {
   const Project = conn.model<IProject>('Project');

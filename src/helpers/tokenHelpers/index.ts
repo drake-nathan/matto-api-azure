@@ -7,10 +7,7 @@ import {
   processNegativeCarbonEvent,
   processNegativeCarbonMint,
 } from './projects/negativeCarbonHelpers';
-import {
-  processCrystallizedIllusionsEvent,
-  processCrystallizedIllusionsMint,
-} from './projects/crystallizedIllusionsHelpers';
+import { processCrystallizedIllusionsMint } from './projects/crystallizedIllusionsHelpers';
 import { ProjectId } from '../../projects';
 
 type ProcessMintFunction = (
@@ -52,13 +49,15 @@ export const getProcessMintFunction = (projectId: ProjectId): ProcessMintFunctio
   return processMintFunctions[projectId];
 };
 
-export const getProcessEventFunction = (projectId: ProjectId): ProcessEventFunction => {
+export const getProcessEventFunction = (
+  projectId: ProjectId,
+): ProcessEventFunction | null => {
   const processEventFunctions = {
     [ProjectId.chainlifeMainnet]: processChainlifeEvent,
     [ProjectId.chainlifeTestnet]: processChainlifeEvent,
     [ProjectId.mathareMemories]: processMathareEvent,
     [ProjectId.negativeCarbon]: processNegativeCarbonEvent,
-    [ProjectId.crystallizedIllusions]: processCrystallizedIllusionsEvent,
+    [ProjectId.crystallizedIllusions]: null,
   };
 
   return processEventFunctions[projectId];

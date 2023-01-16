@@ -1,30 +1,28 @@
 import * as dotenv from 'dotenv';
-import { Context } from '@azure/functions';
-import { Connection } from 'mongoose';
-import { IProject, IScriptInputs, IToken } from '../../../db/schemas/schemaTypes';
+import type { Context } from '@azure/functions';
+import type { Connection } from 'mongoose';
+import type { IProject, IScriptInputs, IToken } from '../../../db/schemas/schemaTypes';
 import {
   getProjectCurrentSupply,
   updateProjectSupplyAndCount,
 } from '../../../db/queries/projectQueries';
-import {
-  addToken,
-  checkIfTokenExists,
-  updateScriptInputs,
-} from '../../../db/queries/tokenQueries';
-import { getPuppeteerImageSet } from '../../../services/puppeteer';
+import { addToken } from '../../../db/queries/tokenQueries';
+import { getAttributes } from '../../../services/puppeteer';
+import { fetchResizeUploadImages } from '../../../services/images';
 
 dotenv.config();
 const rootServerUrl = process.env.ROOT_URL;
 
 const getCrystallizedIllusionsUrls = (
-  project_slug: string,
-  token_id: number,
+  projectSlug: string,
+  tokenId: number,
   rootExternalUrl: string,
 ) => {
-  const generator_url = `${rootServerUrl}/project/${project_slug}/generator/${token_id}`;
-  const external_url = `${rootExternalUrl}/project/${project_slug}/token/${token_id}`;
+  const generator_url = `${rootServerUrl}/project/${projectSlug}/generator/${tokenId}`;
+  const external_url = `${rootExternalUrl}/token/${tokenId}`;
+  const image = `https://arweave.net/Mduh0JQesPrHJbyLcJLBDmXF368mbQqNF68V78DIMoI/${tokenId}.png`;
 
-  return { generator_url, external_url };
+  return { generator_url, external_url, image };
 };
 
 export const processCrystallizedIllusionsMint = async (
@@ -40,7 +38,7 @@ export const processCrystallizedIllusionsMint = async (
     project_slug,
     artist,
     artist_address,
-    description,
+    collection_description,
     collection_name,
     script_type,
     aspect_ratio,
@@ -51,38 +49,39 @@ export const processCrystallizedIllusionsMint = async (
     tx_count,
   } = project;
 
-  const doesTokenExist = await checkIfTokenExists(token_id, project_slug, conn);
-  if (doesTokenExist) {
-    context.log.info(`${project_name} token ${token_id} already exists, skipping`);
-    return;
-  }
-
   context.log.info('Adding token', token_id, 'to', project.project_name);
 
-  const { generator_url, external_url } = getCrystallizedIllusionsUrls(
+  const { generator_url, external_url, image } = getCrystallizedIllusionsUrls(
     project_slug,
     token_id,
     projectExternalUrl,
   );
 
-  const { image, image_mid, thumbnail_url, attributes } = await getPuppeteerImageSet(
+  const { image_mid, thumbnail_url } = await fetchResizeUploadImages(
     context,
     project_id,
     project_slug,
     token_id,
-    generator_url,
-    script_inputs,
+    image,
   );
+
+  const attributes = await getAttributes(generator_url, script_inputs);
+
+  const type = attributes.find((attr) => attr.trait_type === 'Type')?.value;
+  const complexity = attributes.find((attr) => attr.trait_type === 'Complexity')?.value;
+
+  const name =
+    type && complexity ? `${type} #${complexity}` : `${project_name} ${token_id}`;
 
   const newToken: IToken = {
     token_id,
-    name: `${project_name} ${token_id}`,
+    name,
     project_id,
     project_name,
     project_slug,
     artist,
     artist_address,
-    description: description || `${project_name} ${token_id}`,
+    description: collection_description,
     collection_name,
     aspect_ratio,
     script_type,
@@ -110,25 +109,4 @@ export const processCrystallizedIllusionsMint = async (
   );
 
   return { newTokenId, newSupply };
-};
-
-export const processCrystallizedIllusionsEvent = async (
-  token_id: number,
-  project: IProject,
-  script_inputs: IScriptInputs,
-  context: Context,
-  conn: Connection,
-) => {
-  context.log.info('Updating token', token_id, 'on', project.project_name);
-
-  const { _id: project_id } = project;
-
-  const updatedToken = await updateScriptInputs(
-    conn,
-    project_id,
-    token_id,
-    script_inputs,
-  );
-
-  return updatedToken;
 };

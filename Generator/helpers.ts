@@ -68,7 +68,6 @@ export const altScriptCheck = (
   scriptInputsJson: string,
   req: HttpRequest,
 ): boolean => {
-  // store /esoterra/gi as a regex in a const
   const regex = /esoterra/gi;
 
   if (!genScripts.alt) return false;

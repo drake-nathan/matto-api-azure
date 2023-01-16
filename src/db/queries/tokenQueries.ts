@@ -1,5 +1,5 @@
 import { type Connection } from 'mongoose';
-import { ProjectId } from '../../projects';
+import { ProjectId, ProjectSlug } from '../../projects';
 import type {
   IToken,
   IScriptInputs,
@@ -10,7 +10,7 @@ import type {
 
 export const checkIfTokenExists = async (
   token_id: number,
-  project_slug: string,
+  project_slug: ProjectSlug,
   conn: Connection,
 ) => {
   const Token = conn.model<IToken>('Token');
@@ -20,7 +20,7 @@ export const checkIfTokenExists = async (
 };
 
 export const getToken = (
-  project_slug: string,
+  project_slug: ProjectSlug,
   token_id: string | number,
   conn: Connection,
 ) => {
@@ -34,7 +34,7 @@ export const getToken = (
 };
 
 export const getTokenAbbr = (
-  project_slug: string,
+  project_slug: ProjectSlug,
   token_id: string | number,
   conn: Connection,
 ): Promise<TokenAbbr> => {
@@ -49,7 +49,7 @@ export const getTokenAbbr = (
   return query.lean().exec() as Promise<TokenAbbr>;
 };
 
-export const getAllTokensFromProject = (project_slug: string, conn: Connection) => {
+export const getAllTokensFromProject = (project_slug: ProjectSlug, conn: Connection) => {
   const Token = conn.model<IToken>('Token');
 
   const query = Token.find({ project_slug });
@@ -61,7 +61,7 @@ export const getAllTokensFromProject = (project_slug: string, conn: Connection) 
 
 export const getTokensTokenIdSort = (
   conn: Connection,
-  project_slug: string,
+  project_slug: ProjectSlug,
   limit: number,
   skip: number,
   sort: 'asc' | 'desc',
@@ -81,7 +81,7 @@ export const getTokensTokenIdSort = (
 
 export const getTokensWorldLevelSort = (
   conn: Connection,
-  project_slug: string,
+  project_slug: ProjectSlug,
   limit: number,
   skip: number,
   sort: 'asc' | 'desc',
@@ -129,7 +129,7 @@ export const getTokensWorldLevelSort = (
 };
 
 export const getScriptInputsFromDb = async (
-  project_slug: string,
+  project_slug: ProjectSlug,
   token_id: string,
   conn: Connection,
 ) => {
@@ -167,7 +167,7 @@ export const getCurrentTokenSupply = async (project_id: number, conn: Connection
 };
 
 export const getLevels = async (
-  project_slug: string,
+  project_slug: ProjectSlug,
   conn: Connection,
 ): Promise<ILevel[]> => {
   const Token = conn.model<IToken>('Token');

@@ -13,11 +13,16 @@ import {
   updateTokenMetadataOnTransfer,
 } from '../../../db/queries/tokenQueries';
 import { getPuppeteerImageSet } from '../../../services/puppeteer';
+import { ProjectSlug } from '../../../projects';
 
 dotenv.config();
 const rootServerUrl = process.env.ROOT_URL;
 
-const getUrls = (project_slug: string, token_id: number, rootExternalUrl: string) => {
+const getUrls = (
+  project_slug: ProjectSlug,
+  token_id: number,
+  rootExternalUrl: string,
+) => {
   const generator_url = `${rootServerUrl}/project/${project_slug}/generator/${token_id}`;
   const external_url = `${rootExternalUrl}/token/${token_id}`;
 
@@ -145,7 +150,7 @@ export const processChainlifeEvent = async (
 };
 
 export const checkIfTokensMissingAttributes = async (
-  project_slug: string,
+  project_slug: ProjectSlug,
   conn: Connection,
 ) => {
   const allTokens = await getAllTokensFromProject(project_slug, conn);

@@ -1,6 +1,7 @@
-import { Context } from '@azure/functions';
+import type { Context } from '@azure/functions';
 import { BlobServiceClient } from '@azure/storage-blob';
 import * as dotenv from 'dotenv';
+import { ProjectSlug } from '../projects';
 
 dotenv.config();
 
@@ -10,13 +11,20 @@ if (!azureStorageConnectionString) {
   throw new Error('AZURE_STORAGE_CONNECTION_STRING not found');
 }
 
+export enum BlobFolder {
+  main = 'images',
+  mid = 'images-mid',
+  small = 'thumbnails',
+  mathare = 'mathare-images',
+}
+
 export const uploadImage = async (
   context: Context,
   file: Buffer,
-  project_slug: string,
+  project_slug: ProjectSlug,
   token_id: number,
-  folderName?: string,
-) => {
+  folderName?: BlobFolder,
+): Promise<string> => {
   const blobServiceClient = BlobServiceClient.fromConnectionString(
     azureStorageConnectionString,
   );
