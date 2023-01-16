@@ -235,6 +235,7 @@ const reconcileBulkMint = async (
   }
 
   context.log.info(`Added ${newTokens.length} new tokens to ${projectName}.`);
+  context.log.info(`${projectName} has been reconciled.`);
 };
 
 const reconcileDescriptions = async (

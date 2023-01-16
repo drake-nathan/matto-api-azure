@@ -59,13 +59,9 @@ const httpTrigger: AzureFunction = async (
       return;
     }
 
-    // disables alt script for puppeteer, otherwise will run alt check
-    const alt = usingScriptInputsFromBody
-      ? false
-      : altScriptCheck(project_slug, gen_scripts, scriptInputsJson, req);
     const genOptions = {
       mobile: false,
-      alt,
+      alt: altScriptCheck(project_slug, gen_scripts, scriptInputsJson, req),
     };
 
     // adds mobile controls script if query param ?mobile=true

@@ -130,7 +130,7 @@ export const getTokensWorldLevelSort = (
 
 export const getScriptInputsFromDb = async (
   project_slug: ProjectSlug,
-  token_id: string,
+  token_id: string | number,
   conn: Connection,
 ) => {
   const Token = conn.model<IToken>('Token');

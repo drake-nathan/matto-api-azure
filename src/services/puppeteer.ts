@@ -2,6 +2,8 @@ import type { Context } from '@azure/functions';
 import puppeteer, { type Viewport } from 'puppeteer';
 import sharp from 'sharp';
 import type { IAttribute, IScriptInputs } from '../db/schemas/schemaTypes';
+import { connectionFactory } from '../db/connectionFactory';
+import { getScriptInputsFromDb } from '../db/queries/tokenQueries';
 import { ProjectId, projectSizes, ProjectSlug } from '../projects';
 import { BlobFolder, uploadImage } from './azureStorage';
 
@@ -14,7 +16,7 @@ const runPuppeteer = async (
   const browser = await puppeteer.launch({
     defaultViewport: size,
   });
-
+  console.log('token', scriptInputs.token_id, url);
   const page = await browser.newPage();
 
   await page.setRequestInterception(true);
@@ -58,6 +60,27 @@ const runPuppeteer = async (
   await browser.close();
   return { screenshot, attributes };
 };
+
+// connectionFactory()
+//   .then((conn) => {
+//     console.log('Connected to DB');
+//     return getScriptInputsFromDb(ProjectSlug.chainlifeTestnet, 102, conn);
+//   })
+//   .then((scriptInputs) => {
+//     if (scriptInputs) {
+//       console.log('Got script inputs', scriptInputs);
+//       return runPuppeteer(
+//         'https://api.substratum.art/project/chainlife-testnet/generator/102?esoterra=true',
+//         scriptInputs,
+//         0,
+//         { width: 2160, height: 2160 },
+//       );
+//     }
+
+//     throw new Error('Could not get script inputs');
+//   })
+//   .then(console.log)
+//   .catch(console.error);
 
 export const getPuppeteerImageSet = async (
   context: Context,
