@@ -1,9 +1,6 @@
-import type { Context } from '@azure/functions';
 import puppeteer, { type Viewport } from 'puppeteer';
 import sharp from 'sharp';
 import type { IAttribute, IScriptInputs } from '../db/schemas/schemaTypes';
-import { connectionFactory } from '../db/connectionFactory';
-import { getScriptInputsFromDb } from '../db/queries/tokenQueries';
 import { ProjectId, projectSizes, ProjectSlug } from '../projects';
 import { BlobFolder, uploadImage } from './azureStorage';
 
@@ -12,11 +9,12 @@ const runPuppeteer = async (
   scriptInputs: IScriptInputs,
   projectId: ProjectId,
   size: Viewport,
+  esoterra = false,
 ) => {
   const browser = await puppeteer.launch({
     defaultViewport: size,
   });
-  console.log('token', scriptInputs.token_id, url);
+
   const page = await browser.newPage();
 
   await page.setRequestInterception(true);
@@ -36,7 +34,9 @@ const runPuppeteer = async (
     page.setRequestInterception(false);
   });
 
-  await page.goto(url, { waitUntil: 'networkidle0' });
+  const waitUntil = esoterra ? 'load' : 'networkidle0';
+
+  await page.goto(url, { waitUntil });
 
   // need to wait for the full image to generate before taking a screenshot
   if (projectId === ProjectId.negativeCarbon) {
@@ -61,29 +61,7 @@ const runPuppeteer = async (
   return { screenshot, attributes };
 };
 
-// connectionFactory()
-//   .then((conn) => {
-//     console.log('Connected to DB');
-//     return getScriptInputsFromDb(ProjectSlug.chainlifeTestnet, 102, conn);
-//   })
-//   .then((scriptInputs) => {
-//     if (scriptInputs) {
-//       console.log('Got script inputs', scriptInputs);
-//       return runPuppeteer(
-//         'https://api.substratum.art/project/chainlife-testnet/generator/102?esoterra=true',
-//         scriptInputs,
-//         0,
-//         { width: 2160, height: 2160 },
-//       );
-//     }
-
-//     throw new Error('Could not get script inputs');
-//   })
-//   .then(console.log)
-//   .catch(console.error);
-
 export const getPuppeteerImageSet = async (
-  context: Context,
   projectId: ProjectId,
   projectSlug: ProjectSlug,
   tokenId: number,
@@ -92,26 +70,27 @@ export const getPuppeteerImageSet = async (
 ) => {
   const sizes = projectSizes[projectId];
 
+  const isEsoterra = generatorUrl.includes('esoterra=true');
+
   const { screenshot, attributes } = await runPuppeteer(
     generatorUrl,
     scriptInputs,
     projectId,
-    sizes.full,
+    isEsoterra ? { width: 1080, height: 1080 } : sizes.full,
+    isEsoterra,
   );
 
   const imageMidBuffer = await sharp(screenshot).resize(sizes.mid).toBuffer();
   const thumbnailBuffer = await sharp(screenshot).resize(sizes.small).toBuffer();
 
-  const image = await uploadImage(context, screenshot, projectSlug, tokenId);
+  const image = await uploadImage(screenshot, projectSlug, tokenId);
   const image_mid = await uploadImage(
-    context,
     imageMidBuffer,
     projectSlug,
     tokenId,
     BlobFolder.mid,
   );
   const thumbnail_url = await uploadImage(
-    context,
     thumbnailBuffer,
     projectSlug,
     tokenId,
@@ -163,3 +142,29 @@ export const getAttributes = async (
   await browser.close();
   return attributes;
 };
+
+// connectionFactory()
+//   .then((conn) => {
+//     console.log('Connected to DB');
+//     return getScriptInputsFromDb(ProjectSlug.chainlifeTestnet, 102, conn);
+//   })
+//   .then((scriptInputs) => {
+//     if (scriptInputs) {
+//       console.log('Got script inputs', scriptInputs);
+//       return runPuppeteer(
+//         'https://api.substratum.art/project/chainlife-testnet/generator/102?esoterra=true',
+//         scriptInputs,
+//         0,
+//         { width: 1080, height: 1080 },
+//         Wait.none,
+//       );
+//     }
+
+//     throw new Error('Could not get script inputs');
+//   })
+//   .then(({ screenshot }) => {
+//     console.log('Got screenshot', screenshot);
+//     return uploadImage(screenshot, ProjectSlug.chainlifeTestnet, 102);
+//   })
+//   .then(console.log)
+//   .catch(console.error);

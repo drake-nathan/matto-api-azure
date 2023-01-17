@@ -1,11 +1,9 @@
-import type { Context } from '@azure/functions';
 import axios from 'axios';
 import sharp from 'sharp';
 import { ProjectId, projectSizes, ProjectSlug } from '../projects';
 import { BlobFolder, uploadImage } from './azureStorage';
 
 export const fetchResizeUploadImages = async (
-  context: Context,
   projectId: ProjectId,
   projectSlug: ProjectSlug,
   tokenId: number,
@@ -31,15 +29,8 @@ export const fetchResizeUploadImages = async (
   const midBuffer = await sharp(imageBuffer).resize(sizes.mid).toBuffer();
   const smallBuffer = await sharp(imageBuffer).resize(sizes.small).toBuffer();
 
-  const image_mid = await uploadImage(
-    context,
-    midBuffer,
-    projectSlug,
-    tokenId,
-    BlobFolder.mid,
-  );
+  const image_mid = await uploadImage(midBuffer, projectSlug, tokenId, BlobFolder.mid);
   const thumbnail_url = await uploadImage(
-    context,
     smallBuffer,
     projectSlug,
     tokenId,

@@ -58,7 +58,6 @@ export const processCrystallizedIllusionsMint = async (
   );
 
   const { image_mid, thumbnail_url } = await fetchResizeUploadImages(
-    context,
     project_id,
     project_slug,
     token_id,

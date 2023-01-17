@@ -67,7 +67,6 @@ export const processNegativeCarbonMint = async (
   );
 
   const { image, image_mid, thumbnail_url, attributes } = await getPuppeteerImageSet(
-    context,
     project_id,
     project_slug,
     token_id,

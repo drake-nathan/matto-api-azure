@@ -1,4 +1,3 @@
-import type { Context } from '@azure/functions';
 import { BlobServiceClient } from '@azure/storage-blob';
 import * as dotenv from 'dotenv';
 import { ProjectSlug } from '../projects';
@@ -19,7 +18,6 @@ export enum BlobFolder {
 }
 
 export const uploadImage = async (
-  context: Context,
   file: Buffer,
   project_slug: ProjectSlug,
   token_id: number,

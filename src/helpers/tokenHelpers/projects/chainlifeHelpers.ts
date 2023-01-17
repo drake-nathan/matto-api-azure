@@ -73,7 +73,6 @@ export const processChainlifeMint = async (
     : generator_url;
 
   const { image, image_mid, thumbnail_url, attributes } = await getPuppeteerImageSet(
-    context,
     project_id,
     project_slug,
     token_id,
@@ -137,7 +136,6 @@ export const processChainlifeEvent = async (
     : generator_url;
 
   const { image, image_mid, thumbnail_url, attributes } = await getPuppeteerImageSet(
-    context,
     project_id,
     project_slug,
     token_id,
