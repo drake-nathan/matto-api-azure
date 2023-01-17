@@ -20,7 +20,7 @@ export const getProject = (project_slug: ProjectSlug, conn: Connection) => {
 
   const query = Project.findOne({ project_slug });
 
-  query.select('-__v');
+  query.select('-__v -gen_scripts._id -dev_params -royalty_info._id');
 
   return query.lean().exec();
 };

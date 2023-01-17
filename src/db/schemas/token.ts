@@ -26,6 +26,8 @@ export const tokenSchema = new Schema<IToken>({
       imageURI_base: { type: String },
       audioURI_base: { type: String },
       media_URI: { type: String },
+      approved_shuffler: { type: String },
+      svg_parts: { type: String },
     },
     required: true,
   },

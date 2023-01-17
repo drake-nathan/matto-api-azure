@@ -26,6 +26,7 @@ export enum ProjectId {
   mathareMemories,
   negativeCarbon,
   crystallizedIllusions,
+  '100x10x1',
 }
 
 /**
@@ -43,6 +44,7 @@ export enum ProjectSlug {
   mathareMemories = 'mathare-memories',
   negativeCarbon = 'negative-carbon',
   crystallizedIllusions = 'crystallized-illusions',
+  '100x10x1' = '100x10x1',
 }
 
 export const projects: IProject[] = [
@@ -248,6 +250,42 @@ export const projects: IProject[] = [
       isBulkMint: true,
     },
   },
+  {
+    _id: ProjectId['100x10x1'],
+    chain: Chain.mainnet,
+    project_name: '100x10x1',
+    project_slug: ProjectSlug['100x10x1'],
+    collection_name: '100x10x1',
+    artist: 'Matto',
+    artist_address: '0xF8d9056db2C2189155bc25A30269dc5dDeD15d46',
+    royalty_info: {
+      artist_address: '0xA6a4Fe416F8Bf46bc3bCA068aC8b1fC4DF760653',
+      royalty_fee_by_id: 5,
+    },
+    maximum_supply: 101,
+    starting_index: 0,
+    tx_count: 0,
+    collection_description:
+      '100x10x1 is an experimental generative art project: 100 generative tokens, each with 10 layers, together form 1 composite token (100x10x1).',
+    mintable: false,
+    script_type: 'Solidity',
+    aspect_ratio: 1,
+    website: 'https://matto.xyz/project/100x10x1',
+    external_url: 'https://substratum.art/project/100x10x1',
+    license: 'CC BY-NC 4.0',
+    contract_address: '0x32a1918079034b610c27F43f8cb04EF121DcEeD0',
+    events: ['NewOrder'],
+    creation_block: 16317969,
+    gen_scripts: {
+      main: 'https://cdn.substratum.art/scripts/100x10x1/100x10x1.min.js',
+    },
+    devParams: {
+      useInDev: true,
+      useInProd: true,
+      usesPuppeteer: true,
+      isBulkMint: true,
+    },
+  },
 ];
 
 export const abis = {
@@ -280,6 +318,11 @@ export const projectSizes: ProjectSizes = {
     small: { width: 600, height: 338 },
   },
   [ProjectId.crystallizedIllusions]: {
+    full: { width: 2160, height: 2160 },
+    mid: { width: 1080, height: 1080 },
+    small: { width: 600, height: 600 },
+  },
+  [ProjectId['100x10x1']]: {
     full: { width: 2160, height: 2160 },
     mid: { width: 1080, height: 1080 },
     small: { width: 600, height: 600 },

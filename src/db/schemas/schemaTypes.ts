@@ -72,6 +72,8 @@ export interface IScriptInputs {
   imageURI_base?: string;
   audioURI_base?: string;
   media_URI?: string;
+  approved_shuffler?: string;
+  svg_parts?: string;
 }
 
 export interface IToken {
