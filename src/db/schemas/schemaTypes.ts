@@ -14,6 +14,7 @@ export interface GenScripts {
   main: string;
   alt?: string;
   world?: string;
+  painting?: string;
   mobileControls?: string;
   preMainScript?: string;
 }
@@ -74,6 +75,8 @@ export interface IScriptInputs {
   media_URI?: string;
   approved_shuffler?: string;
   svg_parts?: string;
+  title?: string;
+  description?: string;
 }
 
 export interface IToken {

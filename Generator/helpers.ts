@@ -1,22 +1,42 @@
 import type { HttpRequest } from '@azure/functions';
 import type { GenScripts, IScriptInputs } from '../src/db/schemas/schemaTypes';
 
+enum ScriptType {
+  main,
+  alt,
+  painting,
+}
+
 const getScriptTag = (script: string) => `<script src="${script}"></script>`;
 
 export const getHtml = (
   projectName: string,
   genScripts: GenScripts,
   scriptInputs: string | null,
-  options: { mobile: boolean; alt: boolean },
+  options: { mobile: boolean; scriptType: ScriptType },
 ): string => {
-  const { main, mobileControls, alt: altScript, preMainScript } = genScripts;
+  const {
+    main: mainScript,
+    mobileControls,
+    alt: altScript,
+    painting: paintingScript,
+    preMainScript,
+  } = genScripts;
 
-  const scripts = `
+  const scripts = {
+    [ScriptType.main]: mainScript,
+    [ScriptType.alt]: altScript,
+    [ScriptType.painting]: paintingScript,
+  };
+
+  const scriptTags = `
     ${scriptInputs ? `<script>const scriptInputs = ${scriptInputs};</script>` : ''}
     ${preMainScript ? getScriptTag(preMainScript) : ''}
-    ${options.alt && altScript ? getScriptTag(altScript) : getScriptTag(main)}
+    ${getScriptTag(scripts[options.scriptType] || mainScript)}
     ${
-      options.mobile && mobileControls && !options.alt ? getScriptTag(mobileControls) : ''
+      options.mobile && mobileControls && options.scriptType !== ScriptType.alt
+        ? getScriptTag(mobileControls)
+        : ''
     }
   `;
 
@@ -54,7 +74,7 @@ export const getHtml = (
         </head>
         <body>
           <div id="canvas-container"></div>
-          ${scripts}
+          ${scriptTags}
         </body>
       </html>
   `;
@@ -62,38 +82,38 @@ export const getHtml = (
   return generatorHtml;
 };
 
-export const altScriptCheck = (
+export const getScriptType = (
   projectSlug: string,
   genScripts: GenScripts,
   scriptInputsJson: string,
   req: HttpRequest,
-): boolean => {
+): ScriptType => {
   const regex = /esoterra/gi;
 
-  if (!genScripts.alt) return false;
+  if (!genScripts.alt && !genScripts.painting) return ScriptType.main;
 
   if (
-    (req.query?.alt && req.query.alt === 'false') ||
-    (req.query?.esoterra && req.query.esoterra === 'false')
+    (req.query?.alt === 'false' || req.query?.esoterra === 'false') &&
+    req.query?.painting === 'false'
   ) {
-    return false;
+    return ScriptType.main;
   }
 
   if (
     (req.query?.alt && req.query.alt === 'true') ||
     (req.query?.esoterra && req.query.esoterra === 'true')
   ) {
-    return true;
+    return ScriptType.alt;
   }
 
-  if (req.query?.esoterra && req.query.esoterra === 'true') return true;
+  if (req.query?.painting && req.query.painting === 'true') return ScriptType.painting;
 
   if (projectSlug === 'chainlife' || projectSlug === 'chainlife-testnet') {
     const scriptInputs: IScriptInputs = JSON.parse(scriptInputsJson);
     const { custom_rule } = scriptInputs;
 
-    if (custom_rule) return !!custom_rule.match(regex);
+    if (custom_rule && custom_rule.match(regex)) return ScriptType.alt;
   }
 
-  return false;
+  return ScriptType.main;
 };

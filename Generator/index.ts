@@ -3,7 +3,7 @@ import type { Connection } from 'mongoose';
 import { getProject } from '../src/db/queries/projectQueries';
 import { connectionFactory } from '../src/db/connectionFactory';
 import { getScriptInputsFromDb } from '../src/db/queries/tokenQueries';
-import { altScriptCheck, getHtml } from './helpers';
+import { getScriptType, getHtml } from './helpers';
 
 const httpTrigger: AzureFunction = async (
   context: Context,
@@ -28,12 +28,9 @@ const httpTrigger: AzureFunction = async (
     const { project_name, gen_scripts } = project;
 
     let scriptInputsJson: string;
-    let usingScriptInputsFromBody = false;
-    // will be true when puppeteer is running snapshot
 
     if (req.body && req.body.scriptInputs) {
       scriptInputsJson = JSON.stringify(req.body.scriptInputs);
-      usingScriptInputsFromBody = true;
       context.log.info(
         `Using scriptInputs from request body for token ${token_id} on ${project_name}.`,
       );
@@ -61,7 +58,7 @@ const httpTrigger: AzureFunction = async (
 
     const genOptions = {
       mobile: false,
-      alt: altScriptCheck(project_slug, gen_scripts, scriptInputsJson, req),
+      scriptType: getScriptType(project_slug, gen_scripts, scriptInputsJson, req),
     };
 
     // adds mobile controls script if query param ?mobile=true

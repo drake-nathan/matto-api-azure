@@ -38,6 +38,7 @@ export const projectSchema = new Schema<IProject>({
       main: { type: String, required: true },
       alt: { type: String },
       world: { type: String },
+      painting: { type: String },
       mobileControls: { type: String },
       preMainScript: { type: String },
     },

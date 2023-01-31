@@ -1,10 +1,15 @@
 import { type AbiItem } from 'web3-utils';
 import type { IProject, ProjectSizes } from '../db/schemas/schemaTypes';
+// abi's
 import chainlifeGoerliAbi from './abis/ChainlifeGoerli.abi.json';
 import chainlifeMainnetAbi from './abis/ChainlifeMainnet.abi.json';
 import mathareAbi from './abis/Mathare.abi.json';
 import negativeCarbonAbi from './abis/NegativeCarbon.abi.json';
 import crystallizedIllusionsAbi from './abis/CrystallizedIllusions.abi.json';
+// import nfnAbi from './abis/Nfn.abi.json';
+// import oneHundredXAbi from './abis/100x10x1.abi.json';
+// import mfaAbi from './abis/Mfa.abi.json';
+// import pfpAbi from './abis/Pfp.abi.json';
 
 export enum Chain {
   mainnet = 'mainnet',
@@ -19,6 +24,7 @@ export enum Chain {
  * 2 = Mathare
  * 3 = Negative Carbon
  * 4 = Crystallized Illusions
+ * 5 = NFN
  */
 export enum ProjectId {
   chainlifeTestnet,
@@ -26,7 +32,10 @@ export enum ProjectId {
   mathareMemories,
   negativeCarbon,
   crystallizedIllusions,
-  '100x10x1',
+  // nfn,
+  // '100x10x1',
+  // mfa,
+  // pfp,
 }
 
 /**
@@ -37,6 +46,7 @@ export enum ProjectId {
  * mathare-memories = Mathare
  * negative-carbon = Negative Carbon
  * crystallized-illusions = Crystallized Illusions
+ * non-fungible-novels = NFN
  */
 export enum ProjectSlug {
   chainlifeTestnet = 'chainlife-testnet',
@@ -44,7 +54,10 @@ export enum ProjectSlug {
   mathareMemories = 'mathare-memories',
   negativeCarbon = 'negative-carbon',
   crystallizedIllusions = 'crystallized-illusions',
-  '100x10x1' = '100x10x1',
+  // nfn = 'non-fungible-novels',
+  // '100x10x1' = '100x10x1',
+  // mfa = 'MFA',
+  // pfp = 'PFP',
 }
 
 export const projects: IProject[] = [
@@ -80,6 +93,7 @@ export const projects: IProject[] = [
     gen_scripts: {
       main: 'https://cdn.substratum.art/scripts/chainlife/chainlifeToken.min.js',
       alt: 'https://cdn.substratum.art/scripts/chainlife/chainlifeEsoterra.min.js',
+      painting: 'https://cdn.substratum.art/scripts/chainlife/chainlifePainting.min.js',
       mobileControls:
         'https://cdn.substratum.art/scripts/chainlife/tokenMobileMenu.min.js',
       world: 'https://cdn.substratum.art/scripts/chainlife/chainlifeWorld.min.js',
@@ -126,6 +140,7 @@ export const projects: IProject[] = [
       mobileControls:
         'https://cdn.substratum.art/scripts/chainlife/tokenMobileMenu.min.js',
       world: 'https://cdn.substratum.art/scripts/chainlife/chainlifeWorld.min.js',
+      painting: 'https://cdn.substratum.art/scripts/chainlife/chainlifePainting.min.js',
     },
     devParams: {
       useInDev: false,
@@ -198,7 +213,7 @@ export const projects: IProject[] = [
     script_type: 'p5.js',
     aspect_ratio: 1.77,
     website: 'http://immutablecomputer.com/carbon.html',
-    external_url: 'https://www.substratum.art/project/negative-carbon',
+    external_url: 'https://substratum.art/project/negative-carbon',
     license: 'All Rights Reserved',
     contract_address: '0xa9132D23886b63D29858Fe541214fEad5815d64A',
     events: ['Transfer', 'TokenUpdated'],
@@ -250,42 +265,150 @@ export const projects: IProject[] = [
       isBulkMint: true,
     },
   },
-  {
-    _id: ProjectId['100x10x1'],
-    chain: Chain.mainnet,
-    project_name: '100x10x1',
-    project_slug: ProjectSlug['100x10x1'],
-    collection_name: '100x10x1',
-    artist: 'Matto',
-    artist_address: '0xF8d9056db2C2189155bc25A30269dc5dDeD15d46',
-    royalty_info: {
-      artist_address: '0xA6a4Fe416F8Bf46bc3bCA068aC8b1fC4DF760653',
-      royalty_fee_by_id: 5,
-    },
-    maximum_supply: 101,
-    starting_index: 0,
-    tx_count: 0,
-    collection_description:
-      '100x10x1 is an experimental generative art project: 100 generative tokens, each with 10 layers, together form 1 composite token (100x10x1).',
-    mintable: false,
-    script_type: 'Solidity',
-    aspect_ratio: 1,
-    website: 'https://matto.xyz/project/100x10x1',
-    external_url: 'https://substratum.art/project/100x10x1',
-    license: 'CC BY-NC 4.0',
-    contract_address: '0x32a1918079034b610c27F43f8cb04EF121DcEeD0',
-    events: ['NewOrder'],
-    creation_block: 16317969,
-    gen_scripts: {
-      main: 'https://cdn.substratum.art/scripts/100x10x1/100x10x1.min.js',
-    },
-    devParams: {
-      useInDev: true,
-      useInProd: true,
-      usesPuppeteer: true,
-      isBulkMint: true,
-    },
-  },
+  // {
+  //   _id: ProjectId.nfn,
+  //   chain: Chain.mainnet,
+  //   project_name: 'nfn',
+  //   project_slug: ProjectSlug.nfn,
+  //   collection_name: 'NFN (Non-Fungible-Novels)',
+  //   artist: 'Matto',
+  //   artist_address: '0xF8d9056db2C2189155bc25A30269dc5dDeD15d46',
+  //   royalty_info: {
+  //     artist_address: '0xA6a4Fe416F8Bf46bc3bCA068aC8b1fC4DF760653',
+  //     royalty_fee_by_id: 7,
+  //   },
+  //   maximum_supply: 65535,
+  //   starting_index: 0,
+  //   tx_count: 0,
+  //   collection_description:
+  //     'NFN (Non-Fungible-Novels) are tokens that are ebooks that can be read on almost any device.',
+  //   mintable: false,
+  //   script_type: 'epub.js',
+  //   aspect_ratio: 0.666,
+  //   website: 'https://matto.xyz/project/non-fungible-novels',
+  //   external_url: 'https://substratum.art/project/non-fungible-novels',
+  //   license: 'All Rights Reserved',
+  //   contract_address: '0x526Ce354C7fa7D73F035b337C909B9F9b305151B',
+  //   events: ['TokenUpdated'],
+  //   creation_block: 16313674,
+  //   gen_scripts: {
+  //     main: 'https://cdn.substratum.art/scripts/nfn/nfn.min.js',
+  //   },
+  //   devParams: {
+  //     useInDev: false,
+  //     useInProd: false,
+  //     usesPuppeteer: true,
+  //     isBulkMint: false,
+  //   },
+  // },
+  // {
+  //   _id: ProjectId['100x10x1'],
+  //   chain: Chain.mainnet,
+  //   project_name: '100x10x1',
+  //   project_slug: ProjectSlug['100x10x1'],
+  //   collection_name: '100x10x1',
+  //   artist: 'Matto',
+  //   artist_address: '0xF8d9056db2C2189155bc25A30269dc5dDeD15d46',
+  //   royalty_info: {
+  //     artist_address: '0xA6a4Fe416F8Bf46bc3bCA068aC8b1fC4DF760653',
+  //     royalty_fee_by_id: 5,
+  //   },
+  //   maximum_supply: 101,
+  //   starting_index: 0,
+  //   tx_count: 0,
+  //   collection_description:
+  //     '100x10x1 is an experimental generative art project: 100 generative tokens, each with 10 layers, together form 1 composite token (100x10x1).',
+  //   mintable: false,
+  //   script_type: 'Solidity',
+  //   aspect_ratio: 1,
+  //   website: 'https://matto.xyz/project/100x10x1',
+  //   external_url: 'https://substratum.art/project/100x10x1',
+  //   license: 'CC BY-NC 4.0',
+  //   contract_address: '0x32a1918079034b610c27F43f8cb04EF121DcEeD0',
+  //   events: ['NewOrder'],
+  //   creation_block: 16317969,
+  //   gen_scripts: {
+  //     main: 'https://cdn.substratum.art/scripts/100x10x1/100x10x1.min.js',
+  //   },
+  //   devParams: {
+  //     useInDev: false,
+  //     useInProd: false,
+  //     usesPuppeteer: true,
+  //     isBulkMint: false,
+  //   },
+  // },
+  // {
+  //   _id: ProjectId.mfa,
+  //   chain: Chain.mainnet,
+  //   project_name: 'MFA',
+  //   project_slug: ProjectSlug.mfa,
+  //   collection_name: 'MFA (Mattos Fine Art)',
+  //   artist: 'Matto',
+  //   artist_address: '0xF8d9056db2C2189155bc25A30269dc5dDeD15d46',
+  //   royalty_info: {
+  //     artist_address: '0xA6a4Fe416F8Bf46bc3bCA068aC8b1fC4DF760653',
+  //     royalty_fee_by_id: 7,
+  //   },
+  //   maximum_supply: 65535,
+  //   starting_index: 0,
+  //   tx_count: 0,
+  //   collection_description:
+  //     'MFA (Mattos Fine Art) is a collection of different fine art projects by Matto.',
+  //   mintable: false,
+  //   script_type: 'p5',
+  //   aspect_ratio: 1.333,
+  //   website: 'https://matto.xyz/project/mattos-fine-art',
+  //   external_url: 'https://substratum.art/project/mattos-fine-art',
+  //   license: 'All Rights Reserved',
+  //   contract_address: '0x8771c0c3929cf4ebc7b152B2A6337CB65977683F',
+  //   events: ['TokenUpdated'],
+  //   creation_block: 16313524,
+  //   gen_scripts: {
+  //     main: 'https://cdn.substratum.art/scripts/mfa/mfa.min.js',
+  //   },
+  //   devParams: {
+  //     useInDev: false,
+  //     useInProd: false,
+  //     usesPuppeteer: true,
+  //     isBulkMint: false,
+  //   },
+  // },
+  // {
+  //   _id: ProjectId.pfp,
+  //   chain: Chain.mainnet,
+  //   project_name: 'PFP',
+  //   project_slug: ProjectSlug.pfp,
+  //   collection_name: 'PFP (Portraits for People)',
+  //   artist: 'Matto',
+  //   artist_address: '0xF8d9056db2C2189155bc25A30269dc5dDeD15d46',
+  //   royalty_info: {
+  //     artist_address: '0xA6a4Fe416F8Bf46bc3bCA068aC8b1fC4DF760653',
+  //     royalty_fee_by_id: 7,
+  //   },
+  //   maximum_supply: 65535,
+  //   starting_index: 0,
+  //   tx_count: 0,
+  //   collection_description:
+  //     'PFP (Portraits for People) are portraits (made by Matto) for...people.',
+  //   mintable: false,
+  //   script_type: 'p5',
+  //   aspect_ratio: 1,
+  //   website: 'https://matto.xyz/project/portraits-for-people',
+  //   external_url: 'https://substratum.art/project/portraits-for-people',
+  //   license: 'All Rights Reserved',
+  //   contract_address: '0xC968439f09B182a8331277727d61F59280B31D17',
+  //   events: ['TokenUpdated'],
+  //   creation_block: 16312631,
+  //   gen_scripts: {
+  //     main: 'https://cdn.substratum.art/scripts/pfp/pfp.min.js',
+  //   },
+  //   devParams: {
+  //     useInDev: false,
+  //     useInProd: false,
+  //     usesPuppeteer: true,
+  //     isBulkMint: false,
+  //   },
+  // },
 ];
 
 export const abis = {
@@ -294,7 +417,11 @@ export const abis = {
   [ProjectId.mathareMemories]: mathareAbi as AbiItem[],
   [ProjectId.negativeCarbon]: negativeCarbonAbi as AbiItem[],
   [ProjectId.crystallizedIllusions]: crystallizedIllusionsAbi as AbiItem[],
-};
+  // [ProjectId.nfn]: nfnAbi as AbiItem[],
+  // [ProjectId['100x10x1']]: oneHundredXAbi as AbiItem[],
+  // [ProjectId.mfa]: mfaAbi as AbiItem[],
+  // [ProjectId.pfp]: pfpAbi as AbiItem[],
+} satisfies Record<ProjectId, AbiItem[]>;
 
 export const projectSizes: ProjectSizes = {
   [ProjectId.chainlifeTestnet]: {
@@ -322,9 +449,24 @@ export const projectSizes: ProjectSizes = {
     mid: { width: 1080, height: 1080 },
     small: { width: 600, height: 600 },
   },
-  [ProjectId['100x10x1']]: {
-    full: { width: 2160, height: 2160 },
-    mid: { width: 1080, height: 1080 },
-    small: { width: 600, height: 600 },
-  },
+  // [ProjectId.nfn]: {
+  //   full: { width: 2160, height: 2160 },
+  //   mid: { width: 1080, height: 1080 },
+  //   small: { width: 600, height: 600 },
+  // },
+  // [ProjectId['100x10x1']]: {
+  //   full: { width: 2160, height: 2160 },
+  //   mid: { width: 1080, height: 1080 },
+  //   small: { width: 600, height: 600 },
+  // },
+  // [ProjectId.mfa]: {
+  //   full: { width: 2160, height: 2160 },
+  //   mid: { width: 1080, height: 1080 },
+  //   small: { width: 600, height: 600 },
+  // },
+  // [ProjectId.pfp]: {
+  //   full: { width: 2160, height: 2160 },
+  //   mid: { width: 1080, height: 1080 },
+  //   small: { width: 600, height: 600 },
+  // },
 };
