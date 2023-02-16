@@ -11,7 +11,7 @@ export interface IRoyaltyInfo {
 }
 
 export interface GenScripts {
-  main: string;
+  main?: string;
   alt?: string;
   world?: string;
   painting?: string;
@@ -22,8 +22,9 @@ export interface GenScripts {
 export interface IDevParams {
   useInDev: boolean;
   useInProd: boolean;
-  isBulkMint?: boolean;
-  usesPuppeteer?: boolean;
+  isBulkMint: boolean;
+  usesPuppeteer: boolean;
+  usesScriptInputs: boolean;
 }
 
 export interface IProject {
@@ -43,7 +44,7 @@ export interface IProject {
   collection_image?: string;
   collection_description: string;
   mintable: boolean;
-  script_type: string;
+  script_type?: string;
   aspect_ratio: number;
   website: string;
   external_url: string;
@@ -52,7 +53,7 @@ export interface IProject {
   chain: Chain;
   events: string[];
   creation_block: number;
-  gen_scripts: GenScripts;
+  gen_scripts?: GenScripts;
   devParams: IDevParams;
 }
 
@@ -62,7 +63,7 @@ export interface IAttribute {
 }
 
 export interface IScriptInputs {
-  token_id: number;
+  token_id?: number;
   transfer_count?: number;
   token_entropy?: string;
   current_owner?: string;
@@ -91,14 +92,15 @@ export interface IToken {
   description: string; // project
   collection_name: string; // project
   aspect_ratio: number; // project
-  script_type: string; // project
-  script_inputs: IScriptInputs;
+  script_type?: string; // project
+  script_inputs?: IScriptInputs;
   image: string; // generation scripts
   image_mid?: string;
+  image_small?: string;
   thumbnail_url?: string;
   image_data?: string; // not used for Chainlife
-  animation_url: string; // generation script
-  generator_url: string; // same as animation_url
+  animation_url?: string; // generation script
+  generator_url?: string; // same as animation_url
   generator_mobile?: string;
   generator_alt?: string;
   website: string; // project
@@ -152,7 +154,7 @@ export interface TokenAbbr {
   thumbnail_url: string;
   generator_url: string;
   external_url: string;
-  script_inputs: IScriptInputs;
+  script_inputs?: IScriptInputs;
   world_level?: number;
 }
 

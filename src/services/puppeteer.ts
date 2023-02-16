@@ -90,14 +90,14 @@ export const getPuppeteerImageSet = async (
     tokenId,
     BlobFolder.mid,
   );
-  const thumbnail_url = await uploadImage(
+  const image_small = await uploadImage(
     thumbnailBuffer,
     projectSlug,
     tokenId,
     BlobFolder.small,
   );
 
-  return { image, image_mid, thumbnail_url, attributes };
+  return { image, image_mid, image_small, attributes };
 };
 
 export const getAttributes = async (

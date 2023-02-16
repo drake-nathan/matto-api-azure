@@ -1,37 +1,30 @@
-import * as dotenv from 'dotenv';
 import type { Context } from '@azure/functions';
 import type { Connection } from 'mongoose';
-import type { IProject, IScriptInputs, IToken } from '../../../db/schemas/schemaTypes';
+import type { IProject, IToken } from '../../../db/schemas/schemaTypes';
 import type { ProcessMintReturn } from '../types';
 import {
   getProjectCurrentSupply,
   updateProjectSupplyAndCount,
 } from '../../../db/queries/projectQueries';
 import { addToken } from '../../../db/queries/tokenQueries';
-import { getAttributes } from '../../../services/puppeteer';
 import { fetchResizeUploadImages } from '../../../services/images';
+import { fetchBase64Traits } from '../../../web3/blockchainFetches';
+import { Chain, abis } from '../../../projects';
+import { getContract } from '../../../web3/contract';
+import { getWeb3 } from '../../../web3/provider';
 
-dotenv.config();
-const rootServerUrl = process.env.ROOT_URL;
-
-const getCrystallizedIllusionsUrls = (
-  projectSlug: string,
-  tokenId: number,
-  rootExternalUrl: string,
-) => {
-  const generator_url = `${rootServerUrl}/project/${projectSlug}/generator/${tokenId}`;
+const getTexturesUrls = (tokenId: number, rootExternalUrl: string) => {
   const external_url = `${rootExternalUrl}/token/${tokenId}`;
-  const image = `https://arweave.net/Mduh0JQesPrHJbyLcJLBDmXF368mbQqNF68V78DIMoI/${tokenId}.png`;
+  const image = `https://mattoapi.blob.core.windows.net/texture-and-hues-images/${tokenId}.png`;
 
-  return { generator_url, external_url, image };
+  return { external_url, image };
 };
 
-export const processCrystallizedIllusionsMint = async (
+export const processTexturesMint = async (
   token_id: number,
   project: IProject,
   context: Context,
   conn: Connection,
-  script_inputs?: IScriptInputs,
 ): ProcessMintReturn => {
   const {
     _id: project_id,
@@ -52,15 +45,7 @@ export const processCrystallizedIllusionsMint = async (
 
   context.log.info('Adding token', token_id, 'to', project.project_name);
 
-  if (!script_inputs) {
-    throw new Error(`No script inputs for ${project_name} token ${token_id}`);
-  }
-
-  const { generator_url, external_url, image } = getCrystallizedIllusionsUrls(
-    project_slug,
-    token_id,
-    projectExternalUrl,
-  );
+  const { external_url, image } = getTexturesUrls(token_id, projectExternalUrl);
 
   const { image_mid, image_small } = await fetchResizeUploadImages(
     project_id,
@@ -69,13 +54,12 @@ export const processCrystallizedIllusionsMint = async (
     image,
   );
 
-  const attributes = await getAttributes(generator_url, script_inputs);
+  const web3 = getWeb3(Chain.mainnet);
+  const contract = getContract(web3, abis[project._id], project.contract_address);
 
-  const type = attributes.find((attr) => attr.trait_type === 'Type')?.value;
-  const complexity = attributes.find((attr) => attr.trait_type === 'Complexity')?.value;
+  const attributes = await fetchBase64Traits(contract, token_id, context);
 
-  const name =
-    type && complexity ? `${type} #${complexity}` : `${project_name} ${token_id}`;
+  const name = `${project_name} #${token_id}`;
 
   const newToken: IToken = {
     token_id,
@@ -89,12 +73,9 @@ export const processCrystallizedIllusionsMint = async (
     collection_name,
     aspect_ratio,
     script_type,
-    script_inputs,
     image,
     image_mid,
     image_small,
-    generator_url,
-    animation_url: generator_url,
     external_url,
     website,
     license,

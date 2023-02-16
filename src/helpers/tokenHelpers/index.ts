@@ -1,6 +1,3 @@
-import type { Context } from '@azure/functions';
-import type { Connection, LeanDocument, Schema } from 'mongoose';
-import type { IProject, IScriptInputs, IToken } from '../../db/schemas/schemaTypes';
 import { processChainlifeEvent, processChainlifeMint } from './projects/chainlifeHelpers';
 import { processMathareEvent, processMathareMint } from './projects/mathareHelpers';
 import {
@@ -8,34 +5,9 @@ import {
   processNegativeCarbonMint,
 } from './projects/negativeCarbonHelpers';
 import { processCrystallizedIllusionsMint } from './projects/crystallizedIllusionsHelpers';
+import { processTexturesMint } from './projects/textureHelpers';
 import { ProjectId } from '../../projects';
-
-type ProcessMintFunction = (
-  token_id: number,
-  project: IProject,
-  script_inputs: IScriptInputs,
-  context: Context,
-  conn: Connection,
-) => Promise<
-  | {
-      newTokenId: number;
-      newSupply: number | undefined;
-    }
-  | undefined
->;
-
-type ProcessEventFunction = (
-  token_id: number,
-  project: IProject,
-  script_inputs: IScriptInputs,
-  context: Context,
-  conn: Connection,
-) => Promise<LeanDocument<
-  IToken &
-    Required<{
-      _id: Schema.Types.ObjectId;
-    }>
-> | null>;
+import type { ProcessMintFunction, ProcessEventFunction } from './types';
 
 export const getProcessMintFunction = (projectId: ProjectId): ProcessMintFunction => {
   const processMintFunctions = {
@@ -44,6 +16,7 @@ export const getProcessMintFunction = (projectId: ProjectId): ProcessMintFunctio
     [ProjectId.mathareMemories]: processMathareMint,
     [ProjectId.negativeCarbon]: processNegativeCarbonMint,
     [ProjectId.crystallizedIllusions]: processCrystallizedIllusionsMint,
+    [ProjectId.textureAndHues]: processTexturesMint,
   };
 
   return processMintFunctions[projectId];
@@ -58,6 +31,7 @@ export const getProcessEventFunction = (
     [ProjectId.mathareMemories]: processMathareEvent,
     [ProjectId.negativeCarbon]: processNegativeCarbonEvent,
     [ProjectId.crystallizedIllusions]: null,
+    [ProjectId.textureAndHues]: null,
   };
 
   return processEventFunctions[projectId];

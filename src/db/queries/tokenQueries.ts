@@ -43,7 +43,7 @@ export const getTokenAbbr = (
   const query = Token.findOne({ project_slug, token_id });
 
   query.select(
-    'token_id name project_name project_slug artist image image_mid thumbnail_url generator_url external_url script_inputs',
+    'token_id name project_name project_slug artist image image_mid image_small thumbnail_url generator_url external_url script_inputs',
   );
 
   return query.lean().exec() as Promise<TokenAbbr>;
@@ -73,7 +73,7 @@ export const getTokensTokenIdSort = (
     .limit(Number(limit))
     .skip(Number(skip))
     .select(
-      'token_id name project_name project_slug artist image image_mid thumbnail_url generator_url external_url script_inputs',
+      'token_id name project_name project_slug artist image image_mid image_small thumbnail_url generator_url external_url script_inputs',
     );
 
   return query.lean().exec() as Promise<TokenAbbr[]>;
@@ -103,6 +103,7 @@ export const getTokensWorldLevelSort = (
         artist: true,
         image: true,
         image_mid: true,
+        image_small: true,
         thumbnail_url: true,
         generator_url: true,
         external_url: true,
@@ -179,11 +180,9 @@ export const getLevels = async (
   const results = await query.lean().exec();
 
   const resParsed = results.map((token) => {
-    const {
-      token_id,
-      script_inputs: { transfer_count },
-      script_inputs: { level_shift },
-    } = token;
+    const { token_id, script_inputs } = token;
+
+    const { transfer_count, level_shift } = script_inputs!;
 
     return { token_id, transfer_count, level_shift: level_shift || 0 };
   });
@@ -199,7 +198,7 @@ export const updateTokenMetadataOnTransfer = async (
   script_inputs: IScriptInputs,
   image: string,
   image_mid: string,
-  thumbnail_url: string | undefined,
+  image_small: string,
   attributes: IAttribute[],
   conn: Connection,
 ) => {
@@ -207,7 +206,7 @@ export const updateTokenMetadataOnTransfer = async (
 
   const query = Token.findOneAndUpdate(
     { project_id, token_id },
-    { script_inputs, image, image_mid, thumbnail_url, attributes },
+    { script_inputs, image, image_mid, image_small, attributes },
     { new: true },
   );
 

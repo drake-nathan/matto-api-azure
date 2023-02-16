@@ -32,7 +32,7 @@ export const getHtml = (
   const scriptTags = `
     ${scriptInputs ? `<script>const scriptInputs = ${scriptInputs};</script>` : ''}
     ${preMainScript ? getScriptTag(preMainScript) : ''}
-    ${getScriptTag(scripts[options.scriptType] || mainScript)}
+    ${getScriptTag(scripts[options.scriptType] || mainScript!)}
     ${
       options.mobile && mobileControls && options.scriptType !== ScriptType.alt
         ? getScriptTag(mobileControls)

@@ -46,11 +46,11 @@
     "colId": "history",
     "containerId": "",
     "name": "http://localhost:7071/project",
-    "url": "https://api.gengames.io/project/chainlife/token/69",
+    "url": "http://localhost:7071/project/texture-and-hues/token/8",
     "method": "GET",
     "sortNum": 0,
     "created": "2022-11-16T03:01:09.302Z",
-    "modified": "2022-12-03T03:56:40.249Z",
+    "modified": "2023-02-16T01:18:42.000Z",
     "headers": [],
     "params": [],
     "tests": []

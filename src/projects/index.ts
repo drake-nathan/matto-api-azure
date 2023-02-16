@@ -1,15 +1,13 @@
 import { type AbiItem } from 'web3-utils';
 import type { IProject, ProjectSizes } from '../db/schemas/schemaTypes';
+
 // abi's
 import chainlifeGoerliAbi from './abis/ChainlifeGoerli.abi.json';
 import chainlifeMainnetAbi from './abis/ChainlifeMainnet.abi.json';
 import mathareAbi from './abis/Mathare.abi.json';
 import negativeCarbonAbi from './abis/NegativeCarbon.abi.json';
 import crystallizedIllusionsAbi from './abis/CrystallizedIllusions.abi.json';
-// import nfnAbi from './abis/Nfn.abi.json';
-// import oneHundredXAbi from './abis/100x10x1.abi.json';
-// import mfaAbi from './abis/Mfa.abi.json';
-// import pfpAbi from './abis/Pfp.abi.json';
+import textureAndHuesAbi from './abis/TextureAndHues.abi.json';
 
 export enum Chain {
   mainnet = 'mainnet',
@@ -24,7 +22,7 @@ export enum Chain {
  * 2 = Mathare
  * 3 = Negative Carbon
  * 4 = Crystallized Illusions
- * 5 = NFN
+ * 5 = Texture and Hues
  */
 export enum ProjectId {
   chainlifeTestnet,
@@ -32,6 +30,7 @@ export enum ProjectId {
   mathareMemories,
   negativeCarbon,
   crystallizedIllusions,
+  textureAndHues,
   // nfn,
   // '100x10x1',
   // mfa,
@@ -46,7 +45,7 @@ export enum ProjectId {
  * mathare-memories = Mathare
  * negative-carbon = Negative Carbon
  * crystallized-illusions = Crystallized Illusions
- * non-fungible-novels = NFN
+ * texture-and-hues = Texture and Hues
  */
 export enum ProjectSlug {
   chainlifeTestnet = 'chainlife-testnet',
@@ -54,6 +53,7 @@ export enum ProjectSlug {
   mathareMemories = 'mathare-memories',
   negativeCarbon = 'negative-carbon',
   crystallizedIllusions = 'crystallized-illusions',
+  textureAndHues = 'texture-and-hues',
   // nfn = 'non-fungible-novels',
   // '100x10x1' = '100x10x1',
   // mfa = 'MFA',
@@ -61,7 +61,7 @@ export enum ProjectSlug {
 }
 
 export const projects: IProject[] = [
-  {
+  { 
     _id: ProjectId.chainlifeTestnet,
     project_name: 'Chainlife Testnet',
     project_slug: ProjectSlug.chainlifeTestnet,
@@ -103,6 +103,7 @@ export const projects: IProject[] = [
       useInProd: true,
       usesPuppeteer: true,
       isBulkMint: false,
+      usesScriptInputs: true,
     },
   },
   {
@@ -147,6 +148,7 @@ export const projects: IProject[] = [
       useInProd: true,
       usesPuppeteer: true,
       isBulkMint: false,
+      usesScriptInputs: true,
     },
   },
   {
@@ -189,6 +191,7 @@ export const projects: IProject[] = [
       useInProd: true,
       usesPuppeteer: false,
       isBulkMint: true,
+      usesScriptInputs: true,
     },
   },
   {
@@ -222,10 +225,11 @@ export const projects: IProject[] = [
       main: 'https://cdn.substratum.art/scripts/negativeCarbon/negativeCarbon.min.js',
     },
     devParams: {
-      useInDev: true,
+      useInDev: false,
       useInProd: true,
       usesPuppeteer: true,
       isBulkMint: false,
+      usesScriptInputs: true,
     },
   },
   {
@@ -263,9 +267,88 @@ export const projects: IProject[] = [
       useInProd: true,
       usesPuppeteer: true,
       isBulkMint: true,
+      usesScriptInputs: true,
     },
   },
-  // {
+  {
+    _id: ProjectId.textureAndHues,
+    chain: Chain.mainnet,
+    project_name: 'Texture and Hues', 
+    project_slug: ProjectSlug.textureAndHues,
+    artist: 'Matto',
+    artist_address: '0xA6a4Fe416F8Bf46bc3bCA068aC8b1fC4DF760653',
+    collection_name: 'Texture and Hues',
+    royalty_info: {
+      artist_address: '0xA6a4Fe416F8Bf46bc3bCA068aC8b1fC4DF760653',
+      royalty_fee_by_id: 3,
+    },
+    maximum_supply: 256,
+    current_supply: 256,
+    starting_index: 0,
+    tx_count: 0,
+    collection_description:
+      "Texture and Hues is an experimental project in minimalism. Images are vector graphic SVGs, and both the images and metadata are created on-chain. Coded by Matto.",
+    mintable: false,  
+    aspect_ratio: 1,
+    website: 'https://matto.xyz/project/texture-and-hues/',
+    external_url: 'https://substratum.art/project/texture-and-hues',
+    license: 'CC BY-NC 4.0',
+    contract_address: '0x15BF7610a7d50541e865EfA3adad434147a4E1A9',
+    events: [],
+    creation_block: 15415501,
+    devParams: {
+      useInDev: true,
+      useInProd: true,
+      usesPuppeteer: false,
+      isBulkMint: true,
+      usesScriptInputs: false,
+    },
+  },
+];  
+
+export const abis = {
+  [ProjectId.chainlifeTestnet]: chainlifeGoerliAbi as AbiItem[],
+  [ProjectId.chainlifeMainnet]: chainlifeMainnetAbi as AbiItem[],
+  [ProjectId.mathareMemories]: mathareAbi as AbiItem[],
+  [ProjectId.negativeCarbon]: negativeCarbonAbi as AbiItem[],
+  [ProjectId.crystallizedIllusions]: crystallizedIllusionsAbi as AbiItem[],
+  [ProjectId.textureAndHues]: textureAndHuesAbi as AbiItem[], 
+} satisfies Record<ProjectId, AbiItem[]>;
+
+export const projectSizes: ProjectSizes = {
+  [ProjectId.chainlifeTestnet]: {
+    full: { width: 2160, height: 2160 },
+    mid: { width: 1080, height: 1080 },
+    small: { width: 600, height: 600 },
+  },
+  [ProjectId.chainlifeMainnet]: {
+    full: { width: 2160, height: 2160 },
+    mid: { width: 1080, height: 1080 },
+    small: { width: 600, height: 600 },
+  },
+  [ProjectId.mathareMemories]: {
+    full: { width: 2160, height: 2160 },
+    mid: { width: 1080, height: 1080 },
+    small: { width: 600, height: 600 },
+  },
+  [ProjectId.negativeCarbon]: {
+    full: { width: 3840, height: 2160 },
+    mid: { width: 1920, height: 1080 },
+    small: { width: 600, height: 338 },
+  },
+  [ProjectId.crystallizedIllusions]: {
+    full: { width: 2160, height: 2160 },
+    mid: { width: 1080, height: 1080 },
+    small: { width: 600, height: 600 },
+  },
+  [ProjectId.textureAndHues]: {
+    full: { width: 2160, height: 2160 },
+    mid: { width: 1080, height: 1080 },
+    small: { width: 600, height: 600 },
+  },
+};
+
+// {
   //   _id: ProjectId.nfn,
   //   chain: Chain.mainnet,
   //   project_name: 'nfn',
@@ -408,65 +491,4 @@ export const projects: IProject[] = [
   //     usesPuppeteer: true,
   //     isBulkMint: false,
   //   },
-  // },
-];
-
-export const abis = {
-  [ProjectId.chainlifeTestnet]: chainlifeGoerliAbi as AbiItem[],
-  [ProjectId.chainlifeMainnet]: chainlifeMainnetAbi as AbiItem[],
-  [ProjectId.mathareMemories]: mathareAbi as AbiItem[],
-  [ProjectId.negativeCarbon]: negativeCarbonAbi as AbiItem[],
-  [ProjectId.crystallizedIllusions]: crystallizedIllusionsAbi as AbiItem[],
-  // [ProjectId.nfn]: nfnAbi as AbiItem[],
-  // [ProjectId['100x10x1']]: oneHundredXAbi as AbiItem[],
-  // [ProjectId.mfa]: mfaAbi as AbiItem[],
-  // [ProjectId.pfp]: pfpAbi as AbiItem[],
-} satisfies Record<ProjectId, AbiItem[]>;
-
-export const projectSizes: ProjectSizes = {
-  [ProjectId.chainlifeTestnet]: {
-    full: { width: 2160, height: 2160 },
-    mid: { width: 1080, height: 1080 },
-    small: { width: 600, height: 600 },
-  },
-  [ProjectId.chainlifeMainnet]: {
-    full: { width: 2160, height: 2160 },
-    mid: { width: 1080, height: 1080 },
-    small: { width: 600, height: 600 },
-  },
-  [ProjectId.mathareMemories]: {
-    full: { width: 2160, height: 2160 },
-    mid: { width: 1080, height: 1080 },
-    small: { width: 600, height: 600 },
-  },
-  [ProjectId.negativeCarbon]: {
-    full: { width: 3840, height: 2160 },
-    mid: { width: 1920, height: 1080 },
-    small: { width: 600, height: 338 },
-  },
-  [ProjectId.crystallizedIllusions]: {
-    full: { width: 2160, height: 2160 },
-    mid: { width: 1080, height: 1080 },
-    small: { width: 600, height: 600 },
-  },
-  // [ProjectId.nfn]: {
-  //   full: { width: 2160, height: 2160 },
-  //   mid: { width: 1080, height: 1080 },
-  //   small: { width: 600, height: 600 },
-  // },
-  // [ProjectId['100x10x1']]: {
-  //   full: { width: 2160, height: 2160 },
-  //   mid: { width: 1080, height: 1080 },
-  //   small: { width: 600, height: 600 },
-  // },
-  // [ProjectId.mfa]: {
-  //   full: { width: 2160, height: 2160 },
-  //   mid: { width: 1080, height: 1080 },
-  //   small: { width: 600, height: 600 },
-  // },
-  // [ProjectId.pfp]: {
-  //   full: { width: 2160, height: 2160 },
-  //   mid: { width: 1080, height: 1080 },
-  //   small: { width: 600, height: 600 },
-  // },
-};
+  // }, 

@@ -2,13 +2,13 @@ import * as dotenv from 'dotenv';
 import { type Context } from '@azure/functions';
 import { type Connection } from 'mongoose';
 import type { IProject, IScriptInputs, IToken } from '../../../db/schemas/schemaTypes';
+import type { ProcessMintReturn, ProcessEventReturn } from '../types';
 import {
   getProjectCurrentSupply,
   updateProjectSupplyAndCount,
 } from '../../../db/queries/projectQueries';
 import {
   addToken,
-  checkIfTokenExists,
   getAllTokensFromProject,
   updateTokenMetadataOnTransfer,
 } from '../../../db/queries/tokenQueries';
@@ -32,10 +32,10 @@ const getUrls = (
 export const processChainlifeMint = async (
   token_id: number,
   project: IProject,
-  script_inputs: IScriptInputs,
   context: Context,
   conn: Connection,
-) => {
+  script_inputs?: IScriptInputs,
+): ProcessMintReturn => {
   const {
     _id: project_id,
     project_name,
@@ -53,13 +53,11 @@ export const processChainlifeMint = async (
     tx_count,
   } = project;
 
-  const doesTokenExist = await checkIfTokenExists(token_id, project_slug, conn);
-  if (doesTokenExist) {
-    context.log.info(`${project_name} token ${token_id} already exists, skipping`);
-    return;
-  }
-
   context.log.info('Adding token', token_id, 'to', project_name);
+
+  if (!script_inputs) {
+    throw new Error(`No script inputs for ${project_name} token ${token_id}`);
+  }
 
   const { generator_url, external_url } = getUrls(
     project_slug,
@@ -72,7 +70,7 @@ export const processChainlifeMint = async (
     ? `${generator_url}?esoterra=true`
     : generator_url;
 
-  const { image, image_mid, thumbnail_url, attributes } = await getPuppeteerImageSet(
+  const { image, image_mid, image_small, attributes } = await getPuppeteerImageSet(
     project_id,
     project_slug,
     token_id,
@@ -95,7 +93,6 @@ export const processChainlifeMint = async (
     script_inputs,
     image,
     image_mid,
-    thumbnail_url,
     generator_url,
     animation_url: generator_url,
     external_url,
@@ -121,13 +118,17 @@ export const processChainlifeMint = async (
 export const processChainlifeEvent = async (
   token_id: number,
   project: IProject,
-  script_inputs: IScriptInputs,
   context: Context,
   conn: Connection,
-) => {
+  script_inputs?: IScriptInputs,
+): ProcessEventReturn => {
+  const { _id: project_id, project_name, project_slug, external_url } = project;
+
   context.log.info('Updating token', token_id, 'on', project.project_name);
 
-  const { _id: project_id, project_slug, external_url } = project;
+  if (!script_inputs) {
+    throw new Error(`No script inputs for ${project_name} token ${token_id}`);
+  }
   const { generator_url } = getUrls(project_slug, token_id, external_url);
 
   const regex = /esoterra/gi;
@@ -135,7 +136,7 @@ export const processChainlifeEvent = async (
     ? `${generator_url}?esoterra=true`
     : generator_url;
 
-  const { image, image_mid, thumbnail_url, attributes } = await getPuppeteerImageSet(
+  const { image, image_mid, image_small, attributes } = await getPuppeteerImageSet(
     project_id,
     project_slug,
     token_id,
@@ -149,7 +150,7 @@ export const processChainlifeEvent = async (
     script_inputs,
     image,
     image_mid,
-    thumbnail_url,
+    image_small,
     attributes,
     conn,
   );
@@ -182,9 +183,9 @@ export const repairBadTokens = async (
     const updatedToken = await processChainlifeEvent(
       token_id,
       project,
-      script_inputs,
       context,
       conn,
+      script_inputs!,
     );
 
     if (!updatedToken) {

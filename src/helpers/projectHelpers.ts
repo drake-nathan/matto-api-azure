@@ -199,6 +199,7 @@ const reconcileBulkMint = async (
     project_slug,
     maximum_supply: maxSupply,
     starting_index: startingIndex,
+    devParams: { usesScriptInputs },
   } = project;
 
   if (totalTokensInDb === maxSupply) {
@@ -208,7 +209,7 @@ const reconcileBulkMint = async (
 
   const processMint = getProcessMintFunction(projectId);
 
-  const iterateFrom = Math.max(startingIndex, totalTokensInDb);
+  const iterateFrom = startingIndex;
   const iteratorSize = maxSupply + startingIndex - iterateFrom;
 
   const tokenIterator = [...Array(iteratorSize + iterateFrom).keys()].slice(iterateFrom);
@@ -217,15 +218,17 @@ const reconcileBulkMint = async (
 
   for await (const tokenId of tokenIterator) {
     const doesTokenExist = await checkIfTokenExists(tokenId, project_slug, conn);
-    if (doesTokenExist) return;
+    if (doesTokenExist) continue;
 
     try {
-      const scriptInputs = await fetchScriptInputs(contract, tokenId);
-      const newMint = await processMint(tokenId, project, scriptInputs, context, conn);
+      const scriptInputs = usesScriptInputs
+        ? await fetchScriptInputs(contract, tokenId)
+        : undefined;
+      const newMint = await processMint(tokenId, project, context, conn, scriptInputs);
 
       if (!newMint) {
         context.log.error(`Failed to mint token_id ${tokenId} for ${projectName}.`);
-        return;
+        continue;
       }
 
       newTokens.push(newMint.newTokenId);

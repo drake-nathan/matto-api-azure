@@ -48,9 +48,9 @@ export const processNewTransactions = async (
         const newMint = await processMint(
           token_id,
           project,
-          script_inputs,
           context,
           conn,
+          script_inputs,
         );
 
         if (!newMint) {
@@ -65,7 +65,7 @@ export const processNewTransactions = async (
       const processEvent = getProcessEventFunction(project._id);
 
       if (events.length && processEvent) {
-        await processEvent(token_id, project, script_inputs, context, conn);
+        await processEvent(token_id, project, context, conn, script_inputs);
       }
     }
   }

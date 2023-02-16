@@ -10,7 +10,7 @@ export const fetchResizeUploadImages = async (
   imageUrl: string,
 ): Promise<{
   image_mid: string;
-  thumbnail_url: string;
+  image_small: string;
 }> => {
   const sizes = projectSizes[projectId];
 
@@ -30,12 +30,12 @@ export const fetchResizeUploadImages = async (
   const smallBuffer = await sharp(imageBuffer).resize(sizes.small).toBuffer();
 
   const image_mid = await uploadImage(midBuffer, projectSlug, tokenId, BlobFolder.mid);
-  const thumbnail_url = await uploadImage(
+  const image_small = await uploadImage(
     smallBuffer,
     projectSlug,
     tokenId,
     BlobFolder.small,
   );
 
-  return { image_mid, thumbnail_url };
+  return { image_mid, image_small };
 };

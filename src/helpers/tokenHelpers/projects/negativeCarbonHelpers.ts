@@ -2,15 +2,12 @@ import * as dotenv from 'dotenv';
 import type { Context } from '@azure/functions';
 import type { Connection } from 'mongoose';
 import type { IProject, IScriptInputs, IToken } from '../../../db/schemas/schemaTypes';
+import type { ProcessMintReturn, ProcessEventReturn } from '../types';
 import {
   getProjectCurrentSupply,
   updateProjectSupplyAndCount,
 } from '../../../db/queries/projectQueries';
-import {
-  checkIfTokenExists,
-  addToken,
-  updateScriptInputs,
-} from '../../../db/queries/tokenQueries';
+import { addToken, updateScriptInputs } from '../../../db/queries/tokenQueries';
 import { getPuppeteerImageSet } from '../../../services/puppeteer';
 import { ProjectSlug } from '../../../projects';
 
@@ -31,10 +28,10 @@ const getNegativeCarbonUrls = (
 export const processNegativeCarbonMint = async (
   token_id: number,
   project: IProject,
-  script_inputs: IScriptInputs,
   context: Context,
   conn: Connection,
-) => {
+  script_inputs?: IScriptInputs,
+): ProcessMintReturn => {
   const {
     _id: project_id,
     project_name,
@@ -52,13 +49,11 @@ export const processNegativeCarbonMint = async (
     tx_count,
   } = project;
 
-  const doesTokenExist = await checkIfTokenExists(token_id, project_slug, conn);
-  if (doesTokenExist) {
-    context.log.info(`${project_name} token ${token_id} already exists, skipping`);
-    return;
-  }
-
   context.log.info('Adding token', token_id, 'to', project.project_name);
+
+  if (!script_inputs) {
+    throw new Error(`No script inputs for ${project_name} token ${token_id}`);
+  }
 
   const { generator_url, external_url } = getNegativeCarbonUrls(
     project_slug,
@@ -66,7 +61,7 @@ export const processNegativeCarbonMint = async (
     projectExternalUrl,
   );
 
-  const { image, image_mid, thumbnail_url, attributes } = await getPuppeteerImageSet(
+  const { image, image_mid, image_small, attributes } = await getPuppeteerImageSet(
     project_id,
     project_slug,
     token_id,
@@ -89,7 +84,7 @@ export const processNegativeCarbonMint = async (
     script_inputs,
     image,
     image_mid,
-    thumbnail_url,
+    image_small,
     generator_url,
     animation_url: generator_url,
     external_url,
@@ -115,13 +110,17 @@ export const processNegativeCarbonMint = async (
 export const processNegativeCarbonEvent = async (
   token_id: number,
   project: IProject,
-  script_inputs: IScriptInputs,
   context: Context,
   conn: Connection,
-) => {
+  script_inputs?: IScriptInputs,
+): ProcessEventReturn => {
   const { _id: project_id, project_name } = project;
 
   context.log.info('Updating token', token_id, 'on', project_name);
+
+  if (!script_inputs) {
+    throw new Error(`No script inputs for ${project_name} token ${token_id}`);
+  }
 
   const updatedToken = await updateScriptInputs(
     conn,

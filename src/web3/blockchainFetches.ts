@@ -1,6 +1,7 @@
 import type { Contract } from 'web3-eth-contract';
 import type { Connection } from 'mongoose';
-import { type IScriptInputs } from '../db/schemas/schemaTypes';
+import type { Context } from '@azure/functions';
+import type { IAttribute, IScriptInputs } from '../db/schemas/schemaTypes';
 import { getLastTxProcessed } from '../db/queries/transactionQueries';
 
 export const fetchEvents = async (
@@ -43,10 +44,27 @@ export const fetchScriptInputs = async (contract: Contract, token_id: number) =>
   }
 };
 
-// const testFetchEvents = async () => {
-//   const project = projects.find((p) => p._id === ProjectId.crystallizedIllusions);
+export const fetchBase64Traits = async (
+  contract: Contract,
+  tokenId: number,
+  context: Context,
+): Promise<IAttribute[]> => {
+  let base64: string;
 
-//   const conn = await connectionFactory();
+  try {
+    base64 = (await contract.methods.tokenURI(tokenId).call()) as string;
+  } catch (err) {
+    context.log.error(err);
+    return [];
+  }
+
+  const json = Buffer.from(base64.split(',')[1], 'base64').toString('utf8');
+  const { attributes } = JSON.parse(json);
+  return attributes;
+};
+
+// const testFetch = async () => {
+//   const project = projects.find((p) => p._id === ProjectId.textureAndHues);
 
 //   if (!project) {
 //     throw new Error('Project not found');
@@ -55,9 +73,9 @@ export const fetchScriptInputs = async (contract: Contract, token_id: number) =>
 //   const web3 = getWeb3(Chain.mainnet);
 //   const contract = getContract(web3, abis[project._id], project.contract_address);
 
-//   return fetchEvents(contract, [], project._id, conn, project.creation_block, true);
+//   return fetchBase64Traits(contract, 1);
 // };
 
-// testFetchEvents()
-//   .then((res) => console.log(res.allTransactions))
+// testFetch()
+//   .then((res) => console.info(res))
 //   .catch(console.error);

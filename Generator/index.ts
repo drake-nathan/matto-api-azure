@@ -27,6 +27,14 @@ const httpTrigger: AzureFunction = async (
 
     const { project_name, gen_scripts } = project;
 
+    if (!gen_scripts) {
+      context.res = {
+        status: 404,
+        body: 'This project does not have a generator.',
+      };
+      return;
+    }
+
     let scriptInputsJson: string;
 
     if (req.body && req.body.scriptInputs) {

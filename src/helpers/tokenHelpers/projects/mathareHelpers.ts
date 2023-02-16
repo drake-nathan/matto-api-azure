@@ -2,6 +2,7 @@ import * as dotenv from 'dotenv';
 import type { Context } from '@azure/functions';
 import type { Connection } from 'mongoose';
 import type { IProject, IScriptInputs, IToken } from '../../../db/schemas/schemaTypes';
+import type { ProcessMintReturn, ProcessEventReturn } from '../types';
 import {
   getProjectCurrentSupply,
   updateProjectSupplyAndCount,
@@ -35,10 +36,10 @@ const getUrls = (
 export const processMathareMint = async (
   token_id: number,
   project: IProject,
-  script_inputs: IScriptInputs,
   context: Context,
   conn: Connection,
-) => {
+  script_inputs?: IScriptInputs,
+): ProcessMintReturn => {
   const {
     _id: project_id,
     project_name,
@@ -57,6 +58,11 @@ export const processMathareMint = async (
   } = project;
 
   context.log.info('Adding token', token_id, 'to', project_name);
+
+  if (!script_inputs) {
+    context.log.info('No script inputs for token', token_id, 'in project', project_name);
+    return;
+  }
 
   const { generator_url, external_url, image, image_mid, thumbnail_url } = getUrls(
     project_slug,
@@ -105,13 +111,17 @@ export const processMathareMint = async (
 export const processMathareEvent = async (
   token_id: number,
   project: IProject,
-  script_inputs: IScriptInputs,
   context: Context,
   conn: Connection,
-) => {
+  script_inputs?: IScriptInputs,
+): ProcessEventReturn => {
   const { _id: project_id, project_name } = project;
 
   context.log.info('Updating token', token_id, 'on', project_name);
+
+  if (!script_inputs) {
+    throw new Error(`No script inputs for ${project_name} token ${token_id}`);
+  }
 
   const updatedToken = await updateScriptInputs(
     conn,

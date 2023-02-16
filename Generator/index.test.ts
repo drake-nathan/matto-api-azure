@@ -26,6 +26,16 @@ describe('Generator', () => {
     expect(typeof context?.res?.body).toBe('string');
   });
 
+  it('should return a 404 if project does not have gen_scripts', async () => {
+    context.bindingData.project_slug = 'texture-and-hues';
+
+    await httpTrigger(context, req);
+
+    expect(context?.res?.status).toEqual(404);
+    expect(context.log.error).toBeCalledTimes(0);
+    expect(typeof context?.res?.body).toBe('string');
+  });
+
   it('should return a 404 if given nonexistant token', async () => {
     context.bindingData.token_id = '69420';
 
