@@ -303,6 +303,7 @@ export const projects: IProject[] = [
       usesPuppeteer: false,
       isBulkMint: true,
       usesScriptInputs: false,
+      usesSvgs: true,
     },
   },
 ];  

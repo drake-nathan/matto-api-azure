@@ -296,3 +296,15 @@ export const updateScriptInputs = (
 
   return query.lean().exec();
 };
+
+export const getSvg = async (
+  conn: Connection,
+  project_slug: string,
+  token_id: number,
+) => {
+  const Token = conn.model<IToken>('Token');
+
+  const token = await Token.findOne({ project_slug, token_id });
+
+  return token?.svg;
+};

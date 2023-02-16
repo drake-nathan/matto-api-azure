@@ -30,6 +30,7 @@ export const fetchScriptInputs = async (contract: Contract, token_id: number) =>
     const parsedScriptInputs: IScriptInputs = JSON.parse(scriptInputsJson);
     return parsedScriptInputs;
   } catch (err) {
+    // NOTE: This solved a parse error specifically for Chainlife, but may not work for other projects
     const propertiesArr = scriptInputsJson.split(',');
     const parsedScriptInputs: IScriptInputs = {
       token_id: parseInt(JSON.parse(propertiesArr[0].split(':')[1])),
@@ -44,23 +45,31 @@ export const fetchScriptInputs = async (contract: Contract, token_id: number) =>
   }
 };
 
-export const fetchBase64Traits = async (
+export const fetchBase64Textures = async (
   contract: Contract,
   tokenId: number,
   context: Context,
-): Promise<IAttribute[]> => {
+): Promise<{
+  attributes: IAttribute[];
+  svg: string;
+}> => {
   let base64: string;
 
   try {
     base64 = (await contract.methods.tokenURI(tokenId).call()) as string;
   } catch (err) {
     context.log.error(err);
-    return [];
+    return { attributes: [], svg: '' };
   }
 
+  // convert base64 to json
   const json = Buffer.from(base64.split(',')[1], 'base64').toString('utf8');
-  const { attributes } = JSON.parse(json);
-  return attributes;
+  // parse attributes and image properties from json
+  const { attributes, image } = JSON.parse(json);
+  // convert image base64 to svg string
+  const svg = Buffer.from(image.split(',')[1], 'base64').toString('utf8');
+
+  return { attributes, svg };
 };
 
 // const testFetch = async () => {
@@ -73,7 +82,7 @@ export const fetchBase64Traits = async (
 //   const web3 = getWeb3(Chain.mainnet);
 //   const contract = getContract(web3, abis[project._id], project.contract_address);
 
-//   return fetchBase64Traits(contract, 1);
+//   return fetchBase64Textures(contract, 1);
 // };
 
 // testFetch()

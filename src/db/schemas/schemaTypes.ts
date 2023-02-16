@@ -25,6 +25,7 @@ export interface IDevParams {
   isBulkMint: boolean;
   usesPuppeteer: boolean;
   usesScriptInputs: boolean;
+  usesSvgs?: boolean;
 }
 
 export interface IProject {
@@ -98,6 +99,8 @@ export interface IToken {
   image_mid?: string;
   image_small?: string;
   thumbnail_url?: string;
+  svg?: string;
+  svgGen?: string;
   image_data?: string; // not used for Chainlife
   animation_url?: string; // generation script
   generator_url?: string; // same as animation_url
@@ -154,6 +157,7 @@ export interface TokenAbbr {
   image_small?: string;
   thumbnail_url: string;
   generator_url: string;
+  svgGen?: string;
   external_url: string;
   script_inputs?: IScriptInputs;
   world_level?: number;
