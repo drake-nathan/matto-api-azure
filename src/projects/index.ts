@@ -289,6 +289,7 @@ export const projects: IProject[] = [
     collection_description:
       "Texture and Hues is an experimental project in minimalism. Images are vector graphic SVGs, and both the images and metadata are created on-chain. Coded by Matto.",
     mintable: false,  
+    script_type: 'solidity',
     aspect_ratio: 1,
     website: 'https://matto.xyz/project/texture-and-hues/',
     external_url: 'https://substratum.art/project/texture-and-hues',
