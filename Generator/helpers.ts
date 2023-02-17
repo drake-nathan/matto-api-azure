@@ -40,7 +40,7 @@ export const getHtml = (
     }
   `;
 
-  const generatorHtml = `
+  const generatorHtml = /* html */ `
       <!DOCTYPE html>
       <html lang="en">
         <head>

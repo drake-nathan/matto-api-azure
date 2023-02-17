@@ -39,7 +39,7 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
       return;
     }
 
-    const generatorHtml = `
+    const generatorHtml = /* html */ `
       <!DOCTYPE html>
       <html>
         <body>
