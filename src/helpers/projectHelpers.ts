@@ -38,6 +38,7 @@ import { updateMathareDescriptions } from './tokenHelpers/projects/mathareHelper
 
 const processNewProjects = async (projects: IProject[], conn: Connection) => {
   // try to add all projects to db, duplicates removed
+  // REVIEW -- If the tx counts change, this will not update the project. addProject only saves a document to the db if the project doesn't already exist.
   const resultArr = await Promise.all(
     projects.map(async (project) => {
       const { total } = await getTxCounts(conn, project._id);

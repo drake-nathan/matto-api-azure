@@ -8,6 +8,7 @@ import mathareAbi from './abis/Mathare.abi.json';
 import negativeCarbonAbi from './abis/NegativeCarbon.abi.json';
 import crystallizedIllusionsAbi from './abis/CrystallizedIllusions.abi.json';
 import textureAndHuesAbi from './abis/TextureAndHues.abi.json';
+import blonksAbi from './abis/BLONKS.abi.json';
 
 export enum Chain {
   mainnet = 'mainnet',
@@ -31,6 +32,7 @@ export enum ProjectId {
   negativeCarbon,
   crystallizedIllusions,
   textureAndHues,
+  blonks,
   // nfn,
   // '100x10x1',
   // mfa,
@@ -54,6 +56,7 @@ export enum ProjectSlug {
   negativeCarbon = 'negative-carbon',
   crystallizedIllusions = 'crystallized-illusions',
   textureAndHues = 'texture-and-hues',
+  blonks = 'blonks'
   // nfn = 'non-fungible-novels',
   // '100x10x1' = '100x10x1',
   // mfa = 'MFA',
@@ -306,6 +309,42 @@ export const projects: IProject[] = [
       usesSvgs: true,
     },
   },
+  {
+    _id: ProjectId.blonks,
+    chain: Chain.mainnet,
+    project_name: 'BLONKS', 
+    project_slug: ProjectSlug.blonks,
+    artist: 'Matto',
+    artist_address: '0xA6a4Fe416F8Bf46bc3bCA068aC8b1fC4DF760653',
+    collection_name: 'BLONKS',
+    royalty_info: {
+      artist_address: '0xA6a4Fe416F8Bf46bc3bCA068aC8b1fC4DF760653',
+      royalty_fee_by_id: 3,
+    },
+    maximum_supply: 4444,
+    current_supply: 4444,
+    starting_index: 0,
+    tx_count: 0,
+    collection_description:
+      "BLONKS are owner-responsive, 100% on-chain, CC0, generative vector-graphic illustrations.\n\nTraits are based on values generated at mint and never change, while visual aspects of each NFT are determined by its owner's address (preview changes directly from the smart contract or at http://blonks.xyz). BLONKS NFTs live on Ethereum and require no off-chain dependencies.",
+    mintable: false,  
+    script_type: 'solidity',
+    aspect_ratio: 1,
+    website: 'https://substratum.art/project/blonks',
+    external_url: 'https://blonks.xyz',
+    license: 'CC0',
+    contract_address: '0x7f463b874eC264dC7BD8C780f5790b4Fc371F11f',
+    events: ['Transfer'],
+    creation_block: 14833341,
+    devParams: {
+      useInDev: true,
+      useInProd: true,
+      usesPuppeteer: false,
+      isBulkMint: true,
+      usesScriptInputs: false,
+      usesSvgs: true,
+    },
+  },
 ];  
 
 export const abis = {
@@ -314,7 +353,8 @@ export const abis = {
   [ProjectId.mathareMemories]: mathareAbi as AbiItem[],
   [ProjectId.negativeCarbon]: negativeCarbonAbi as AbiItem[],
   [ProjectId.crystallizedIllusions]: crystallizedIllusionsAbi as AbiItem[],
-  [ProjectId.textureAndHues]: textureAndHuesAbi as AbiItem[], 
+  [ProjectId.textureAndHues]: textureAndHuesAbi as AbiItem[],
+  [ProjectId.blonks]: blonksAbi as AbiItem[], 
 } satisfies Record<ProjectId, AbiItem[]>;
 
 export const projectSizes: ProjectSizes = {
@@ -348,6 +388,11 @@ export const projectSizes: ProjectSizes = {
     mid: { width: 1080, height: 1080 },
     small: { width: 600, height: 600 },
   },
+  [ProjectId.blonks]: {
+    full: { width: 2160, height: 2160 },
+    mid: { width: 1080, height: 1080 },
+    small: { width: 600, height: 600 },
+  }
 };
 
 // {

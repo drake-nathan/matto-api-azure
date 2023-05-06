@@ -26,7 +26,7 @@ const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
   try {
     conn = await connectionFactory(context);
 
-    await checkForNewProjects(context, projects, conn);
+    await checkForNewProjects(context, projects, conn); // checks for new projects in the projects array that it receives and adds it to the database
 
     for await (const project of projects) {
       await reconcileProject(context, project, conn);
