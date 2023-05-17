@@ -366,7 +366,7 @@ export const reconcileProject = async (
   });
 
   if (isBulkMint) {
-    // TODO - test viem, then add it to everything
+    // const result = await contractUsingViem.read.getSVG([1]);
     // await reconcileBulkMint(conn, context, project, contract, totalTokensInDb);
   }
 
