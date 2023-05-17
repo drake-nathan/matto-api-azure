@@ -155,6 +155,16 @@ export const addToken = async (tokenToAdd: IToken, conn: Connection) => {
   return query;
 };
 
+export const addManyTokens = async (tokensToAdd: IToken[], conn: Connection) => {
+  const Token = conn.model<IToken>('Token');
+
+  const documents = await Token.create(tokensToAdd);
+
+  const query = await Token.bulkSave(documents);
+
+  return query;
+};
+
 export const getCurrentTokenSupply = async (project_id: number, conn: Connection) => {
   const Token = conn.model<IToken>('Token');
 

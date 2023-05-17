@@ -26,6 +26,7 @@
     "mongoose": "^6.8.0",
     "puppeteer": "^18.0.4",
     "sharp": "^0.31.3",
+    "viem": "^0.3.26",
     "web3": "^1.8.0"
   },
   "devDependencies": {

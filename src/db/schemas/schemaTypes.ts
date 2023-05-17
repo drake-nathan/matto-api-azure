@@ -26,6 +26,7 @@ export interface IDevParams {
   usesPuppeteer: boolean;
   usesScriptInputs: boolean;
   usesSvgs?: boolean;
+  isOversizedMint: boolean;
 }
 
 export interface IProject {

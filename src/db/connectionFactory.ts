@@ -1,4 +1,4 @@
-import { createConnection } from 'mongoose';
+import { createConnection, Schema } from 'mongoose';
 import * as dotenv from 'dotenv';
 import { Context } from '@azure/functions';
 import { projectSchema } from './schemas/project';
@@ -14,6 +14,9 @@ export const connectionFactory = async (context?: Context) => {
   if (!dbConnectionString) {
     throw new Error('DB_CONNECTION_STRING not found in .env');
   }
+
+  // mongoose config: set a validator function that allows empty strings
+  Schema.Types.String.checkRequired((v) => typeof v === 'string');
 
   const conn = await createConnection(dbConnectionString).asPromise();
 

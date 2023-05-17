@@ -2,6 +2,7 @@ import type { Context } from '@azure/functions';
 import type { Connection } from 'mongoose';
 import type { Contract, EventData } from 'web3-eth-contract';
 import type Web3 from 'web3';
+import { getContract as getContractUsingViem } from 'viem';
 import { nullAddress } from './constants';
 import type { IProject } from '../db/schemas/schemaTypes';
 import {
@@ -33,8 +34,9 @@ import {
   repairBadTokens,
 } from './tokenHelpers/projects/chainlifeHelpers';
 import { getWeb3 } from '../web3/provider';
-import { getProcessMintFunction } from './tokenHelpers';
+import { getProcessMintFunction, getProcessManyMintsFunction } from './tokenHelpers';
 import { updateMathareDescriptions } from './tokenHelpers/projects/mathareHelpers';
+import { getViemClient } from '../web3/viemClient';
 
 const processNewProjects = async (projects: IProject[], conn: Connection) => {
   // try to add all projects to db, duplicates removed
@@ -208,37 +210,49 @@ const reconcileBulkMint = async (
     return;
   }
 
-  const processMint = getProcessMintFunction(projectId);
-
   const iterateFrom = startingIndex;
-  const iteratorSize = maxSupply + startingIndex - iterateFrom;
+  const iteratorSize = maxSupply;
 
   const tokenIterator = [...Array(iteratorSize + iterateFrom).keys()].slice(iterateFrom);
 
-  const newTokens: number[] = [];
-
-  for await (const tokenId of tokenIterator) {
-    const doesTokenExist = await checkIfTokenExists(tokenId, project_slug, conn);
-    if (doesTokenExist) continue;
+  // TODO - abstract this logic into separate functions
+  if (project.devParams.isOversizedMint) {
+    const processAllMints = getProcessManyMintsFunction(projectId);
 
     try {
-      const scriptInputs = usesScriptInputs
-        ? await fetchScriptInputs(contract, tokenId)
-        : undefined;
-      const newMint = await processMint(tokenId, project, context, conn, scriptInputs);
-
-      if (!newMint) {
-        context.log.error(`Failed to mint token_id ${tokenId} for ${projectName}.`);
-        continue;
-      }
-
-      newTokens.push(newMint.newTokenId);
+      await processAllMints(tokenIterator, project, contract, context, conn);
     } catch (err) {
-      context.log.error(err);
+      context.log.error(`Failed to process bulk mint for ${projectName}`, err);
     }
+  } else {
+    const processMint = getProcessMintFunction(projectId);
+
+    const newTokens: number[] = [];
+
+    for await (const tokenId of tokenIterator) {
+      const doesTokenExist = await checkIfTokenExists(tokenId, project_slug, conn);
+      if (doesTokenExist) continue;
+
+      try {
+        const scriptInputs = usesScriptInputs
+          ? await fetchScriptInputs(contract, tokenId)
+          : undefined;
+        const newMint = await processMint(tokenId, project, context, conn, scriptInputs);
+
+        if (!newMint) {
+          context.log.error(`Failed to mint token_id ${tokenId} for ${projectName}.`);
+          continue;
+        }
+
+        newTokens.push(newMint.newTokenId);
+      } catch (err) {
+        context.log.error(err);
+      }
+    }
+
+    context.log.info(`Added ${newTokens.length} new tokens to ${projectName}.`);
   }
 
-  context.log.info(`Added ${newTokens.length} new tokens to ${projectName}.`);
   context.log.info(`${projectName} has been reconciled.`);
 };
 
@@ -344,8 +358,16 @@ export const reconcileProject = async (
   const web3 = getWeb3(chain);
   const contract = getContract(web3, abis[project_id], contract_address);
 
+  const client = getViemClient(chain);
+  const contractUsingViem = getContractUsingViem({
+    address: contract_address as `0x${string}`,
+    abi: abis[project_id],
+    publicClient: client,
+  });
+
   if (isBulkMint) {
-    await reconcileBulkMint(conn, context, project, contract, totalTokensInDb);
+    // TODO - test viem, then add it to everything
+    // await reconcileBulkMint(conn, context, project, contract, totalTokensInDb);
   }
 
   if (usesPuppeteer) {

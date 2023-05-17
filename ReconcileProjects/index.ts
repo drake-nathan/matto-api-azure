@@ -1,11 +1,13 @@
 import * as dotenv from 'dotenv';
 import { AzureFunction, Context } from '@azure/functions';
 import { Connection } from 'mongoose';
-import { projects as allProjects } from '../src/projects';
+import { ProjectId, ProjectSlug, projects as allProjects } from '../src/projects';
 import { checkForNewProjects, reconcileProject } from '../src/helpers/projectHelpers';
 import { connectionFactory } from '../src/db/connectionFactory';
 import { removeDuplicateTransactions } from '../src/db/queries/transactionQueries';
-import { IProject } from '../src/db/schemas/schemaTypes';
+import { IProject, IToken } from '../src/db/schemas/schemaTypes';
+import { addToken } from '../src/db/queries/tokenQueries';
+import { allBLONKStraits } from '../src/helpers/constants';
 
 dotenv.config();
 
@@ -26,6 +28,7 @@ const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
   try {
     conn = await connectionFactory(context);
 
+    // FIXME If a project is already in the db, but one of its hardcoded properties changes, the project in the db is not updated. Use mongoose's save function to do the heavy lifting of seeing whether a project is different and changing only the new properties.
     await checkForNewProjects(context, projects, conn); // checks for new projects in the projects array that it receives and adds it to the database
 
     for await (const project of projects) {

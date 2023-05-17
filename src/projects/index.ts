@@ -64,7 +64,7 @@ export enum ProjectSlug {
 }
 
 export const projects: IProject[] = [
-  { 
+    {
     _id: ProjectId.chainlifeTestnet,
     project_name: 'Chainlife Testnet',
     project_slug: ProjectSlug.chainlifeTestnet,
@@ -102,11 +102,12 @@ export const projects: IProject[] = [
       world: 'https://cdn.substratum.art/scripts/chainlife/chainlifeWorld.min.js',
     },
     devParams: {
-      useInDev: true,
+      useInDev: false,
       useInProd: true,
       usesPuppeteer: true,
       isBulkMint: false,
       usesScriptInputs: true,
+      isOversizedMint: false
     },
   },
   {
@@ -152,6 +153,7 @@ export const projects: IProject[] = [
       usesPuppeteer: true,
       isBulkMint: false,
       usesScriptInputs: true,
+      isOversizedMint: false
     },
   },
   {
@@ -190,11 +192,12 @@ export const projects: IProject[] = [
       preMainScript: 'https://cdn.substratum.art/scripts/mathare/descriptions.min.js',
     },
     devParams: {
-      useInDev: true,
+      useInDev: false,
       useInProd: true,
       usesPuppeteer: false,
       isBulkMint: true,
       usesScriptInputs: true,
+      isOversizedMint: false
     },
   },
   {
@@ -233,6 +236,7 @@ export const projects: IProject[] = [
       usesPuppeteer: true,
       isBulkMint: false,
       usesScriptInputs: true,
+      isOversizedMint: false
     },
   },
   {
@@ -266,11 +270,12 @@ export const projects: IProject[] = [
       main: 'https://cdn.substratum.art/scripts/crystallizedIllusions/crystallizedIllusions.min.js',
     },
     devParams: {
-      useInDev: true,
+      useInDev: false,
       useInProd: true,
       usesPuppeteer: true,
       isBulkMint: true,
       usesScriptInputs: true,
+      isOversizedMint: false
     },
   },
   {
@@ -301,12 +306,13 @@ export const projects: IProject[] = [
     events: [],
     creation_block: 15415501,
     devParams: {
-      useInDev: true,
+      useInDev: false,
       useInProd: true,
       usesPuppeteer: false,
       isBulkMint: true,
       usesScriptInputs: false,
       usesSvgs: true,
+      isOversizedMint: false
     },
   },
   {
@@ -343,6 +349,7 @@ export const projects: IProject[] = [
       isBulkMint: true,
       usesScriptInputs: false,
       usesSvgs: true,
+      isOversizedMint: true
     },
   },
 ];  
