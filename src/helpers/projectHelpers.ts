@@ -366,7 +366,9 @@ export const reconcileProject = async (
   });
 
   if (isBulkMint) {
-    // const result = await contractUsingViem.read.getSVG([1]);
+    // TODO - Inject the viem functionality for blonks only
+    const result = await contractUsingViem.read.getSVG([1]);
+    context.log.warn(result);
     // await reconcileBulkMint(conn, context, project, contract, totalTokensInDb);
   }
 
