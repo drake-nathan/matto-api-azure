@@ -113,7 +113,7 @@ export const processMathareEvent = async (
   project: IProject,
   context: Context,
   conn: Connection,
-  script_inputs?: IScriptInputs,
+  script_inputs: IScriptInputs | null,
 ): ProcessEventReturn => {
   const { _id: project_id, project_name } = project;
 

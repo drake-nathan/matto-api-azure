@@ -2,7 +2,7 @@ import { AzureFunction, Context } from '@azure/functions';
 import { Connection } from 'mongoose';
 import { connectionFactory } from '../src/db/connectionFactory';
 import { checkIfProjectExists } from '../src/db/queries/projectQueries';
-import { getToken } from '../src/db/queries/tokenQueries';
+import { getTokenLean } from '../src/db/queries/tokenQueries';
 
 const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
   const { project_slug, token_id } = context.bindingData;
@@ -21,7 +21,7 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
       return;
     }
 
-    const token = await getToken(project_slug, token_id, conn);
+    const token = await getTokenLean(project_slug, token_id, conn);
 
     if (!token) {
       context.res = {

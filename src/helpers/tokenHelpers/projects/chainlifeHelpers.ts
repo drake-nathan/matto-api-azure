@@ -93,6 +93,7 @@ export const processChainlifeMint = async (
     script_inputs,
     image,
     image_mid,
+    image_small,
     generator_url,
     animation_url: generator_url,
     external_url,
@@ -120,7 +121,7 @@ export const processChainlifeEvent = async (
   project: IProject,
   context: Context,
   conn: Connection,
-  script_inputs?: IScriptInputs,
+  script_inputs: IScriptInputs | null,
 ): ProcessEventReturn => {
   const { _id: project_id, project_name, project_slug, external_url } = project;
 
@@ -176,7 +177,7 @@ export const repairBadTokens = async (
   context: Context,
   conn: Connection,
 ) => {
-  const updatedTokens: IToken[] = [];
+  const updatedTokens: any[] = [];
 
   for await (const token of bumTokens) {
     const { token_id, script_inputs } = token;

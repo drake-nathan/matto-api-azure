@@ -47,7 +47,7 @@ export const getProcessEventFunction = (
     [ProjectId.negativeCarbon]: processNegativeCarbonEvent,
     [ProjectId.crystallizedIllusions]: null,
     [ProjectId.textureAndHues]: null,
-    [ProjectId.blonks]: null,
+    [ProjectId.blonks]: processBlonksEvent,
   };
 
   return processEventFunctions[projectId];

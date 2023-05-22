@@ -1,7 +1,7 @@
 import type { Context } from '@azure/functions';
-import type { Connection, LeanDocument, Schema } from 'mongoose';
-import { Contract } from 'web3-eth-contract';
+import type { Connection, Document, LeanDocument, Schema } from 'mongoose';
 import type { IProject, IScriptInputs, IToken } from '../../db/schemas/schemaTypes';
+import { Chain } from '../../projects';
 
 export type ProcessMintReturn = Promise<
   | {
@@ -30,24 +30,28 @@ export type ProcessSingleMintFunction = (
 export type ProcessManyMintsFunction = (
   token_ids: number[],
   project: IProject,
-  contract: Contract,
+  chain: Chain,
   context: Context,
   conn: Connection,
 ) => ProcessManyMintsReturn;
 
 export type ProcessMintFunction = ProcessSingleMintFunction;
 
-export type ProcessEventReturn = Promise<LeanDocument<
-  IToken &
-    Required<{
-      _id: Schema.Types.ObjectId;
-    }>
-> | null>;
+export type ProcessEventReturn = Promise<
+  | LeanDocument<
+      IToken &
+        Required<{
+          _id: Schema.Types.ObjectId;
+        }>
+    >
+  | Document<IToken>
+  | null
+>;
 
 export type ProcessEventFunction = (
   token_id: number,
   project: IProject,
   context: Context,
   conn: Connection,
-  script_inputs?: IScriptInputs,
+  script_inputs: IScriptInputs | null,
 ) => ProcessEventReturn;

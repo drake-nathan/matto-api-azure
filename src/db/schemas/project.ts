@@ -47,6 +47,8 @@ export const projectSchema = new Schema<IProject>({
     isBulkMint: { type: Boolean, required: true },
     usesPuppeteer: { type: Boolean, required: true },
     usesScriptInputs: { type: Boolean, required: true },
-    usesSvgs: { type: Boolean },
+    usesSvgs: { type: Boolean, required: true },
+    isOversizedMint: { type: Boolean, required: true },
+    hasScriptInputs: { type: Boolean, required: true },
   },
 });

@@ -9,10 +9,10 @@ import {
 } from '../../../db/queries/projectQueries';
 import { addToken } from '../../../db/queries/tokenQueries';
 import { fetchResizeUploadImages } from '../../../services/images';
-import { fetchBase64Textures } from '../../../web3/blockchainFetches';
+import { fetchBase64Textures } from '../../../web3/web3Fetches';
 import { Chain, abis } from '../../../projects';
-import { getContract } from '../../../web3/contract';
-import { getWeb3 } from '../../../web3/provider';
+import { getContractWeb3 } from '../../../web3/contractWeb3';
+import { getWeb3 } from '../../../web3/providers';
 
 dotenv.config();
 const rootServerUrl = process.env.ROOT_URL;
@@ -68,7 +68,7 @@ export const processTexturesMint = async (
   );
 
   const web3 = getWeb3(Chain.mainnet);
-  const contract = getContract(web3, abis[project._id], project.contract_address);
+  const contract = getContractWeb3(web3, abis[project._id], project.contract_address);
 
   const { attributes, svg } = await fetchBase64Textures(contract, token_id, context);
 

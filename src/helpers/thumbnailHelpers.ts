@@ -1,8 +1,9 @@
-import { Context } from '@azure/functions';
-import axios from 'axios';
-import { Connection } from 'mongoose';
-import { IThumbnail } from '../db/schemas/schemaTypes';
-import { uploadImage } from '../services/azureStorage';
+export const bollocks = 1;
+// import { Context } from '@azure/functions';
+// import axios from 'axios';
+// import { Connection } from 'mongoose';
+// import { IThumbnail } from '../db/schemas/schemaTypes';
+// import { uploadImage } from '../services/azureStorage';
 
 // const fetchImageUploadThumbnail = async (
 //   image_full: string,
