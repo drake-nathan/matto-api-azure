@@ -48,6 +48,5 @@ export const projectSchema = new Schema<IProject>({
     usesPuppeteer: { type: Boolean, required: true },
     usesScriptInputs: { type: Boolean, required: true },
     usesSvgs: { type: Boolean, required: true },
-    hasScriptInputs: { type: Boolean, required: true },
   },
 });
