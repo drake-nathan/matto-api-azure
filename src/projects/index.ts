@@ -345,7 +345,7 @@ export const projects: IProject[] = [
     external_url: 'https://blonks.xyz',
     license: 'CC0',
     contract_address: '0x7f463b874eC264dC7BD8C780f5790b4Fc371F11f',
-    events: [],
+    events: ['Transfer'],
     creation_block: 17315032, // not the real creation block
     devParams: {
       useInDev: true,
