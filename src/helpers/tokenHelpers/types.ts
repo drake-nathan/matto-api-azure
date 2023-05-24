@@ -1,7 +1,6 @@
 import type { Context } from '@azure/functions';
 import type { Connection, Document, LeanDocument, Schema } from 'mongoose';
 import type { IProject, IScriptInputs, IToken } from '../../db/schemas/schemaTypes';
-import { Chain } from '../../projects';
 
 export type ProcessMintReturn = Promise<
   | {
@@ -11,31 +10,13 @@ export type ProcessMintReturn = Promise<
   | undefined
 >;
 
-export type ProcessManyMintsReturn = Promise<
-  | {
-      newTokenIds: number[];
-      newSupply: number | undefined;
-    }
-  | undefined
->;
-
-export type ProcessSingleMintFunction = (
+export type ProcessMintFunction = (
   token_id: number,
   project: IProject,
   context: Context,
   conn: Connection,
   script_inputs?: IScriptInputs,
 ) => ProcessMintReturn;
-
-export type ProcessManyMintsFunction = (
-  token_ids: number[],
-  project: IProject,
-  chain: Chain,
-  context: Context,
-  conn: Connection,
-) => ProcessManyMintsReturn;
-
-export type ProcessMintFunction = ProcessSingleMintFunction;
 
 export type ProcessEventReturn = Promise<
   | LeanDocument<

@@ -6,35 +6,22 @@ import {
 } from './projects/negativeCarbonHelpers';
 import { processCrystallizedIllusionsMint } from './projects/crystallizedIllusionsHelpers';
 import { processTexturesMint } from './projects/textureHelpers';
-import { processBlonksMint, processBlonksEvent } from './projects/blonksHelpers';
+import { processBlonksEvent, processBlonksMint } from './projects/blonksHelpers';
 import { ProjectId } from '../../projects';
-import type {
-  ProcessMintFunction,
-  ProcessEventFunction,
-  ProcessManyMintsFunction,
-} from './types';
+import type { ProcessMintFunction, ProcessEventFunction } from './types';
 
 export const getProcessMintFunction = (projectId: ProjectId): ProcessMintFunction => {
-  const processMintFunctions: { [key: string]: ProcessMintFunction } = {
+  const processMintFunctions = {
     [ProjectId.chainlifeMainnet]: processChainlifeMint,
     [ProjectId.chainlifeTestnet]: processChainlifeMint,
     [ProjectId.mathareMemories]: processMathareMint,
     [ProjectId.negativeCarbon]: processNegativeCarbonMint,
     [ProjectId.crystallizedIllusions]: processCrystallizedIllusionsMint,
     [ProjectId.textureAndHues]: processTexturesMint,
-  };
-
-  return processMintFunctions[projectId];
-};
-
-export const getProcessManyMintsFunction = (
-  projectId: ProjectId,
-): ProcessManyMintsFunction => {
-  const processManyMintsFunctions: { [key: string]: ProcessManyMintsFunction } = {
     [ProjectId.blonks]: processBlonksMint,
   };
 
-  return processManyMintsFunctions[projectId];
+  return processMintFunctions[projectId];
 };
 
 export const getProcessEventFunction = (

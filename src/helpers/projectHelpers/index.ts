@@ -33,7 +33,7 @@ import {
   repairBadTokens,
 } from '../tokenHelpers/projects/chainlifeHelpers';
 import { getWeb3 } from '../../web3/providers';
-import { getProcessMintFunction, getProcessManyMintsFunction } from '../tokenHelpers';
+import { getProcessMintFunction } from '../tokenHelpers';
 import { updateMathareDescriptions } from '../tokenHelpers/projects/mathareHelpers';
 
 const processNewProjects = async (projects: IProject[], conn: Connection) => {
@@ -208,9 +208,10 @@ const reconcileBulkMint = async (
     project_slug,
     maximum_supply: maxSupply,
     starting_index: startingIndex,
-    devParams: { usesScriptInputs, isOversizedMint },
-    chain,
+    devParams: { usesScriptInputs },
   } = project;
+
+  context.log('bulk mint');
 
   if (totalTokensInDb === maxSupply) {
     context.log.info(`${projectName} has been reconciled.`);
@@ -218,47 +219,36 @@ const reconcileBulkMint = async (
   }
 
   const iterateFrom = startingIndex;
-  const iteratorSize = 200; // maxSupply;
+  const iteratorSize = maxSupply;
 
   const tokenIterator = [...Array(iteratorSize + iterateFrom).keys()].slice(iterateFrom);
 
-  // TODO - abstract this logic into separate functions
-  if (isOversizedMint) {
-    const processAllMints = getProcessManyMintsFunction(projectId);
+  const processMint = getProcessMintFunction(projectId);
+
+  const newTokens: number[] = [];
+
+  for await (const tokenId of tokenIterator) {
+    const doesTokenExist = await checkIfTokenExists(tokenId, project_slug, conn);
+    if (doesTokenExist) continue;
 
     try {
-      await processAllMints(tokenIterator, project, chain, context, conn);
-    } catch (err) {
-      context.log.error(`Failed to process bulk mint for ${projectName}`, err);
-    }
-  } else {
-    const processMint = getProcessMintFunction(projectId);
+      const scriptInputs = usesScriptInputs
+        ? await fetchScriptInputs(contract, tokenId)
+        : undefined;
+      const newMint = await processMint(tokenId, project, context, conn, scriptInputs);
 
-    const newTokens: number[] = [];
-
-    for await (const tokenId of tokenIterator) {
-      const doesTokenExist = await checkIfTokenExists(tokenId, project_slug, conn);
-      if (doesTokenExist) continue;
-
-      try {
-        const scriptInputs = usesScriptInputs
-          ? await fetchScriptInputs(contract, tokenId)
-          : undefined;
-        const newMint = await processMint(tokenId, project, context, conn, scriptInputs);
-
-        if (!newMint) {
-          context.log.error(`Failed to mint token_id ${tokenId} for ${projectName}.`);
-          continue;
-        }
-
-        newTokens.push(newMint.newTokenId);
-      } catch (err) {
-        context.log.error(err);
+      if (!newMint) {
+        context.log.error(`Failed to mint token_id ${tokenId} for ${projectName}.`);
+        continue;
       }
-    }
 
-    context.log.info(`Added ${newTokens.length} new tokens to ${projectName}.`);
+      newTokens.push(newMint.newTokenId);
+    } catch (err) {
+      context.log.error(err);
+    }
   }
+
+  context.log.info(`Added ${newTokens.length} new tokens to ${projectName}.`);
 
   context.log.info(`${projectName} has been reconciled.`);
 };
