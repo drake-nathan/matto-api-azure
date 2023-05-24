@@ -6,6 +6,7 @@ import {
 } from './projects/negativeCarbonHelpers';
 import { processCrystallizedIllusionsMint } from './projects/crystallizedIllusionsHelpers';
 import { processTexturesMint } from './projects/textureHelpers';
+import { processBlonksEvent, processBlonksMint } from './projects/blonksHelpers';
 import { ProjectId } from '../../projects';
 import type { ProcessMintFunction, ProcessEventFunction } from './types';
 
@@ -17,6 +18,7 @@ export const getProcessMintFunction = (projectId: ProjectId): ProcessMintFunctio
     [ProjectId.negativeCarbon]: processNegativeCarbonMint,
     [ProjectId.crystallizedIllusions]: processCrystallizedIllusionsMint,
     [ProjectId.textureAndHues]: processTexturesMint,
+    [ProjectId.blonks]: processBlonksMint,
   };
 
   return processMintFunctions[projectId];
@@ -32,6 +34,7 @@ export const getProcessEventFunction = (
     [ProjectId.negativeCarbon]: processNegativeCarbonEvent,
     [ProjectId.crystallizedIllusions]: null,
     [ProjectId.textureAndHues]: null,
+    [ProjectId.blonks]: processBlonksEvent,
   };
 
   return processEventFunctions[projectId];

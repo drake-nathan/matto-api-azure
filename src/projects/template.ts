@@ -1,4 +1,4 @@
-const projectTemplate = {
+export const projectTemplate = {
   _id: 5, // I'll do this
   chain: 'mainnet',
   project_name: '',

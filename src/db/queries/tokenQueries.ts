@@ -19,7 +19,17 @@ export const checkIfTokenExists = async (
   return query;
 };
 
-export const getToken = (
+export const getTokenDoc = (
+  project_slug: ProjectSlug,
+  token_id: string | number,
+  conn: Connection,
+) => {
+  const Token = conn.model<IToken>('Token');
+
+  return Token.findOne({ project_slug, token_id });
+};
+
+export const getTokenLean = (
   project_slug: ProjectSlug,
   token_id: string | number,
   conn: Connection,
@@ -151,6 +161,16 @@ export const addToken = async (tokenToAdd: IToken, conn: Connection) => {
   const newToken = new Token(tokenToAdd);
 
   const query = await newToken.save();
+
+  return query;
+};
+
+export const addManyTokens = async (tokensToAdd: IToken[], conn: Connection) => {
+  const Token = conn.model<IToken>('Token');
+
+  const documents = await Token.create(tokensToAdd);
+
+  const query = await Token.bulkSave(documents);
 
   return query;
 };

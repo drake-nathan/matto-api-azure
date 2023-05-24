@@ -25,7 +25,8 @@ export interface IDevParams {
   isBulkMint: boolean;
   usesPuppeteer: boolean;
   usesScriptInputs: boolean;
-  usesSvgs?: boolean;
+  usesSvgs: boolean;
+  hasScriptInputs: boolean;
 }
 
 export interface IProject {
@@ -56,6 +57,7 @@ export interface IProject {
   creation_block: number;
   gen_scripts?: GenScripts;
   devParams: IDevParams;
+  [key: string]: any; // for future proofing ???
 }
 
 export interface IAttribute {

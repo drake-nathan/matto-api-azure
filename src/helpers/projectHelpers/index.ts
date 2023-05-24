@@ -2,8 +2,8 @@ import type { Context } from '@azure/functions';
 import type { Connection } from 'mongoose';
 import type { Contract, EventData } from 'web3-eth-contract';
 import type Web3 from 'web3';
-import { nullAddress } from './constants';
-import type { IProject } from '../db/schemas/schemaTypes';
+import { nullAddress } from '../constants';
+import type { IProject } from '../../db/schemas/schemaTypes';
 import {
   addProject,
   checkIfNewProjects,
@@ -12,29 +12,29 @@ import {
   updateCollectionDescription,
   updateProjectSupplyAndCount,
   updateTokenDescription,
-} from '../db/queries/projectQueries';
+} from '../../db/queries/projectQueries';
 import {
   checkIfTokenExists,
   getAllTokensFromProject,
   getCurrentTokenSupply,
   removeDuplicateTokens,
-} from '../db/queries/tokenQueries';
+} from '../../db/queries/tokenQueries';
 import {
   addTransaction,
   getAllMintTransactions,
   getTxCounts,
-} from '../db/queries/transactionQueries';
-import { abis } from '../projects';
-import { fetchEvents, fetchScriptInputs } from '../web3/blockchainFetches';
-import { getContract } from '../web3/contract';
-import { processNewTransactions } from './transactionHelpers';
+} from '../../db/queries/transactionQueries';
+import { ProjectSlug, abis } from '../../projects';
+import { fetchEvents, fetchScriptInputs } from '../../web3/web3Fetches';
+import { getContractWeb3 } from '../../web3/contractWeb3';
+import { processNewTransactions } from '../transactionHelpers';
 import {
   checkIfTokensMissingAttributes,
   repairBadTokens,
-} from './tokenHelpers/projects/chainlifeHelpers';
-import { getWeb3 } from '../web3/provider';
-import { getProcessMintFunction } from './tokenHelpers';
-import { updateMathareDescriptions } from './tokenHelpers/projects/mathareHelpers';
+} from '../tokenHelpers/projects/chainlifeHelpers';
+import { getWeb3 } from '../../web3/providers';
+import { getProcessMintFunction } from '../tokenHelpers';
+import { updateMathareDescriptions } from '../tokenHelpers/projects/mathareHelpers';
 
 const processNewProjects = async (projects: IProject[], conn: Connection) => {
   // try to add all projects to db, duplicates removed
@@ -42,8 +42,17 @@ const processNewProjects = async (projects: IProject[], conn: Connection) => {
     projects.map(async (project) => {
       const { total } = await getTxCounts(conn, project._id);
       const tokens = await getAllTokensFromProject(project.project_slug, conn);
+
+      let { creation_block } = project;
+
+      if (project.project_slug === ProjectSlug.blonks) {
+        const block = await getWeb3(project.chain).eth.getBlock('latest');
+        const { number: blockNumber } = block;
+        creation_block = blockNumber;
+      }
+
       return addProject(
-        { ...project, tx_count: total, current_supply: tokens.length },
+        { ...project, tx_count: total, current_supply: tokens.length, creation_block },
         conn,
       );
     }),
@@ -202,17 +211,19 @@ const reconcileBulkMint = async (
     devParams: { usesScriptInputs },
   } = project;
 
+  context.log('bulk mint');
+
   if (totalTokensInDb === maxSupply) {
     context.log.info(`${projectName} has been reconciled.`);
     return;
   }
 
-  const processMint = getProcessMintFunction(projectId);
-
   const iterateFrom = startingIndex;
-  const iteratorSize = maxSupply + startingIndex - iterateFrom;
+  const iteratorSize = maxSupply;
 
   const tokenIterator = [...Array(iteratorSize + iterateFrom).keys()].slice(iterateFrom);
+
+  const processMint = getProcessMintFunction(projectId);
 
   const newTokens: number[] = [];
 
@@ -238,6 +249,7 @@ const reconcileBulkMint = async (
   }
 
   context.log.info(`Added ${newTokens.length} new tokens to ${projectName}.`);
+
   context.log.info(`${projectName} has been reconciled.`);
 };
 
@@ -331,6 +343,7 @@ export const reconcileProject = async (
     events,
     devParams: { isBulkMint, usesPuppeteer },
   } = project;
+
   context.log.info(`Reconciling ${project_name} database to blockchain.`);
 
   if (!conn) {
@@ -341,7 +354,7 @@ export const reconcileProject = async (
   const totalTokensInDb = await getCurrentTokenSupply(project_id, conn);
 
   const web3 = getWeb3(chain);
-  const contract = getContract(web3, abis[project_id], contract_address);
+  const contract = getContractWeb3(web3, abis[project_id], contract_address);
 
   if (isBulkMint) {
     await reconcileBulkMint(conn, context, project, contract, totalTokensInDb);

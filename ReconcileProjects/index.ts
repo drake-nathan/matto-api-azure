@@ -5,7 +5,8 @@ import { projects as allProjects } from '../src/projects';
 import { checkForNewProjects, reconcileProject } from '../src/helpers/projectHelpers';
 import { connectionFactory } from '../src/db/connectionFactory';
 import { removeDuplicateTransactions } from '../src/db/queries/transactionQueries';
-import { IProject } from '../src/db/schemas/schemaTypes';
+import type { IProject } from '../src/db/schemas/schemaTypes';
+import { updateProjectIfNeeded } from '../src/helpers/projectHelpers/updateProjectIfNeeded';
 
 dotenv.config();
 
@@ -26,10 +27,12 @@ const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
   try {
     conn = await connectionFactory(context);
 
-    await checkForNewProjects(context, projects, conn);
+    await checkForNewProjects(context, projects, conn); // checks for new projects in the projects array that it receives and adds it to the database
 
     for await (const project of projects) {
-      await reconcileProject(context, project, conn);
+      const _project = await updateProjectIfNeeded(project, context, conn);
+
+      await reconcileProject(context, _project, conn);
     }
 
     const numOfDuplicateTransactions = await removeDuplicateTransactions(conn);

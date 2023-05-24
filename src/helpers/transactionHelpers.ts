@@ -6,9 +6,9 @@ import { getProjectCurrentSupply } from '../db/queries/projectQueries';
 import { checkIfTokenExists } from '../db/queries/tokenQueries';
 import { addTransaction } from '../db/queries/transactionQueries';
 import { abis } from '../projects';
-import { fetchEvents, fetchScriptInputs } from '../web3/blockchainFetches';
-import { getContract } from '../web3/contract';
-import { getWeb3 } from '../web3/provider';
+import { fetchEvents, fetchScriptInputs } from '../web3/web3Fetches';
+import { getContractWeb3 } from '../web3/contractWeb3';
+import { getWeb3 } from '../web3/providers';
 import { getProcessMintFunction, getProcessEventFunction } from './tokenHelpers';
 
 export interface ILogValues {
@@ -27,7 +27,7 @@ export const processNewTransactions = async (
 ) => {
   const {
     project_slug,
-    devParams: { isBulkMint },
+    devParams: { isBulkMint, usesScriptInputs },
     events,
   } = project;
   const newTokenIds: number[] = [];
@@ -36,9 +36,11 @@ export const processNewTransactions = async (
     if (!tx) continue;
 
     const { event_type, token_id } = tx;
-    const script_inputs = await fetchScriptInputs(contract, token_id);
+    const script_inputs = usesScriptInputs
+      ? await fetchScriptInputs(contract, token_id)
+      : null;
 
-    if (event_type === 'Mint') {
+    if (event_type === 'Mint' && script_inputs) {
       if (isBulkMint) continue;
 
       const doesTokenExist = await checkIfTokenExists(token_id, project_slug, conn);
@@ -88,7 +90,7 @@ export const checkForNewTransactions = async (
   } = project;
   context.log(`Checking for new transactions for ${project_name}...`);
   const web3 = getWeb3(chain);
-  const contract = getContract(web3, abis[project_id], contract_address);
+  const contract = getContractWeb3(web3, abis[project_id], contract_address);
 
   const logValues: ILogValues = {
     project_name,
