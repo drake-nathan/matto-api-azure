@@ -111,7 +111,7 @@ export const projects: IProject[] = [
       world: 'https://cdn.substratum.art/scripts/chainlife/chainlifeWorld.min.js',
     },
     devParams: {
-      useInDev: false,
+      useInDev: true,
       useInProd: true,
       usesPuppeteer: true,
       isBulkMint: false,
