@@ -9,6 +9,7 @@ import negativeCarbonAbi from './abis/NegativeCarbon.abi.json';
 import crystallizedIllusionsAbi from './abis/CrystallizedIllusions.abi.json';
 import textureAndHuesAbi from './abis/TextureAndHues.abi.json';
 import blonksAbi from './abis/BLONKS.abi.json';
+import oneHundredxAbi from './100x10x1x/abi/100x10x1.abi.json';
 
 export enum Chain {
   mainnet = 'mainnet',
@@ -24,6 +25,9 @@ export enum Chain {
  * 3 = Negative Carbon
  * 4 = Crystallized Illusions
  * 5 = Texture and Hues
+ * 6 = BLONKS
+ * 7 = 100x10x1 Goerli
+ * 8 = 100x10x1
  */
 export enum ProjectId {
   chainlifeTestnet,
@@ -33,9 +37,10 @@ export enum ProjectId {
   crystallizedIllusions,
   textureAndHues,
   blonks,
-  // '100x10x1',
-  // nfn,
+  '100x10x1-A-goerli',
   // mfa,
+  // '100x10x1-A',
+  // nfn,
   // pfp,
 }
 
@@ -48,6 +53,9 @@ export enum ProjectId {
  * negative-carbon = Negative Carbon
  * crystallized-illusions = Crystallized Illusions
  * texture-and-hues = Texture and Hues
+ * blonks = BLONKS
+ * 100x10x1-A-goerli = 100x10x1-A Goerli
+ * 100x10x1-A = 100x10x1-A
  */
 export enum ProjectSlug {
   chainlifeTestnet = 'chainlife-testnet',
@@ -57,9 +65,10 @@ export enum ProjectSlug {
   crystallizedIllusions = 'crystallized-illusions',
   textureAndHues = 'texture-and-hues',
   blonks = 'blonks',
-  // '100x10x1' = '100x10x1',
-  // nfn = 'non-fungible-novels',
+  '100x10x1-A-goerli' = '100x10x1-A-goerli',
   // mfa = 'MFA',
+  // '100x10x1-A' = '100x10x1-A',
+  // nfn = 'non-fungible-novels',
   // pfp = 'PFP',
 }
 
@@ -229,7 +238,7 @@ export const projects: IProject[] = [
       main: 'https://cdn.substratum.art/scripts/negativeCarbon/negativeCarbon.min.js',
     },
     devParams: {
-      useInDev: false,
+      useInDev: true,
       useInProd: true,
       usesPuppeteer: true,
       isBulkMint: false,
@@ -302,7 +311,7 @@ export const projects: IProject[] = [
     events: [],
     creation_block: 15415501,
     devParams: {
-      useInDev: false,
+      useInDev: true,
       useInProd: true,
       usesPuppeteer: false,
       isBulkMint: true,
@@ -337,7 +346,7 @@ export const projects: IProject[] = [
     events: ['Transfer'],
     creation_block: 17315032, // not the real creation block
     devParams: {
-      useInDev: true,
+      useInDev: false,
       useInProd: true,
       usesPuppeteer: false,
       isBulkMint: true,
@@ -345,44 +354,41 @@ export const projects: IProject[] = [
       usesSvgs: true,
     },
   },
-  // {
-  //   _id: ProjectId['100x10x1'],
-  //   chain: Chain.mainnet,
-  //   project_name: '100x10x1',
-  //   project_slug: ProjectSlug['100x10x1'],
-  //   collection_name: '100x10x1',
-  //   artist: 'Matto',
-  //   artist_address: '0xF8d9056db2C2189155bc25A30269dc5dDeD15d46',
-  //   royalty_info: {
-  //     artist_address: '0xA6a4Fe416F8Bf46bc3bCA068aC8b1fC4DF760653',
-  //     royalty_fee_by_id: 5,
-  //   },
-  //   maximum_supply: 101,
-  //   starting_index: 0,
-  //   tx_count: 0,
-  //   collection_description:
-  //     '100x10x1 is an experimental generative art project: 100 generative tokens, each with 10 layers, together form 1 composite token (100x10x1).',
-  //   mintable: false,
-  //   script_type: 'Solidity',
-  //   aspect_ratio: 1,
-  //   website: 'https://matto.xyz/project/100x10x1',
-  //   external_url: 'https://substratum.art/project/100x10x1',
-  //   license: 'CC BY-NC 4.0',
-  //   contract_address: '0x32a1918079034b610c27F43f8cb04EF121DcEeD0',
-  //   events: ['NewOrder'],
-  //   creation_block: 16317969,
-  //   gen_scripts: {
-  //     main: 'https://cdn.substratum.art/scripts/100x10x1/100x10x1.min.js',
-  //   },
-  //   devParams: {
-  //     useInDev: true,
-  //     useInProd: true,
-  //     usesPuppeteer: false,
-  //     isBulkMint: false,
-  //     usesScriptInputs: true,
-  //     usesSvgs: true,
-  //   },
-  // },
+  {
+    _id: ProjectId['100x10x1-A-goerli'],
+    chain: Chain.goerli,
+    project_name: '100x10x1-A',
+    project_slug: ProjectSlug['100x10x1-A-goerli'],
+    collection_name: '100x10x1-A',
+    artist: 'Matto',
+    artist_address: '0xF8d9056db2C2189155bc25A30269dc5dDeD15d46',
+    royalty_info: {
+      artist_address: '0xA6a4Fe416F8Bf46bc3bCA068aC8b1fC4DF760653',
+      royalty_fee_by_id: 5,
+    },
+    maximum_supply: 101,
+    starting_index: 0,
+    tx_count: 0,
+    collection_description:
+      '100x10x1 Composition A, is an experimental generative art project: 100 generative tokens, each with 10 layers, together form 1 composite token (100x10x1).',
+    mintable: false,
+    script_type: 'Solidity',
+    aspect_ratio: 0.5625,
+    website: 'https://matto.xyz/project/100x10x1-a',
+    external_url: 'https://substratum.art/project/100x10x1-a',
+    license: 'CC BY-NC 4.0',
+    contract_address: '0x87C9Ac13798E2Eb0D0Fa2f6aEEC3e9890a3e28D6',
+    events: ['Transfer', 'NewOrder'],
+    creation_block: 8779147,
+    devParams: {
+      useInDev: false,
+      useInProd: false,
+      usesPuppeteer: false,
+      isBulkMint: false,
+      usesScriptInputs: true,
+      usesSvgs: true,
+    },
+  },
 ];
 
 export const abis = {
@@ -393,6 +399,7 @@ export const abis = {
   [ProjectId.crystallizedIllusions]: crystallizedIllusionsAbi as AbiItem[],
   [ProjectId.textureAndHues]: textureAndHuesAbi as AbiItem[],
   [ProjectId.blonks]: blonksAbi as AbiItem[],
+  [ProjectId['100x10x1-A-goerli']]: oneHundredxAbi as AbiItem[],
 };
 
 export const projectSizes: ProjectSizes = {
@@ -431,11 +438,11 @@ export const projectSizes: ProjectSizes = {
     mid: { width: 1080, height: 1080 },
     small: { width: 600, height: 600 },
   },
-  // [ProjectId['100x10x1']]: {
-  //   full: { width: 2160, height: 2160 },
-  //   mid: { width: 1080, height: 1080 },
-  //   small: { width: 600, height: 600 },
-  // },
+  [ProjectId['100x10x1-A-goerli']]: {
+    full: { width: 2160, height: 3840 },
+    mid: { width: 1080, height: 1920 },
+    small: { width: 338, height: 600 },
+  },
 };
 
 // {

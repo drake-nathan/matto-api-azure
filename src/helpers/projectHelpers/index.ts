@@ -211,8 +211,6 @@ const reconcileBulkMint = async (
     devParams: { usesScriptInputs },
   } = project;
 
-  context.log('bulk mint');
-
   if (totalTokensInDb === maxSupply) {
     context.log.info(`${projectName} has been reconciled.`);
     return;

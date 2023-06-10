@@ -76,7 +76,8 @@ export interface IScriptInputs {
   imageURI_base?: string;
   audioURI_base?: string;
   media_URI?: string;
-  approved_shuffler?: string;
+  approved_shuffler?: `0x${string}`;
+  svg_part?: string;
   svg_parts?: string;
   title?: string;
   description?: string;
