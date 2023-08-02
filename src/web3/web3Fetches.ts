@@ -71,20 +71,3 @@ export const fetchBase64Textures = async (
 
   return { attributes, svg };
 };
-
-// const testFetch = async () => {
-//   const project = projects.find((p) => p._id === ProjectId.textureAndHues);
-
-//   if (!project) {
-//     throw new Error('Project not found');
-//   }
-
-//   const web3 = getWeb3(Chain.mainnet);
-//   const contract = getContract(web3, abis[project._id], project.contract_address);
-
-//   return fetchBase64Textures(contract, 1);
-// };
-
-// testFetch()
-//   .then((res) => console.info(res))
-//   .catch(console.error);

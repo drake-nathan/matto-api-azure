@@ -12,7 +12,7 @@ export const updateProjectIfNeeded = async (
 
   const Project = conn.model<IProject>('Project');
 
-  let projectDb = await Project.findOne({ project_slug });
+  const projectDb = await Project.findOne({ project_slug });
 
   if (!projectDb) {
     throw new Error(`No project found for ${project_name}`);
@@ -28,8 +28,8 @@ export const updateProjectIfNeeded = async (
   }
 
   if (isChanged) {
-    projectDb = await projectDb.save();
+    await projectDb.save();
   }
 
-  return projectDb;
+  return project;
 };

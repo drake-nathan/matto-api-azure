@@ -30,7 +30,7 @@ export type ProcessEventReturn = Promise<
 >;
 
 export type ProcessEventFunction = (
-  token_id: number,
+  token_id: number | undefined,
   project: IProject,
   context: Context,
   conn: Connection,

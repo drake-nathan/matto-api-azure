@@ -29,7 +29,7 @@ export const addTransaction = async (
     transaction_hash,
     transaction_date: new Date(blockTime * 1000),
     event_type: event === 'Transfer' && from === nullAddress ? 'Mint' : event,
-    token_id: parseInt(tokenId),
+    token_id: event === 'NewOrder' ? undefined : parseInt(tokenId),
   };
 
   const newTx = new Transaction(parsedTx);

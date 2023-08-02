@@ -122,7 +122,7 @@ export interface ITransaction {
   transaction_hash: string;
   transaction_date: Date;
   event_type: string;
-  token_id: number;
+  token_id?: number;
 }
 
 export interface IThumbnail {

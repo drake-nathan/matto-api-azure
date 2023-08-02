@@ -108,7 +108,7 @@ export const processNegativeCarbonMint = async (
 };
 
 export const processNegativeCarbonEvent = async (
-  token_id: number,
+  token_id: number | undefined,
   project: IProject,
   context: Context,
   conn: Connection,
@@ -120,6 +120,10 @@ export const processNegativeCarbonEvent = async (
 
   if (!script_inputs) {
     throw new Error(`No script inputs for ${project_name} token ${token_id}`);
+  }
+
+  if (!token_id) {
+    throw new Error(`No token id for ${project_name}, (processNegativeCarbonEvent)`);
   }
 
   const updatedToken = await updateScriptInputs(

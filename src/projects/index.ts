@@ -371,6 +371,7 @@ export const projects: IProject[] = [
     tx_count: 0,
     collection_description:
       '100x10x1 Composition A, is an experimental generative art project: 100 generative tokens, each with 10 layers, together form 1 composite token (100x10x1).',
+    description: '',
     mintable: false,
     script_type: 'Solidity',
     aspect_ratio: 0.5625,
@@ -378,11 +379,11 @@ export const projects: IProject[] = [
     external_url: 'https://substratum.art/project/100x10x1-a',
     license: 'CC BY-NC 4.0',
     contract_address: '0x87C9Ac13798E2Eb0D0Fa2f6aEEC3e9890a3e28D6',
-    events: ['Transfer', 'NewOrder'],
+    events: ['Transfer', 'NewOrder', 'Shuffler'],
     creation_block: 8779147,
     devParams: {
-      useInDev: false,
-      useInProd: false,
+      useInDev: true,
+      useInProd: true,
       usesPuppeteer: false,
       isBulkMint: false,
       usesScriptInputs: true,

@@ -113,7 +113,7 @@ export const processBlonksMint: ProcessMintFunction = async (
 };
 
 export const processBlonksEvent = async (
-  token_id: number,
+  token_id: number | undefined,
   project: IProject,
   context: Context,
   conn: Connection,
@@ -125,6 +125,10 @@ export const processBlonksEvent = async (
     chain,
     contract_address,
   } = project;
+
+  if (!token_id) {
+    throw new Error(`No token_id for ${project_name}, (processBlonksEvent)`);
+  }
 
   const token = await getTokenDoc(project_slug, token_id, conn);
 

@@ -36,12 +36,18 @@ export const processNewTransactions = async (
     if (!tx) continue;
 
     const { event_type, token_id } = tx;
-    const script_inputs = usesScriptInputs
-      ? await fetchScriptInputs(contract, token_id)
-      : null;
+    const script_inputs =
+      usesScriptInputs && token_id ? await fetchScriptInputs(contract, token_id) : null;
 
     if (event_type === 'Mint' && script_inputs) {
       if (isBulkMint) continue;
+
+      if (!token_id) {
+        context.log.error(
+          `Error processing new mint for ${project.project_name}, no token_id.`,
+        );
+        continue;
+      }
 
       const doesTokenExist = await checkIfTokenExists(token_id, project_slug, conn);
 
@@ -114,10 +120,9 @@ export const checkForNewTransactions = async (
   );
   const newTxNoNull = newTransactionsAdded.filter(Boolean);
 
-  if (newTxNoNull.length)
+  if (newTxNoNull.length) {
     context.log.info(`${newTxNoNull.length} missing transactions found and added.`);
-
-  if (!newTxNoNull.length) {
+  } else {
     const currentSupply = await getProjectCurrentSupply(project._id, conn);
     logValues.currentSupply = currentSupply;
     return logValues;

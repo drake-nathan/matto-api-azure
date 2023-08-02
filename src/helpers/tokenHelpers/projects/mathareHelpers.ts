@@ -109,7 +109,7 @@ export const processMathareMint = async (
 };
 
 export const processMathareEvent = async (
-  token_id: number,
+  token_id: number | undefined,
   project: IProject,
   context: Context,
   conn: Connection,
@@ -121,6 +121,10 @@ export const processMathareEvent = async (
 
   if (!script_inputs) {
     throw new Error(`No script inputs for ${project_name} token ${token_id}`);
+  }
+
+  if (!token_id) {
+    throw new Error(`No token id for ${project_name}, (processMathareEvent)`);
   }
 
   const updatedToken = await updateScriptInputs(
