@@ -1,31 +1,28 @@
-import { decodeEventLog, getContract } from 'viem';
-import { Chain } from '../projects';
-import { getViem } from './providers';
-import { oneHundredxAbi } from '../projects/100x10x1x/abi';
+import { getContract } from "viem";
+import { Chain } from "../projects";
+import { getViem } from "./providers";
+import { oneHundredxAbi } from "../projects/100x10x1x/abi";
+import { parseSvgAttributes } from "../projects/100x10x1x/helpers/parseSvgAttributes";
 
-console.log('go time');
+console.log("go time");
 const viemTx = async () => {
   const client = getViem(Chain.goerli);
 
-  const logs = await client.getLogs({
-    address: '0x87C9Ac13798E2Eb0D0Fa2f6aEEC3e9890a3e28D6',
-    // fromBlock: BigInt(8852203),
-    // toBlock: BigInt(8923471),
+  const contract = getContract({
+    abi: oneHundredxAbi,
+    address: "0x5Af0264C48eB2fB3D3250e5dd679cfb1D35b624A",
+    publicClient: client,
   });
 
-  return logs;
+  const svg = await contract.read.getTokenSVG([BigInt(1)]);
+
+  return svg;
 };
 
 viemTx()
-  .then((logs) =>
-    logs.forEach((log, i) => {
-      const decoded = decodeEventLog({
-        abi: oneHundredxAbi,
-        data: log.data,
-        topics: log.topics,
-      });
+  .then((svg) => {
+    const attributes = parseSvgAttributes(svg);
 
-      console.log(`Log #${i + 1}:`, { log, decoded });
-    }),
-  )
+    console.log({ svg, attributes });
+  })
   .catch(console.error);

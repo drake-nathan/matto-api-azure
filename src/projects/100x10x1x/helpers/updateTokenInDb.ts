@@ -1,9 +1,10 @@
-import type { Context } from '@azure/functions';
-import type { Connection } from 'mongoose';
-import { getTokenDoc } from '../../../db/queries/tokenQueries';
-import { openseaRefresh } from '../../../services/openseaRefresh';
-import { getUpdatedTokenValues } from './getUpdatedTokenValues';
-import { Chain, ProjectId, ProjectSlug } from '../..';
+import type { Context } from "@azure/functions";
+import type { Connection } from "mongoose";
+
+import { getTokenDoc } from "../../../db/queries/tokenQueries";
+import { openseaRefresh } from "../../../services/openseaRefresh";
+import { Chain, ProjectId, ProjectSlug } from "../..";
+import { getUpdatedTokenValues } from "./getUpdatedTokenValues";
 
 interface Params {
   chain: Chain;
@@ -34,7 +35,7 @@ export const updateTokenInDb = async ({
     throw new Error(`No token found for ${projectName} ${tokenId}`);
   }
 
-  const { svg, scriptInputs, image, image_mid, image_small, attributes } =
+  const { svg, image, image_mid, image_small, attributes } =
     await getUpdatedTokenValues({
       context,
       tokenId,
@@ -44,11 +45,9 @@ export const updateTokenInDb = async ({
       projectId,
       projectSlug,
       existingAttributes: token.attributes,
-      existingSvg: token.svg,
     });
 
   token.svg = svg;
-  token.script_inputs = scriptInputs;
   token.image = image;
   token.image_mid = image_mid;
   token.image_small = image_small;
@@ -58,7 +57,11 @@ export const updateTokenInDb = async ({
   const updatedToken = await token.save();
 
   if (tokenId === 0) {
-    await openseaRefresh(contractAddress, tokenId);
+    try {
+      await openseaRefresh(contractAddress, tokenId);
+    } catch (error) {
+      context.log.error("Error refreshing opensea.");
+    }
   }
 
   return updatedToken;

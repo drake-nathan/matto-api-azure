@@ -1,13 +1,13 @@
 import {
   getProjectCurrentSupply,
   updateProjectSupplyAndCount,
-} from '../../../db/queries/projectQueries';
-import { addToken } from '../../../db/queries/tokenQueries';
-import type { IToken } from '../../../db/schemas/schemaTypes';
-import type { ProcessMintFunction } from '../../../helpers/tokenHelpers/types';
-import { getTokenZeroDescription } from './getTokenZeroDescription';
-import { getUpdatedTokenValues } from './getUpdatedTokenValues';
-import { updateTokenInDb } from './updateTokenInDb';
+} from "../../../db/queries/projectQueries";
+import { addToken } from "../../../db/queries/tokenQueries";
+import type { IToken } from "../../../db/schemas/schemaTypes";
+import type { ProcessMintFunction } from "../../../helpers/tokenHelpers/types";
+import { getTokenZeroDescription } from "./getTokenZeroDescription";
+import { getUpdatedTokenValues } from "./getUpdatedTokenValues";
+import { updateTokenInDb } from "./updateTokenInDb";
 
 export const process100xMint: ProcessMintFunction = async (
   token_id,
@@ -36,9 +36,9 @@ export const process100xMint: ProcessMintFunction = async (
 
   const isTokenZero = token_id === 0;
 
-  context.log.info('Adding token', token_id, 'to', project_name);
+  context.log.info("Adding token", token_id, "to", project_name);
 
-  const { svg, scriptInputs, image, image_mid, image_small, attributes } =
+  const { svg, image, image_mid, image_small, attributes } =
     await getUpdatedTokenValues({
       context,
       tokenId: token_id,
@@ -50,12 +50,16 @@ export const process100xMint: ProcessMintFunction = async (
     });
 
   const description = isTokenZero
-    ? await getTokenZeroDescription(chain, contract_address, collection_description)
+    ? await getTokenZeroDescription(
+        chain,
+        contract_address,
+        collection_description,
+      )
     : collection_description;
 
   const newToken: IToken = {
     token_id,
-    name: `${project_name} #${token_id}`,
+    name: isTokenZero ? `${collection_name}` : `#${token_id}`,
     project_id,
     project_name,
     project_slug,
@@ -74,7 +78,6 @@ export const process100xMint: ProcessMintFunction = async (
     license,
     royalty_info,
     attributes,
-    script_inputs: scriptInputs,
   };
 
   const { token_id: newTokenId } = await addToken(newToken, conn);

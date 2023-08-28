@@ -1,15 +1,19 @@
-import { type Context } from '@azure/functions';
-import { type Contract } from 'web3-eth-contract';
-import { type Connection } from 'mongoose';
-import type { IProject, ITransaction } from '../db/schemas/schemaTypes';
-import { getProjectCurrentSupply } from '../db/queries/projectQueries';
-import { checkIfTokenExists } from '../db/queries/tokenQueries';
-import { addTransaction } from '../db/queries/transactionQueries';
-import { abis } from '../projects';
-import { fetchEvents, fetchScriptInputs } from '../web3/web3Fetches';
-import { getContractWeb3 } from '../web3/contractWeb3';
-import { getWeb3 } from '../web3/providers';
-import { getProcessMintFunction, getProcessEventFunction } from './tokenHelpers';
+import { type Context } from "@azure/functions";
+import { type Connection } from "mongoose";
+import { type Contract } from "web3-eth-contract";
+
+import { getProjectCurrentSupply } from "../db/queries/projectQueries";
+import { checkIfTokenExists } from "../db/queries/tokenQueries";
+import { addTransaction } from "../db/queries/transactionQueries";
+import type { IProject, ITransaction } from "../db/schemas/schemaTypes";
+import { abis } from "../projects";
+import { getContractWeb3 } from "../web3/contractWeb3";
+import { getWeb3 } from "../web3/providers";
+import { fetchEvents, fetchScriptInputs } from "../web3/web3Fetches";
+import {
+  getProcessEventFunction,
+  getProcessMintFunction,
+} from "./tokenHelpers";
 
 export interface ILogValues {
   project_name: string;
@@ -37,9 +41,11 @@ export const processNewTransactions = async (
 
     const { event_type, token_id } = tx;
     const script_inputs =
-      usesScriptInputs && token_id ? await fetchScriptInputs(contract, token_id) : null;
+      usesScriptInputs && token_id
+        ? await fetchScriptInputs(contract, token_id)
+        : undefined;
 
-    if (event_type === 'Mint' && script_inputs) {
+    if (event_type === "Mint") {
       if (isBulkMint) continue;
 
       if (!token_id) {
@@ -49,7 +55,11 @@ export const processNewTransactions = async (
         continue;
       }
 
-      const doesTokenExist = await checkIfTokenExists(token_id, project_slug, conn);
+      const doesTokenExist = await checkIfTokenExists(
+        token_id,
+        project_slug,
+        conn,
+      );
 
       if (!doesTokenExist) {
         const processMint = getProcessMintFunction(project._id);
@@ -62,7 +72,9 @@ export const processNewTransactions = async (
         );
 
         if (!newMint) {
-          context.log.error(`Error processing new mint for ${project.project_name}`);
+          context.log.error(
+            `Error processing new mint for ${project.project_name}`,
+          );
           continue;
         }
 
@@ -105,7 +117,8 @@ export const checkForNewTransactions = async (
     currentSupply: 0,
   };
 
-  if (!conn) throw new Error('No connection to database. (checkForNewTransactions)');
+  if (!conn)
+    throw new Error("No connection to database. (checkForNewTransactions)");
 
   const { filteredTransactions: fetchedTransactions } = await fetchEvents(
     contract,
@@ -116,12 +129,16 @@ export const checkForNewTransactions = async (
   );
 
   const newTransactionsAdded = await Promise.all(
-    fetchedTransactions.map(async (tx) => addTransaction(tx, project_id, conn, web3)),
+    fetchedTransactions.map(async (tx) =>
+      addTransaction(tx, project_id, conn, chain),
+    ),
   );
   const newTxNoNull = newTransactionsAdded.filter(Boolean);
 
   if (newTxNoNull.length) {
-    context.log.info(`${newTxNoNull.length} missing transactions found and added.`);
+    context.log.info(
+      `${newTxNoNull.length} missing transactions found and added.`,
+    );
   } else {
     const currentSupply = await getProjectCurrentSupply(project._id, conn);
     logValues.currentSupply = currentSupply;

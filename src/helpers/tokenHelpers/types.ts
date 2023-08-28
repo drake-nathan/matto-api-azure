@@ -1,6 +1,11 @@
-import type { Context } from '@azure/functions';
-import type { Connection, Document, LeanDocument, Schema } from 'mongoose';
-import type { IProject, IScriptInputs, IToken } from '../../db/schemas/schemaTypes';
+import type { Context } from "@azure/functions";
+import type { Connection, Document, LeanDocument, Schema } from "mongoose";
+
+import type {
+  IProject,
+  IScriptInputs,
+  IToken,
+} from "../../db/schemas/schemaTypes";
 
 export type ProcessMintReturn = Promise<
   | {
@@ -34,5 +39,5 @@ export type ProcessEventFunction = (
   project: IProject,
   context: Context,
   conn: Connection,
-  script_inputs: IScriptInputs | null,
+  script_inputs: IScriptInputs | undefined,
 ) => ProcessEventReturn;

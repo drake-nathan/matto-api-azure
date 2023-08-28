@@ -1,5 +1,6 @@
-import { Schema } from 'mongoose';
-import type { ITransaction } from './schemaTypes';
+import { Schema } from "mongoose";
+
+import type { ITransaction } from "./schemaTypes";
 
 export const transactionSchema = new Schema<ITransaction>({
   project_id: { type: Number, required: true },

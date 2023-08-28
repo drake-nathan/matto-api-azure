@@ -1,6 +1,6 @@
-import type { ProcessEventFunction } from '../../../helpers/tokenHelpers/types';
-import { getTokenZeroDescription } from './getTokenZeroDescription';
-import { updateTokenInDb } from './updateTokenInDb';
+import type { ProcessEventFunction } from "../../../helpers/tokenHelpers/types";
+import { getTokenZeroDescription } from "./getTokenZeroDescription";
+import { updateTokenInDb } from "./updateTokenInDb";
 
 export const process100xEvent: ProcessEventFunction = async (
   token_id,
@@ -22,7 +22,11 @@ export const process100xEvent: ProcessEventFunction = async (
 
   const description =
     tokenId === 0
-      ? await getTokenZeroDescription(chain, contract_address, collection_description)
+      ? await getTokenZeroDescription(
+          chain,
+          contract_address,
+          collection_description,
+        )
       : collection_description;
 
   const updatedToken = await updateTokenInDb({

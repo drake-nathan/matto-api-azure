@@ -1,11 +1,20 @@
 {
   "extends": ["airbnb-base", "airbnb-typescript/base", "prettier"],
+  "plugins": ["simple-import-sort"],
   "parserOptions": {
     "project": "./tsconfig.json"
   },
   "rules": {
-    "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
     "@typescript-eslint/no-unused-vars": "warn",
+    "@typescript-eslint/naming-convention": [
+      "error",
+      {
+        "selector": "variable",
+        "format": ["camelCase", "UPPER_CASE", "PascalCase", "snake_case"],
+        "leadingUnderscore": "allow"
+      }
+    ],
+    "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
     "no-unused-vars": "off",
     "import/prefer-default-export": "off",
     "radix": "off",
@@ -20,14 +29,8 @@
     "object-curly-newline": "off",
     "no-restricted-syntax": "off",
     "no-promise-executor-return": "off",
-    "@typescript-eslint/naming-convention": [
-      "error",
-      {
-        "selector": "variable",
-        "format": ["camelCase", "UPPER_CASE", "PascalCase", "snake_case"],
-        "leadingUnderscore": "allow"
-      }
-    ]
+    "simple-import-sort/imports": "error",
+    "simple-import-sort/exports": "error"
   },
   "settings": {
     "import/resolver": {

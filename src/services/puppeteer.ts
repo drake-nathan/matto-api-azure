@@ -10,6 +10,7 @@ const runPuppeteer = async (
   projectId: ProjectId,
   size: Viewport,
   esoterra = false,
+  getAttributes = true,
 ) => {
   const browser = await puppeteer.launch({
     defaultViewport: size,
@@ -45,17 +46,20 @@ const runPuppeteer = async (
 
   const screenshot = (await page.screenshot({ encoding: 'binary' })) as Buffer;
 
-  const attributes = await page.evaluate(() => {
-    const newAttributes = sessionStorage.getItem('attributes');
+  let attributes: IAttribute[] = [];
+  if (getAttributes) {
+    attributes = await page.evaluate(() => {
+      const newAttributes = sessionStorage.getItem('attributes');
 
-    if (!newAttributes) {
-      throw new Error(
-        `No attributes found in sessionStorage for token ${scriptInputs.token_id}}`,
-      );
-    }
+      if (!newAttributes) {
+        throw new Error(
+          `No attributes found in sessionStorage for token ${scriptInputs.token_id}}`,
+        );
+      }
 
-    return JSON.parse(newAttributes) as IAttribute[];
-  });
+      return JSON.parse(newAttributes) as IAttribute[];
+    });
+  }
 
   await browser.close();
   return { screenshot, attributes };
@@ -67,6 +71,7 @@ export const getPuppeteerImageSet = async (
   tokenId: number,
   generatorUrl: string,
   scriptInputs: IScriptInputs,
+  getAttributes = true,
 ) => {
   const sizes = projectSizes[projectId];
 
@@ -78,6 +83,7 @@ export const getPuppeteerImageSet = async (
     projectId,
     isEsoterra ? { width: 1080, height: 1080 } : sizes.full,
     isEsoterra,
+    getAttributes,
   );
 
   const imageMidBuffer = await sharp(screenshot).resize(sizes.mid).toBuffer();

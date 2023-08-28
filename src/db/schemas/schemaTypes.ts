@@ -25,6 +25,7 @@ export interface IDevParams {
   isBulkMint: boolean;
   usesPuppeteer: boolean;
   usesScriptInputs: boolean;
+  usesTokenDataOf?: boolean;
   usesSvgs: boolean;
 }
 

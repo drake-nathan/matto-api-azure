@@ -1,20 +1,25 @@
-import * as dotenv from 'dotenv';
-import type { Context } from '@azure/functions';
-import type { Connection } from 'mongoose';
-import type { IProject, IScriptInputs, IToken } from '../../../db/schemas/schemaTypes';
-import type { ProcessMintReturn, ProcessEventReturn } from '../types';
+import type { Context } from "@azure/functions";
+import * as dotenv from "dotenv";
+import type { Connection } from "mongoose";
+
 import {
   getProjectCurrentSupply,
   updateProjectSupplyAndCount,
-} from '../../../db/queries/projectQueries';
+} from "../../../db/queries/projectQueries";
 import {
   addToken,
   updateOneTokenDesc,
   updateScriptInputs,
-} from '../../../db/queries/tokenQueries';
-import { attributes as mathareStartingAttr } from '../../../projects/mathareData/attributes';
-import mathareDescriptionsJson from '../../../projects/mathareData/descriptions.json';
-import { ProjectSlug } from '../../../projects';
+} from "../../../db/queries/tokenQueries";
+import type {
+  IProject,
+  IScriptInputs,
+  IToken,
+} from "../../../db/schemas/schemaTypes";
+import { ProjectSlug } from "../../../projects";
+import { attributes as mathareStartingAttr } from "../../../projects/mathareData/attributes";
+import mathareDescriptionsJson from "../../../projects/mathareData/descriptions.json";
+import type { ProcessEventFunction, ProcessMintReturn } from "../types";
 
 dotenv.config();
 const rootServerUrl = process.env.ROOT_URL;
@@ -57,18 +62,20 @@ export const processMathareMint = async (
     appended_description,
   } = project;
 
-  context.log.info('Adding token', token_id, 'to', project_name);
+  context.log.info("Adding token", token_id, "to", project_name);
 
   if (!script_inputs) {
-    context.log.info('No script inputs for token', token_id, 'in project', project_name);
+    context.log.info(
+      "No script inputs for token",
+      token_id,
+      "in project",
+      project_name,
+    );
     return;
   }
 
-  const { generator_url, external_url, image, image_mid, thumbnail_url } = getUrls(
-    project_slug,
-    token_id,
-    projectExternalUrl,
-  );
+  const { generator_url, external_url, image, image_mid, thumbnail_url } =
+    getUrls(project_slug, token_id, projectExternalUrl);
 
   const newToken: IToken = {
     token_id,
@@ -78,7 +85,9 @@ export const processMathareMint = async (
     project_slug,
     artist,
     artist_address,
-    description: `${mathareDescriptionsJson[token_id - 1]}${appended_description}`,
+    description: `${
+      mathareDescriptionsJson[token_id - 1]
+    }${appended_description}`,
     collection_name,
     aspect_ratio,
     script_type,
@@ -108,16 +117,16 @@ export const processMathareMint = async (
   return { newTokenId, newSupply };
 };
 
-export const processMathareEvent = async (
-  token_id: number | undefined,
-  project: IProject,
-  context: Context,
-  conn: Connection,
-  script_inputs: IScriptInputs | null,
-): ProcessEventReturn => {
+export const processMathareEvent: ProcessEventFunction = async (
+  token_id,
+  project,
+  context,
+  conn,
+  script_inputs,
+) => {
   const { _id: project_id, project_name } = project;
 
-  context.log.info('Updating token', token_id, 'on', project_name);
+  context.log.info("Updating token", token_id, "on", project_name);
 
   if (!script_inputs) {
     throw new Error(`No script inputs for ${project_name} token ${token_id}`);
@@ -137,7 +146,10 @@ export const processMathareEvent = async (
   return updatedToken;
 };
 
-export const updateMathareDescriptions = async (conn: Connection, project: IProject) => {
+export const updateMathareDescriptions = async (
+  conn: Connection,
+  project: IProject,
+) => {
   const { _id: project_id, maximum_supply, appended_description } = project;
 
   // create array of token ids starting from 1 to maximum_supply

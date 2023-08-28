@@ -1,12 +1,12 @@
-import { getContract } from 'viem';
-import type { Context } from '@azure/functions';
-import { getViem } from '../../../web3/providers';
-import { oneHundredxAbi } from '../abi';
-import type { IAttribute, IScriptInputs } from '../../../db/schemas/schemaTypes';
-import { parseSvgAttributes } from './parseScriptInputs';
-import { svgToPngAndUpload } from '../../../services/images';
-import { Chain, ProjectId, ProjectSlug } from '../..';
-import { svgStart } from './svgStart';
+import type { Context } from "@azure/functions";
+import { getContract } from "viem";
+
+import type { IAttribute } from "../../../db/schemas/schemaTypes";
+import { svgToPngAndUpload } from "../../../services/images";
+import { getViem } from "../../../web3/providers";
+import { Chain, ProjectId, ProjectSlug } from "../..";
+import { oneHundredxAbi } from "../abi";
+import { parseSvgAttributes } from "./parseSvgAttributes";
 
 interface Params {
   chain: Chain;
@@ -17,13 +17,11 @@ interface Params {
   projectId: ProjectId;
   projectSlug: ProjectSlug;
   existingAttributes?: IAttribute[];
-  existingSvg?: string;
 }
 
 interface UpdatedValues {
   svg: string;
   attributes: IAttribute[];
-  scriptInputs: IScriptInputs;
   image: string;
   image_mid: string;
   image_small: string;
@@ -39,7 +37,6 @@ export const getUpdatedTokenValues = async ({
   projectId,
   projectSlug,
   existingAttributes,
-  existingSvg,
 }: Params): Promise<UpdatedValues> => {
   const viemClient = getViem(chain);
 
@@ -51,34 +48,23 @@ export const getUpdatedTokenValues = async ({
 
   // function state
   const updatedValues: UpdatedValues = {
-    svg: '',
+    svg: "",
     attributes: [],
-    scriptInputs: {},
-    image: '',
-    image_mid: '',
-    image_small: '',
+    image: "",
+    image_mid: "",
+    image_small: "",
   };
 
   // get scriptInputs from blockchain
   try {
-    const scriptInputsString = await contract.read.scriptInputsOf([BigInt(tokenId)]);
-    const currentOwner = await contract.read.ownerOf([BigInt(tokenId)]);
+    updatedValues.svg = await contract.read.getTokenSVG([BigInt(tokenId)]);
 
-    const scriptInputs: IScriptInputs = JSON.parse(scriptInputsString);
-
-    if (!scriptInputs.svg_part) {
-      throw new Error(
-        `Failed to fetch script inputs for ${projectName} ${tokenId} from blockchain`,
-      );
+    if (!updatedValues.svg) {
+      throw new Error();
     }
 
-    const attributes =
-      existingAttributes ?? parseSvgAttributes(scriptInputs.svg_part) ?? [];
-
-    updatedValues.attributes = attributes;
-    if (!existingSvg) updatedValues.svg = svgStart + scriptInputs.svg_part;
-    updatedValues.scriptInputs = scriptInputs;
-    updatedValues.scriptInputs.current_owner = currentOwner;
+    updatedValues.attributes =
+      existingAttributes ?? parseSvgAttributes(updatedValues.svg) ?? [];
   } catch (err) {
     context.log.error(
       `Failed to fetch script inputs for ${projectName} ${tokenId} from blockchain`,
@@ -86,12 +72,10 @@ export const getUpdatedTokenValues = async ({
     );
   }
 
-  if (tokenId === 0) {
-    updatedValues.svg = await contract.read.getCompositeSVG();
-  }
-
   if (!updatedValues.svg) {
-    throw new Error(`Failed to fetch svg for ${projectName} ${tokenId} from blockchain`);
+    throw new Error(
+      `Failed to fetch svg for ${projectName} ${tokenId} from blockchain`,
+    );
   }
 
   try {

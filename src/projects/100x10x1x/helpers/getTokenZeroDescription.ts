@@ -1,7 +1,8 @@
-import { getContract } from 'viem';
-import { Chain } from '../..';
-import { getViem } from '../../../web3/providers';
-import { oneHundredxAbi } from '../abi';
+import { getContract } from "viem";
+
+import { getViem } from "../../../web3/providers";
+import { Chain } from "../..";
+import { oneHundredxAbi } from "../abi";
 
 export const getTokenZeroDescription = async (
   chain: Chain,
