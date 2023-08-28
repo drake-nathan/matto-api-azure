@@ -1,10 +1,11 @@
-import { AzureFunction, Context } from '@azure/functions';
-import { Connection } from 'mongoose';
-import { connectionFactory } from '../src/db/connectionFactory';
-import { addLevelSnapshot } from '../src/db/queries/snapshotQueries';
-import { getLevels } from '../src/db/queries/tokenQueries';
-import { ILevelSnapshot } from '../src/db/schemas/schemaTypes';
-import { ProjectSlug } from '../src/projects';
+import { AzureFunction, Context } from "@azure/functions";
+import { Connection } from "mongoose";
+
+import { connectionFactory } from "../src/db/connectionFactory";
+import { addLevelSnapshot } from "../src/db/queries/snapshotQueries";
+import { getLevels } from "../src/db/queries/tokenQueries";
+import { ILevelSnapshot } from "../src/db/schemas/schemaTypes";
+import { ProjectSlug } from "../src/projects";
 
 const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
   let conn: Connection | undefined;
@@ -25,11 +26,11 @@ const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
     const newLevelSnapshot = await addLevelSnapshot(levelSnapshotToAdd, conn);
 
     context.log.info(
-      'New level snapshot added at',
+      "New level snapshot added at",
       newLevelSnapshot.snapshot_date.toLocaleTimeString(),
     );
   } catch (error) {
-    context.log.error('SnapshotLevels function error', error);
+    context.log.error("SnapshotLevels function error", error);
   } finally {
     if (conn) await conn.close();
   }

@@ -1,8 +1,9 @@
 import { getContract } from "viem";
+
 import { Chain } from "../projects";
-import { getViem } from "./providers";
 import { oneHundredxAbi } from "../projects/100x10x1x/abi";
 import { parseSvgAttributes } from "../projects/100x10x1x/helpers/parseSvgAttributes";
+import { getViem } from "./providers";
 
 console.log("go time");
 const viemTx = async () => {

@@ -1,15 +1,20 @@
-import * as dotenv from 'dotenv';
-import type { Context } from '@azure/functions';
-import type { Connection } from 'mongoose';
-import type { IProject, IScriptInputs, IToken } from '../../../db/schemas/schemaTypes';
-import type { ProcessMintReturn } from '../types';
+import type { Context } from "@azure/functions";
+import * as dotenv from "dotenv";
+import type { Connection } from "mongoose";
+
 import {
   getProjectCurrentSupply,
   updateProjectSupplyAndCount,
-} from '../../../db/queries/projectQueries';
-import { addToken } from '../../../db/queries/tokenQueries';
-import { getAttributes } from '../../../services/puppeteer';
-import { fetchResizeUploadImages } from '../../../services/images';
+} from "../../../db/queries/projectQueries";
+import { addToken } from "../../../db/queries/tokenQueries";
+import type {
+  IProject,
+  IScriptInputs,
+  IToken,
+} from "../../../db/schemas/schemaTypes";
+import { fetchResizeUploadImages } from "../../../services/images";
+import { getAttributes } from "../../../services/puppeteer";
+import type { ProcessMintReturn } from "../types";
 
 dotenv.config();
 const rootServerUrl = process.env.ROOT_URL;
@@ -50,7 +55,7 @@ export const processCrystallizedIllusionsMint = async (
     tx_count,
   } = project;
 
-  context.log.info('Adding token', token_id, 'to', project.project_name);
+  context.log.info("Adding token", token_id, "to", project.project_name);
 
   if (!script_inputs) {
     throw new Error(`No script inputs for ${project_name} token ${token_id}`);
@@ -71,11 +76,14 @@ export const processCrystallizedIllusionsMint = async (
 
   const attributes = await getAttributes(generator_url, script_inputs);
 
-  const type = attributes.find((attr) => attr.trait_type === 'Type')?.value;
-  const complexity = attributes.find((attr) => attr.trait_type === 'Complexity')?.value;
+  const type = attributes.find((attr) => attr.trait_type === "Type")?.value;
+  const complexity = attributes.find((attr) => attr.trait_type === "Complexity")
+    ?.value;
 
   const name =
-    type && complexity ? `${type} #${complexity}` : `${project_name} ${token_id}`;
+    type && complexity
+      ? `${type} #${complexity}`
+      : `${project_name} ${token_id}`;
 
   const newToken: IToken = {
     token_id,

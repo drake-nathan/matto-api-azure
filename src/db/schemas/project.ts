@@ -1,5 +1,6 @@
-import { Schema } from 'mongoose';
-import { IProject } from './schemaTypes';
+import { Schema } from "mongoose";
+
+import { IProject } from "./schemaTypes";
 
 export const projectSchema = new Schema<IProject>({
   _id: { type: Number, required: true },

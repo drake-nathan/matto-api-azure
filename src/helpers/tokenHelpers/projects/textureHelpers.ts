@@ -1,18 +1,19 @@
-import * as dotenv from 'dotenv';
-import type { Context } from '@azure/functions';
-import type { Connection } from 'mongoose';
-import type { IProject, IToken } from '../../../db/schemas/schemaTypes';
-import type { ProcessMintReturn } from '../types';
+import type { Context } from "@azure/functions";
+import * as dotenv from "dotenv";
+import type { Connection } from "mongoose";
+
 import {
   getProjectCurrentSupply,
   updateProjectSupplyAndCount,
-} from '../../../db/queries/projectQueries';
-import { addToken } from '../../../db/queries/tokenQueries';
-import { fetchResizeUploadImages } from '../../../services/images';
-import { fetchBase64Textures } from '../../../web3/web3Fetches';
-import { Chain, abis } from '../../../projects';
-import { getContractWeb3 } from '../../../web3/contractWeb3';
-import { getWeb3 } from '../../../web3/providers';
+} from "../../../db/queries/projectQueries";
+import { addToken } from "../../../db/queries/tokenQueries";
+import type { IProject, IToken } from "../../../db/schemas/schemaTypes";
+import { abis, Chain } from "../../../projects";
+import { fetchResizeUploadImages } from "../../../services/images";
+import { getContractWeb3 } from "../../../web3/contractWeb3";
+import { getWeb3 } from "../../../web3/providers";
+import { fetchBase64Textures } from "../../../web3/web3Fetches";
+import type { ProcessMintReturn } from "../types";
 
 dotenv.config();
 const rootServerUrl = process.env.ROOT_URL;
@@ -52,7 +53,7 @@ export const processTexturesMint = async (
     tx_count,
   } = project;
 
-  context.log.info('Adding token', token_id, 'to', project.project_name);
+  context.log.info("Adding token", token_id, "to", project.project_name);
 
   const { external_url, image, svgGen } = getTexturesUrls(
     project_slug,
@@ -68,9 +69,17 @@ export const processTexturesMint = async (
   );
 
   const web3 = getWeb3(Chain.mainnet);
-  const contract = getContractWeb3(web3, abis[project._id], project.contract_address);
+  const contract = getContractWeb3(
+    web3,
+    abis[project._id],
+    project.contract_address,
+  );
 
-  const { attributes, svg } = await fetchBase64Textures(contract, token_id, context);
+  const { attributes, svg } = await fetchBase64Textures(
+    contract,
+    token_id,
+    context,
+  );
 
   const name = `${project_name} #${token_id}`;
 

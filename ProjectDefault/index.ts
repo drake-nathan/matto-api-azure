@@ -1,8 +1,9 @@
-import { AzureFunction, Context } from '@azure/functions';
-import { Connection } from 'mongoose';
-import * as dotenv from 'dotenv';
-import { getAllProjects } from '../src/db/queries/projectQueries';
-import { connectionFactory } from '../src/db/connectionFactory';
+import { AzureFunction, Context } from "@azure/functions";
+import * as dotenv from "dotenv";
+import { Connection } from "mongoose";
+
+import { connectionFactory } from "../src/db/connectionFactory";
+import { getAllProjects } from "../src/db/queries/projectQueries";
 
 const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
   let conn: Connection | undefined;
@@ -18,7 +19,7 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
     if (!projects) {
       context.res = {
         status: 400,
-        body: 'No projects on this server.',
+        body: "No projects on this server.",
       };
       return;
     }
@@ -76,15 +77,15 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
       status: 200,
       body: html,
       headers: {
-        'Content-Type': 'text/html',
+        "Content-Type": "text/html",
       },
     };
   } catch (error) {
     context.log.error(error);
-    if (process.env.NODE_ENV === 'test') console.error(error);
+    if (process.env.NODE_ENV === "test") console.error(error);
     context.res = {
       status: 500,
-      body: 'Something went wrong, ngmi.',
+      body: "Something went wrong, ngmi.",
     };
   } finally {
     if (conn) await conn.close();

@@ -1,9 +1,9 @@
-import axios from 'axios';
+import axios from "axios";
 
 export const fetchFocusSupply = async () => {
   const response = await axios({
-    url: 'https://api.thegraph.com/subgraphs/name/artblocks/art-blocks',
-    method: 'post',
+    url: "https://api.thegraph.com/subgraphs/name/artblocks/art-blocks",
+    method: "post",
     data: {
       query: `
         {

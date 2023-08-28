@@ -1,17 +1,18 @@
-import { getContract as getContractViem } from 'viem';
-import type { Context } from '@azure/functions';
-import type { Connection } from 'mongoose';
-import type { IProject, IToken } from '../../../db/schemas/schemaTypes';
-import type { ProcessEventReturn, ProcessMintFunction } from '../types';
-import { allBLONKStraits } from '../../constants';
-import { addToken, getTokenDoc } from '../../../db/queries/tokenQueries';
+import type { Context } from "@azure/functions";
+import type { Connection } from "mongoose";
+import { getContract as getContractViem } from "viem";
+
 import {
-  updateProjectSupplyAndCount,
   getProjectCurrentSupply,
-} from '../../../db/queries/projectQueries';
-import { getViem } from '../../../web3/providers';
-import { blonksAbi } from '../../../projects/abis/blonksAbi';
-import { svgToPngAndUpload } from '../../../services/images';
+  updateProjectSupplyAndCount,
+} from "../../../db/queries/projectQueries";
+import { addToken, getTokenDoc } from "../../../db/queries/tokenQueries";
+import type { IProject, IToken } from "../../../db/schemas/schemaTypes";
+import { blonksAbi } from "../../../projects/abis/blonksAbi";
+import { svgToPngAndUpload } from "../../../services/images";
+import { getViem } from "../../../web3/providers";
+import { allBLONKStraits } from "../../constants";
+import type { ProcessEventReturn, ProcessMintFunction } from "../types";
 
 export const processBlonksMint: ProcessMintFunction = async (
   token_id,
@@ -38,7 +39,7 @@ export const processBlonksMint: ProcessMintFunction = async (
     chain,
   } = project;
 
-  context.log.info('Adding token', token_id, 'to', project_name);
+  context.log.info("Adding token", token_id, "to", project_name);
 
   const newToken: IToken = {
     token_id,
@@ -49,9 +50,9 @@ export const processBlonksMint: ProcessMintFunction = async (
     artist,
     artist_address,
     collection_name,
-    description: description || '',
+    description: description || "",
     script_type,
-    image: '',
+    image: "",
     aspect_ratio,
     website,
     external_url,
@@ -154,7 +155,12 @@ export const processBlonksEvent = async (
   }
 
   try {
-    const pngs = await svgToPngAndUpload(token.svg!, project_id, project_slug, token_id);
+    const pngs = await svgToPngAndUpload(
+      token.svg!,
+      project_id,
+      project_slug,
+      token_id,
+    );
 
     token.image = pngs.image;
     token.image_mid = pngs.image_mid;

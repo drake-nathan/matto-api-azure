@@ -1,7 +1,8 @@
-import { AzureFunction, Context } from '@azure/functions';
-import { Connection } from 'mongoose';
-import { connectionFactory } from '../src/db/connectionFactory';
-import { getThumbnail } from '../src/db/queries/thumbnailQueries';
+import { AzureFunction, Context } from "@azure/functions";
+import { Connection } from "mongoose";
+
+import { connectionFactory } from "../src/db/connectionFactory";
+import { getThumbnail } from "../src/db/queries/thumbnailQueries";
 
 const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
   const { artblocks_id } = context.bindingData;
@@ -15,7 +16,7 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
     if (!thumbnail) {
       context.res = {
         status: 404,
-        body: 'Thumbnail not found',
+        body: "Thumbnail not found",
       };
       return;
     }
@@ -26,10 +27,10 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
     };
   } catch (error) {
     context.log.error(error);
-    if (process.env.NODE_ENV === 'test') console.error(error);
+    if (process.env.NODE_ENV === "test") console.error(error);
     context.res = {
       status: 500,
-      body: 'Internal Server Error',
+      body: "Internal Server Error",
     };
   } finally {
     if (conn) await conn.close();

@@ -4,11 +4,14 @@
   "description": "",
   "scripts": {
     "build": "tsc",
-    "watch": "tsc -w",
-    "type-check": "tsc --noEmit",
+    "lint": "eslint . --ext .ts --fix",
     "prestart": "npm run build",
+    "prettier": "prettier --write .",
+    "prettify": "npm run prettier && npm run lint",
     "start": "func start",
-    "test": "jest"
+    "test": "jest",
+    "type-check": "tsc --noEmit",
+    "watch": "tsc -w"
   },
   "jest": {
     "testPathIgnorePatterns": [

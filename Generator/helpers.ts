@@ -1,5 +1,6 @@
-import type { HttpRequest } from '@azure/functions';
-import type { GenScripts, IScriptInputs } from '../src/db/schemas/schemaTypes';
+import type { HttpRequest } from "@azure/functions";
+
+import type { GenScripts, IScriptInputs } from "../src/db/schemas/schemaTypes";
 
 enum ScriptType {
   main,
@@ -30,13 +31,17 @@ export const getHtml = (
   };
 
   const scriptTags = `
-    ${scriptInputs ? `<script>const scriptInputs = ${scriptInputs};</script>` : ''}
-    ${preMainScript ? getScriptTag(preMainScript) : ''}
+    ${
+      scriptInputs
+        ? `<script>const scriptInputs = ${scriptInputs};</script>`
+        : ""
+    }
+    ${preMainScript ? getScriptTag(preMainScript) : ""}
     ${getScriptTag(scripts[options.scriptType] || mainScript!)}
     ${
       options.mobile && mobileControls && options.scriptType !== ScriptType.alt
         ? getScriptTag(mobileControls)
-        : ''
+        : ""
     }
   `;
 
@@ -56,9 +61,9 @@ export const getHtml = (
             }
             canvas {
               ${
-                projectName === 'Negative Carbon'
-                  ? 'width: 100% !important; height: auto !important;'
-                  : ''
+                projectName === "Negative Carbon"
+                  ? "width: 100% !important; height: auto !important;"
+                  : ""
               }
               padding: 0;
               margin: auto;
@@ -93,22 +98,23 @@ export const getScriptType = (
   if (!genScripts.alt && !genScripts.painting) return ScriptType.main;
 
   if (
-    (req.query?.alt === 'false' || req.query?.esoterra === 'false') &&
-    req.query?.painting === 'false'
+    (req.query?.alt === "false" || req.query?.esoterra === "false") &&
+    req.query?.painting === "false"
   ) {
     return ScriptType.main;
   }
 
   if (
-    (req.query?.alt && req.query.alt === 'true') ||
-    (req.query?.esoterra && req.query.esoterra === 'true')
+    (req.query?.alt && req.query.alt === "true") ||
+    (req.query?.esoterra && req.query.esoterra === "true")
   ) {
     return ScriptType.alt;
   }
 
-  if (req.query?.painting && req.query.painting === 'true') return ScriptType.painting;
+  if (req.query?.painting && req.query.painting === "true")
+    return ScriptType.painting;
 
-  if (projectSlug === 'chainlife' || projectSlug === 'chainlife-testnet') {
+  if (projectSlug === "chainlife" || projectSlug === "chainlife-testnet") {
     const scriptInputs: IScriptInputs = JSON.parse(scriptInputsJson);
     const { custom_rule } = scriptInputs;
 

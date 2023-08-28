@@ -1,6 +1,7 @@
-import { type ObjectId } from 'mongoose';
-import { type Viewport } from 'puppeteer';
-import type { ProjectSlug, ProjectId, Chain } from '../../projects';
+import { type ObjectId } from "mongoose";
+import { type Viewport } from "puppeteer";
+
+import type { Chain, ProjectId, ProjectSlug } from "../../projects";
 
 export interface IRoyaltyInfo {
   royalty_fee_by_id: number;
@@ -128,7 +129,7 @@ export interface ITransaction {
 
 export interface IThumbnail {
   _id?: ObjectId;
-  project_slug: 'focus' | 'enso';
+  project_slug: "focus" | "enso";
   project_id: 34 | 181;
   token_id: number;
   artblocks_id: string;

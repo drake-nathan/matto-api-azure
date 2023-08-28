@@ -1,8 +1,9 @@
-import { AzureFunction, Context } from '@azure/functions';
-import { Connection } from 'mongoose';
-import { connectionFactory } from '../src/db/connectionFactory';
-import { getProject } from '../src/db/queries/projectQueries';
-import { getTxCounts } from '../src/db/queries/transactionQueries';
+import { AzureFunction, Context } from "@azure/functions";
+import { Connection } from "mongoose";
+
+import { connectionFactory } from "../src/db/connectionFactory";
+import { getProject } from "../src/db/queries/projectQueries";
+import { getTxCounts } from "../src/db/queries/transactionQueries";
 
 const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
   const { project_slug } = context.bindingData;
@@ -16,7 +17,7 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
     if (!project) {
       context.res = {
         status: 404,
-        body: 'Invalid project slug',
+        body: "Invalid project slug",
       };
       return;
     }
@@ -29,7 +30,7 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
     };
   } catch (error) {
     context.log.error(error);
-    if (process.env.NODE_ENV === 'test') console.error(error);
+    if (process.env.NODE_ENV === "test") console.error(error);
     context.res = {
       status: 500,
       body: "Can't get tx counts right now",

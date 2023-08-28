@@ -1,9 +1,10 @@
-import type { AzureFunction, Context, HttpRequest } from '@azure/functions';
-import type { Connection } from 'mongoose';
-import { getProject } from '../src/db/queries/projectQueries';
-import { connectionFactory } from '../src/db/connectionFactory';
-import { getScriptInputsFromDb } from '../src/db/queries/tokenQueries';
-import { getScriptType, getHtml } from './helpers';
+import type { AzureFunction, Context, HttpRequest } from "@azure/functions";
+import type { Connection } from "mongoose";
+
+import { connectionFactory } from "../src/db/connectionFactory";
+import { getProject } from "../src/db/queries/projectQueries";
+import { getScriptInputsFromDb } from "../src/db/queries/tokenQueries";
+import { getHtml, getScriptType } from "./helpers";
 
 const httpTrigger: AzureFunction = async (
   context: Context,
@@ -20,7 +21,7 @@ const httpTrigger: AzureFunction = async (
     if (!project) {
       context.res = {
         status: 404,
-        body: 'Project not found.',
+        body: "Project not found.",
       };
       return;
     }
@@ -30,7 +31,7 @@ const httpTrigger: AzureFunction = async (
     if (!gen_scripts) {
       context.res = {
         status: 404,
-        body: 'This project does not have a generator.',
+        body: "This project does not have a generator.",
       };
       return;
     }
@@ -43,12 +44,16 @@ const httpTrigger: AzureFunction = async (
         `Using scriptInputs from request body for token ${token_id} on ${project_name}.`,
       );
     } else {
-      const scriptInputsDb = await getScriptInputsFromDb(project_slug, token_id, conn);
+      const scriptInputsDb = await getScriptInputsFromDb(
+        project_slug,
+        token_id,
+        conn,
+      );
 
       if (!scriptInputsDb) {
         context.res = {
           status: 404,
-          body: 'This token may not be minted yet.',
+          body: "This token may not be minted yet.",
         };
         return;
       }
@@ -59,18 +64,24 @@ const httpTrigger: AzureFunction = async (
     if (!scriptInputsJson) {
       context.res = {
         status: 400,
-        body: 'Something went wrong, ngmi.',
+        body: "Something went wrong, ngmi.",
       };
       return;
     }
 
     const genOptions = {
       mobile: false,
-      scriptType: getScriptType(project_slug, gen_scripts, scriptInputsJson, req),
+      scriptType: getScriptType(
+        project_slug,
+        gen_scripts,
+        scriptInputsJson,
+        req,
+      ),
     };
 
     // adds mobile controls script if query param ?mobile=true
-    if (req.query?.mobile && req.query.mobile === 'true') genOptions.mobile = true;
+    if (req.query?.mobile && req.query.mobile === "true")
+      genOptions.mobile = true;
 
     const generatorHtml = getHtml(
       project_name,
@@ -83,15 +94,15 @@ const httpTrigger: AzureFunction = async (
       status: 200,
       body: generatorHtml,
       headers: {
-        'Content-Type': 'text/html',
+        "Content-Type": "text/html",
       },
     };
   } catch (error) {
     context.log.error(error);
-    if (process.env.NODE_ENV === 'test') console.error(error);
+    if (process.env.NODE_ENV === "test") console.error(error);
     context.res = {
       status: 500,
-      body: 'Something went wrong, ngmi.',
+      body: "Something went wrong, ngmi.",
     };
   } finally {
     if (conn) await conn.close();

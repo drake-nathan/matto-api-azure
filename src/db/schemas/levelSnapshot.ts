@@ -1,5 +1,6 @@
-import { Schema } from 'mongoose';
-import { ILevelSnapshot } from './schemaTypes';
+import { Schema } from "mongoose";
+
+import { ILevelSnapshot } from "./schemaTypes";
 
 export const levelSnapshotSchema = new Schema<ILevelSnapshot>({
   snapshot_date: { type: Date, required: true },

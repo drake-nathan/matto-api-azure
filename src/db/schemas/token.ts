@@ -1,5 +1,6 @@
-import { Schema } from 'mongoose';
-import { IToken } from './schemaTypes';
+import { Schema } from "mongoose";
+
+import { IToken } from "./schemaTypes";
 
 export const tokenSchema = new Schema<IToken>({
   token_id: { type: Number, required: true },

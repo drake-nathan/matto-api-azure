@@ -1,10 +1,11 @@
-import * as dotenv from 'dotenv';
-import { AzureFunction, Context } from '@azure/functions';
-import { Connection } from 'mongoose';
-import { connectionFactory } from '../src/db/connectionFactory';
-import { IProject } from '../src/db/schemas/schemaTypes';
-import { checkForNewTransactions } from '../src/helpers/transactionHelpers';
-import { projects as allProjects } from '../src/projects';
+import { AzureFunction, Context } from "@azure/functions";
+import * as dotenv from "dotenv";
+import { Connection } from "mongoose";
+
+import { connectionFactory } from "../src/db/connectionFactory";
+import { IProject } from "../src/db/schemas/schemaTypes";
+import { checkForNewTransactions } from "../src/helpers/transactionHelpers";
+import { projects as allProjects } from "../src/projects";
 
 dotenv.config();
 
@@ -12,7 +13,7 @@ const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
   let conn: Connection | undefined;
   const projects: IProject[] = [];
 
-  const isDev = process.env.NODE_ENV === 'development';
+  const isDev = process.env.NODE_ENV === "development";
 
   allProjects.forEach((project) => {
     if (isDev && project.devParams.useInDev) {
@@ -38,8 +39,8 @@ const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
     arrOfLogValues.forEach((logValues) => {
       if (logValues) {
         const tokenMsg = logValues.newTokens.length
-          ? `New tokens: ${logValues.newTokens.join(', ')}.`
-          : 'No new tokens.';
+          ? `New tokens: ${logValues.newTokens.join(", ")}.`
+          : "No new tokens.";
 
         const logMsg = `${logValues.project_name}: ${logValues.numOfTxsAdded} new transactions. ${tokenMsg} Current supply: ${logValues.currentSupply}`;
 
