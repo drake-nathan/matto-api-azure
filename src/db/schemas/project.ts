@@ -28,7 +28,9 @@ export const projectSchema = new Schema<IProject>({
   events: [{ type: String }],
   creation_block: { type: Number, required: true },
   royalty_info: {
-    royalty_fee_by_id: { type: Number, required: true },
+    royalty_fee_by_id: { type: Number },
+    royalty_bps: { type: Number },
+    royalty_address: { type: String },
     artist_address: { type: String },
     charity_address: { type: String },
     additional_payee: { type: String },

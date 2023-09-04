@@ -3,13 +3,23 @@ import { type Viewport } from "puppeteer";
 
 import type { Chain, ProjectId, ProjectSlug } from "../../projects";
 
-export interface IRoyaltyInfo {
-  royalty_fee_by_id: number;
-  artist_address?: string;
-  charity_address?: string;
+export type IRoyaltyInfo = (
+  | {
+      royalty_fee_by_id: number;
+      artist_address: string;
+    }
+  | {
+      royalty_bps: number;
+      royalty_address: string;
+    }
+  | {
+      charity_address: string;
+      royalty_fee_by_id: number;
+    }
+) & {
   additional_payee?: string;
   additional_payee_bps?: number;
-}
+};
 
 export interface GenScripts {
   main?: string;
@@ -58,7 +68,7 @@ export interface IProject {
   creation_block: number;
   gen_scripts?: GenScripts;
   devParams: IDevParams;
-  [key: string]: any; // for future proofing ???
+  [key: string]: any; // for the mongo `updateProjectIfNeeded` function, not ideal
 }
 
 export interface IAttribute {

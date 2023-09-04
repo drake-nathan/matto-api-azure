@@ -19,7 +19,7 @@ import {
 } from "../../db/queries/tokenQueries";
 import {
   addTransaction,
-  getAllMintTransactions,
+  getTransactionsByEvent,
   getTxCounts,
 } from "../../db/queries/transactionQueries";
 import type { IProject } from "../../db/schemas/schemaTypes";
@@ -188,7 +188,7 @@ const reconcileTokens = async (
         `${project_name} has a token count discrepancy, attempting to fix.`,
       );
       const allMintTransactions = (
-        await getAllMintTransactions(project_id, conn)
+        await getTransactionsByEvent(conn, project_id, "Mint")
       ).sort((a, b) => {
         if (a.token_id && b.token_id) {
           return a.token_id - b.token_id;

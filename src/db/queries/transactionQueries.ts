@@ -67,15 +67,28 @@ export const getLastTxProcessed = async (
   return query?.block_number || null;
 };
 
-export const getAllMintTransactions = async (
-  project_id: number,
+export const getTransactionsByEvent = async (
   conn: Connection,
+  project_id: number,
+  event_type: string,
 ) => {
   const Transaction = conn.model<ITransaction>("Transaction");
 
-  const query = await Transaction.find({ project_id, event_type: "Mint" });
+  const query = await Transaction.find({ project_id, event_type });
 
   return query;
+};
+
+export const getTransactionCountByEvent = (
+  conn: Connection,
+  project_id: number,
+  event_type: string,
+) => {
+  const Transaction = conn.model<ITransaction>("Transaction");
+
+  const query = Transaction.countDocuments({ project_id, event_type });
+
+  return query.exec();
 };
 
 export const removeDuplicateTransactions = async (

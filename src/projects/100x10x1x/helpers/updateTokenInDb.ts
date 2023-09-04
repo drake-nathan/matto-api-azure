@@ -2,8 +2,8 @@ import type { Context } from "@azure/functions";
 import type { Connection } from "mongoose";
 
 import { getTokenDoc } from "../../../db/queries/tokenQueries";
-import { openseaRefresh } from "../../../services/openseaRefresh";
 import { Chain, ProjectId, ProjectSlug } from "../..";
+import { getTokenZeroAttributes } from "./getTokenZeroAttributes";
 import { getUpdatedTokenValues } from "./getUpdatedTokenValues";
 
 interface Params {
@@ -35,6 +35,10 @@ export const updateTokenInDb = async ({
     throw new Error(`No token found for ${projectName} ${tokenId}`);
   }
 
+  if (tokenId === 0) {
+    token.attributes = await getTokenZeroAttributes(conn);
+  }
+
   const { svg, image, image_mid, image_small, attributes } =
     await getUpdatedTokenValues({
       context,
@@ -56,13 +60,13 @@ export const updateTokenInDb = async ({
 
   const updatedToken = await token.save();
 
-  if (tokenId === 0) {
-    try {
-      await openseaRefresh(contractAddress, tokenId);
-    } catch (error) {
-      context.log.error("Error refreshing opensea.");
-    }
-  }
+  // if (tokenId === 0) {
+  //   try {
+  //     await openseaRefresh(contractAddress, tokenId);
+  //   } catch (error) {
+  //     context.log.error("Error refreshing opensea.");
+  //   }
+  // }
 
   return updatedToken;
 };

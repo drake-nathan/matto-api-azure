@@ -364,14 +364,14 @@ export const projects: IProject[] = [
   {
     _id: ProjectId["100x10x1-A-goerli"],
     chain: Chain.goerli,
-    project_name: "100x10x1-A Goerli",
+    project_name: "100x10x1-a Goerli",
     project_slug: ProjectSlug["100x10x1-A-goerli"],
-    collection_name: "100x10x1-A",
+    collection_name: "100x10x1-a",
     artist: "Matto",
     artist_address: "0xF8d9056db2C2189155bc25A30269dc5dDeD15d46",
     royalty_info: {
-      artist_address: "0xA6a4Fe416F8Bf46bc3bCA068aC8b1fC4DF760653",
-      royalty_fee_by_id: 5,
+      royalty_address: "0xA6a4Fe416F8Bf46bc3bCA068aC8b1fC4DF760653",
+      royalty_bps: 5,
     },
     maximum_supply: 101,
     starting_index: 0,
