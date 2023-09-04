@@ -371,7 +371,7 @@ export const projects: IProject[] = [
     artist_address: "0xF8d9056db2C2189155bc25A30269dc5dDeD15d46",
     royalty_info: {
       royalty_address: "0xA6a4Fe416F8Bf46bc3bCA068aC8b1fC4DF760653",
-      royalty_bps: 5,
+      royalty_bps: 700,
     },
     maximum_supply: 101,
     starting_index: 0,
