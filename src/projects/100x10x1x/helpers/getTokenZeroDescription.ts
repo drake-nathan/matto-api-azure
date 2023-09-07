@@ -19,7 +19,10 @@ export const getTokenZeroDescription = async (
 
   const compositeOrder = await contract.read.getOrder();
 
-  const finalDescription = `${collectionDescription}\n\nComposite Order: ${compositeOrder}`;
+  const extraDescription =
+    "Token 0 represents the composite artwork. It is owned by the smart-contract, and it can be leant out (and recalled back), by the artist at any time.";
+
+  const finalDescription = `${collectionDescription} ${extraDescription}\n\nComposite Order: ${compositeOrder}`;
 
   return finalDescription;
 };
