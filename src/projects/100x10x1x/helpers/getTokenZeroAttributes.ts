@@ -9,13 +9,13 @@ export const getTokenZeroAttributes = async (
   conn: Connection,
 ): Promise<IAttribute[]> => {
   const tokens = await getAllTokensFromProject(
-    ProjectSlug["100x10x1-A-goerli"],
+    ProjectSlug["100x10x1-a-goerli"],
     conn,
   );
 
   const orderChangedCount = await getTransactionCountByEvent(
     conn,
-    ProjectId["100x10x1-A-goerli"],
+    ProjectId["100x10x1-a-goerli"],
     "OrderChanged",
   );
   const tokenCount = tokens.length;

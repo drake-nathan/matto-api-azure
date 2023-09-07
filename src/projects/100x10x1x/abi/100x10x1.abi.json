@@ -128,6 +128,20 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "SVGfilter",
+    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "name": "SVGstart",
+    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       { "internalType": "uint256", "name": "_tokenId", "type": "uint256" }
     ],
@@ -201,6 +215,20 @@
     "type": "function"
   },
   {
+    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "name": "blackBackground",
+    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "blackBackgroundDefault",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "collection",
     "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
@@ -223,7 +251,56 @@
   },
   {
     "inputs": [],
+    "name": "contractsFrozen",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "croppedCompositeDefault",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "externalUrl",
+    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "freezeContracts",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "freezeLayerSVGs",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "bool", "name": "_cropped", "type": "bool" },
+      { "internalType": "bool", "name": "_blackBackground", "type": "bool" }
+    ],
+    "name": "getAltCompositeSVG",
+    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "_tokenId", "type": "uint256" },
+      { "internalType": "bool", "name": "_cropped", "type": "bool" },
+      { "internalType": "bool", "name": "_blackBackground", "type": "bool" }
+    ],
+    "name": "getAltTokenSVG",
     "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
     "stateMutability": "view",
     "type": "function"
@@ -256,9 +333,7 @@
   {
     "inputs": [],
     "name": "getOrder",
-    "outputs": [
-      { "internalType": "uint256[]", "name": "", "type": "uint256[]" }
-    ],
+    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
     "stateMutability": "view",
     "type": "function"
   },
@@ -267,13 +342,6 @@
       { "internalType": "uint256", "name": "_tokenId", "type": "uint256" }
     ],
     "name": "getTokenSVG",
-    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getUncroppedCompositeSVG",
     "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
     "stateMutability": "view",
     "type": "function"
@@ -293,6 +361,20 @@
     "name": "layerContent",
     "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "layerSVGsFrozen",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "_to", "type": "address" }],
+    "name": "loanToken0",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -372,14 +454,14 @@
   },
   {
     "inputs": [],
-    "name": "recallToken0",
+    "name": "renounceOwnership",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "inputs": [],
-    "name": "renounceOwnership",
+    "name": "retrieveToken0",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -472,6 +554,19 @@
       }
     ],
     "name": "setBaseShuffleFee",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string[]",
+        "name": "_blackBackground",
+        "type": "string[]"
+      }
+    ],
+    "name": "setBlackBackground",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -583,9 +678,31 @@
   },
   {
     "inputs": [
-      { "internalType": "string", "name": "_svgStart", "type": "string" }
+      { "internalType": "string", "name": "_SVGfilter", "type": "string" }
     ],
-    "name": "setSvgStart",
+    "name": "setSVGfilter",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "string[]", "name": "_SVGstart", "type": "string[]" }
+    ],
+    "name": "setSVGstart",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_token0ExtraDescription",
+        "type": "string"
+      }
+    ],
+    "name": "setToken0ExtraDescription",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -595,19 +712,6 @@
       { "internalType": "string", "name": "_newBaseURI", "type": "string" }
     ],
     "name": "setURI",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "_uncroppedSVGstart",
-        "type": "string"
-      }
-    ],
-    "name": "setUncroppedSVGstart",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -653,13 +757,6 @@
   },
   {
     "inputs": [],
-    "name": "svgStart",
-    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "symbol",
     "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
     "stateMutability": "view",
@@ -667,9 +764,30 @@
   },
   {
     "inputs": [],
+    "name": "toggleBlackBackgroundDefault",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "toggleCroppedDefault",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "toggleShuffling",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "token0ExtraDescription",
+    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -731,13 +849,6 @@
     "name": "transferOwnership",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "uncroppedSVGstart",
-    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
-    "stateMutability": "view",
     "type": "function"
   },
   {

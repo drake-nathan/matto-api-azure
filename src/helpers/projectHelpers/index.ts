@@ -414,7 +414,7 @@ export const reconcileProject = async (
     return;
   }
 
-  const is100x10x1 = project_id === ProjectId["100x10x1-A-goerli"];
+  const is100x10x1 = project_id === ProjectId["100x10x1-a-goerli"];
   if (is100x10x1) {
     await checkIfTokenZeroExists(conn, context, project);
   }

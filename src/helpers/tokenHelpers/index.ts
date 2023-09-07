@@ -32,7 +32,7 @@ export const getProcessMintFunction = (
     [ProjectId.crystallizedIllusions]: processCrystallizedIllusionsMint,
     [ProjectId.textureAndHues]: processTexturesMint,
     [ProjectId.blonks]: processBlonksMint,
-    [ProjectId["100x10x1-A-goerli"]]: process100xMint,
+    [ProjectId["100x10x1-a-goerli"]]: process100xMint,
   };
 
   return processMintFunctions[projectId];
@@ -50,7 +50,7 @@ export const getProcessEventFunction = (
       [ProjectId.crystallizedIllusions]: null,
       [ProjectId.textureAndHues]: null,
       [ProjectId.blonks]: processBlonksEvent,
-      [ProjectId["100x10x1-A-goerli"]]: process100xEvent,
+      [ProjectId["100x10x1-a-goerli"]]: process100xEvent,
     };
 
   return processEventFunctions[projectId];

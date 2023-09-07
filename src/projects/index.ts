@@ -37,7 +37,7 @@ export enum ProjectId {
   crystallizedIllusions,
   textureAndHues,
   blonks,
-  "100x10x1-A-goerli",
+  "100x10x1-a-goerli",
   // mfa,
   // '100x10x1-A',
   // nfn,
@@ -65,7 +65,7 @@ export enum ProjectSlug {
   crystallizedIllusions = "crystallized-illusions",
   textureAndHues = "texture-and-hues",
   blonks = "blonks",
-  "100x10x1-A-goerli" = "100x10x1-A-goerli",
+  "100x10x1-a-goerli" = "100x10x1-a-goerli",
   // mfa = 'MFA',
   // '100x10x1-A' = '100x10x1-A',
   // nfn = 'non-fungible-novels',
@@ -362,10 +362,10 @@ export const projects: IProject[] = [
     },
   },
   {
-    _id: ProjectId["100x10x1-A-goerli"],
+    _id: ProjectId["100x10x1-a-goerli"],
     chain: Chain.goerli,
     project_name: "100x10x1-a Goerli",
-    project_slug: ProjectSlug["100x10x1-A-goerli"],
+    project_slug: ProjectSlug["100x10x1-a-goerli"],
     collection_name: "100x10x1-a",
     artist: "Matto",
     artist_address: "0xF8d9056db2C2189155bc25A30269dc5dDeD15d46",
@@ -385,9 +385,9 @@ export const projects: IProject[] = [
     website: "https://matto.xyz/project/100x10x1-a",
     external_url: "https://substratum.art/project/100x10x1-a",
     license: "CC BY-NC 4.0",
-    contract_address: "0x5Af0264C48eB2fB3D3250e5dd679cfb1D35b624A",
+    contract_address: "0x0D257B5Eeebf30eF9Eb05589Bb5F94b1AA5D6dd6",
     events: ["Transfer", "OrderChanged"],
-    creation_block: 8779147,
+    creation_block: 9638558,
     devParams: {
       useInDev: true,
       useInProd: true,
@@ -407,7 +407,7 @@ export const abis = {
   [ProjectId.crystallizedIllusions]: crystallizedIllusionsAbi as AbiItem[],
   [ProjectId.textureAndHues]: textureAndHuesAbi as AbiItem[],
   [ProjectId.blonks]: blonksAbi as AbiItem[],
-  [ProjectId["100x10x1-A-goerli"]]: oneHundredxAbi as AbiItem[],
+  [ProjectId["100x10x1-a-goerli"]]: oneHundredxAbi as AbiItem[],
 };
 
 export const projectSizes: ProjectSizes = {
@@ -446,7 +446,7 @@ export const projectSizes: ProjectSizes = {
     mid: { width: 1080, height: 1080 },
     small: { width: 600, height: 600 },
   },
-  [ProjectId["100x10x1-A-goerli"]]: {
+  [ProjectId["100x10x1-a-goerli"]]: {
     full: { width: 2160, height: 3840 },
     mid: { width: 1080, height: 1920 },
     small: { width: 338, height: 600 },
