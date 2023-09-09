@@ -31,12 +31,15 @@ export const getTokenZeroAttributes = async (
     Ellipses: 0,
   };
 
-  tokens.forEach(({ attributes }) => {
+  tokens.forEach((token) => {
+    const { token_id, attributes } = token;
+    if (token_id === 0) return;
+
     Object.keys(cummulativeValues).forEach((trait_type) => {
       const value = attributes.find(({ trait_type: tt }) => tt === trait_type)
         ?.value;
 
-      if (value) {
+      if (value !== undefined) {
         cummulativeValues[trait_type] += Number(value);
       }
     });

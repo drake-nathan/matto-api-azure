@@ -6,7 +6,7 @@ import { getProjectCurrentSupply } from "../db/queries/projectQueries";
 import { checkIfTokenExists } from "../db/queries/tokenQueries";
 import { addTransaction } from "../db/queries/transactionQueries";
 import type { IProject, ITransaction } from "../db/schemas/schemaTypes";
-import { abis } from "../projects";
+import { abis, ProjectSlug } from "../projects";
 import { getContractWeb3 } from "../web3/contractWeb3";
 import { getWeb3 } from "../web3/providers";
 import { fetchEvents, fetchScriptInputs } from "../web3/web3Fetches";
@@ -49,9 +49,11 @@ export const processNewTransactions = async (
       if (isBulkMint) continue;
 
       if (!token_id) {
-        context.log.error(
-          `Error processing new mint for ${project.project_name}, no token_id.`,
-        );
+        if (project_slug !== ProjectSlug["100x10x1-a-goerli"]) {
+          context.log.error(
+            `Error processing new mint for ${project.project_name}, no token_id.`,
+          );
+        }
         continue;
       }
 
