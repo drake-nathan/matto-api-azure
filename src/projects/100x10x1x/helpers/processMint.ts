@@ -49,13 +49,11 @@ export const process100xMint: ProcessMintFunction = async (
       projectSlug: project_slug,
     });
 
-  const description = isTokenZero
-    ? await getTokenZeroDescription(
-        chain,
-        contract_address,
-        collection_description,
-      )
-    : collection_description;
+  const tokenZeroDescription = await getTokenZeroDescription(
+    chain,
+    contract_address,
+    collection_description,
+  );
 
   const newToken: IToken = {
     token_id,
@@ -66,7 +64,7 @@ export const process100xMint: ProcessMintFunction = async (
     artist,
     artist_address,
     collection_name,
-    description,
+    description: isTokenZero ? tokenZeroDescription : collection_description,
     script_type,
     svg,
     image,
@@ -92,6 +90,7 @@ export const process100xMint: ProcessMintFunction = async (
       projectName: project_name,
       projectSlug: project_slug,
       contractAddress: contract_address,
+      description: tokenZeroDescription,
     });
   }
 
