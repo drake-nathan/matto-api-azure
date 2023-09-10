@@ -45,18 +45,16 @@ export const getTokenZeroAttributes = async (
     });
   });
 
-  const attributes: IAttribute[] = Object.entries<number | string>(
-    cummulativeValues,
-  )
-    .map(([trait_type, value]) => ({
+  const attributes: IAttribute[] = (
+    Object.entries(cummulativeValues).map(([trait_type, value]) => ({
       trait_type,
-      value,
-    }))
-    .concat([
-      { trait_type: "Shuffles", value: shuffles },
-      { trait_type: "Palette", value: "Durham Sunset" },
-      { trait_type: "Composite Image License", value: "CC BY-NC 4.0" },
-    ]);
+      value: String(value),
+    })) as IAttribute[]
+  ).concat([
+    { trait_type: "Shuffles", value: String(shuffles) },
+    { trait_type: "Palette", value: "Durham Sunset" },
+    { trait_type: "Composite Image License", value: "CC BY-NC 4.0" },
+  ]);
 
   return attributes;
 };
