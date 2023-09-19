@@ -139,3 +139,18 @@ export const getTxCounts = async (conn: Connection, project_id: number) => {
 
   return txCounts;
 };
+
+export const checkIfTransactionExists = (
+  transaction_hash: string,
+  project_id: number,
+  conn: Connection,
+) => {
+  const Transaction = conn.model<ITransaction>("Transaction");
+
+  const query = Transaction.exists({
+    transaction_hash,
+    project_id,
+  });
+
+  return query.exec();
+};

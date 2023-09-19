@@ -87,7 +87,14 @@ export const processNewTransactions = async (
       const processEvent = getProcessEventFunction(project._id);
 
       if (events.length && processEvent) {
-        await processEvent(token_id, project, context, conn, script_inputs);
+        await processEvent(
+          token_id,
+          project,
+          context,
+          conn,
+          script_inputs,
+          event_type,
+        );
       }
     }
   }
@@ -119,8 +126,9 @@ export const checkForNewTransactions = async (
     currentSupply: 0,
   };
 
-  if (!conn)
+  if (!conn) {
     throw new Error("No connection to database. (checkForNewTransactions)");
+  }
 
   const { filteredTransactions: fetchedTransactions } = await fetchEvents(
     contract,

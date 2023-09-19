@@ -19,9 +19,20 @@ export const fetchEvents = async (
   const options = { fromBlock };
 
   const allTransactions = await contract.getPastEvents("allEvents", options);
-  const filteredTransactions = allTransactions.filter((tx) =>
-    events.includes(tx.event),
-  );
+  const filteredTransactions = allTransactions.filter((tx) => {
+    if (project_id === 7) {
+      if (tx.event === "OrderChanged") {
+        const mintTx = allTransactions.find(
+          (t) =>
+            t.transactionHash.toLowerCase() ===
+              tx.transactionHash.toLowerCase() && t.event === "Transfer",
+        );
+        if (mintTx) return false;
+      }
+    }
+
+    return events.includes(tx.event);
+  });
 
   return { filteredTransactions, totalTxCount: allTransactions.length };
 };

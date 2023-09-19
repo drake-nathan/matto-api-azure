@@ -40,4 +40,5 @@ export type ProcessEventFunction = (
   context: Context,
   conn: Connection,
   script_inputs: IScriptInputs | undefined,
+  event_type?: string,
 ) => ProcessEventReturn;

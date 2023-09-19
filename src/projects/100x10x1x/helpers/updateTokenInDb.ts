@@ -29,6 +29,7 @@ export const updateTokenInDb = async ({
   projectSlug,
   tokenId,
 }: Params) => {
+  context.log.info("updateTokenInDb Step 1: getTokenDoc");
   const token = await getTokenDoc(projectSlug, tokenId, conn);
 
   if (!token) {
@@ -36,9 +37,11 @@ export const updateTokenInDb = async ({
   }
 
   if (tokenId === 0) {
+    context.log.info("updateTokenInDb Step 2: getTokenZeroAttributes");
     token.attributes = await getTokenZeroAttributes(conn);
   }
 
+  context.log.info("updateTokenInDb Step 3: getUpdatedTokenValues");
   const { svg, image, image_mid, image_small, attributes } =
     await getUpdatedTokenValues({
       context,

@@ -56,18 +56,24 @@ export const getUpdatedTokenValues = async ({
   };
 
   // get scriptInputs from blockchain
+  context.log.info(
+    `getUpdatedTokenValues token #${tokenId} Step 1: read.getTokenSVG`,
+  );
   try {
     updatedValues.svg = await contract.read.getTokenSVG([BigInt(tokenId)]);
 
     if (!updatedValues.svg) {
-      throw new Error();
+      throw new Error("No SVG");
     }
 
+    context.log.info(
+      `getUpdatedTokenValues token #${tokenId} Step 2: parseSvgAttributes`,
+    );
     updatedValues.attributes =
       existingAttributes ?? parseSvgAttributes(updatedValues.svg) ?? [];
   } catch (err) {
     context.log.error(
-      `Failed to fetch script inputs for ${projectName} ${tokenId} from blockchain`,
+      `Failed to fetch SVG for ${projectName} ${tokenId} from blockchain`,
       err,
     );
   }
@@ -78,6 +84,9 @@ export const getUpdatedTokenValues = async ({
     );
   }
 
+  context.log.info(
+    `getUpdatedTokenValues token #${tokenId} Step 3: svgToPngAndUpload`,
+  );
   try {
     const pngs = await svgToPngAndUpload(
       updatedValues.svg,

@@ -7,7 +7,13 @@ export const process100xEvent: ProcessEventFunction = async (
   project,
   context,
   conn,
+  script_inputs,
+  event_type,
 ) => {
+  context.log.info(
+    `ProcessEvent: Processing ${event_type} for ${project.project_name}.`,
+  );
+
   const {
     _id: project_id,
     project_name,
@@ -17,17 +23,13 @@ export const process100xEvent: ProcessEventFunction = async (
     collection_description,
   } = project;
 
-  // if token_id is undefined, then it's a NewOrder event, update 0
-  const tokenId = token_id ?? 0;
+  if (event_type === "Transfer") return null;
 
-  const description =
-    tokenId === 0
-      ? await getTokenZeroDescription(
-          chain,
-          contract_address,
-          collection_description,
-        )
-      : collection_description;
+  const description = await getTokenZeroDescription(
+    chain,
+    contract_address,
+    collection_description,
+  );
 
   const updatedToken = await updateTokenInDb({
     chain,
@@ -38,7 +40,7 @@ export const process100xEvent: ProcessEventFunction = async (
     projectId: project_id,
     projectName: project_name,
     projectSlug: project_slug,
-    tokenId,
+    tokenId: 0,
   });
 
   return updatedToken;

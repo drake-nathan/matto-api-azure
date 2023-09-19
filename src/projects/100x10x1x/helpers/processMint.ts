@@ -80,6 +80,14 @@ export const process100xMint: ProcessMintFunction = async (
 
   const { token_id: newTokenId } = await addToken(newToken, conn);
 
+  const previousSupply = await getProjectCurrentSupply(project_id, conn);
+  const newSupply = await updateProjectSupplyAndCount(
+    project_id,
+    previousSupply + 1,
+    tx_count + 1,
+    conn,
+  );
+
   if (!isTokenZero) {
     await updateTokenInDb({
       chain,
@@ -93,14 +101,6 @@ export const process100xMint: ProcessMintFunction = async (
       description: tokenZeroDescription,
     });
   }
-
-  const previousSupply = await getProjectCurrentSupply(project_id, conn);
-  const newSupply = await updateProjectSupplyAndCount(
-    project_id,
-    previousSupply + 1,
-    tx_count + 1,
-    conn,
-  );
-
+  context.log.info("Processed Mint for token", token_id, "in", project_name);
   return { newTokenId, newSupply };
 };
