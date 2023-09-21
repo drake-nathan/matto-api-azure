@@ -77,22 +77,29 @@ export const getUpdatedTokenValues = async ({
     );
   }
 
-  try {
-    const pngs = await svgToPngAndUpload(
-      updatedValues.svg,
-      projectId,
-      projectSlug,
-      tokenId,
-    );
+  // NOTE: temporarily disabling png conversion for token 0
+  if (tokenId !== 0) {
+    try {
+      const pngs = await svgToPngAndUpload(
+        updatedValues.svg,
+        projectId,
+        projectSlug,
+        tokenId,
+      );
 
-    updatedValues.image = pngs.image;
-    updatedValues.image_mid = pngs.image_mid;
-    updatedValues.image_small = pngs.image_small;
-  } catch (err) {
-    context.log.error(
-      `Failed to convert svg to png and upload for ${projectName} ${tokenId}`,
-      err,
-    );
+      updatedValues.image = pngs.image;
+      updatedValues.image_mid = pngs.image_mid;
+      updatedValues.image_small = pngs.image_small;
+    } catch (err) {
+      context.log.error(
+        `Failed to convert svg to png and upload for ${projectName} ${tokenId}`,
+        err,
+      );
+    }
+  } else {
+    updatedValues.image = "";
+    updatedValues.image_mid = "";
+    updatedValues.image_small = "";
   }
 
   return updatedValues;
