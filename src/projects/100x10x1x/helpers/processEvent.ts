@@ -1,85 +1,47 @@
-import { getContract as getContractViem } from 'viem';
-import { getViem } from '../../../web3/providers';
-import { getTokenDoc } from '../../../db/queries/tokenQueries';
-import { oneHundredxAbi } from '../abi';
-import type { ProcessEventFunction } from '../../../helpers/tokenHelpers/types';
-import type { IScriptInputs } from '../../../db/schemas/schemaTypes';
-import { parseSvgAttributes } from './parseScriptInputs';
-import { svgToPngAndUpload } from '../../../services/images';
+import type { ProcessEventFunction } from "../../../helpers/tokenHelpers/types";
+import { getTokenZeroDescription } from "./getTokenZeroDescription";
+import { updateTokenInDb } from "./updateTokenInDb";
 
 export const process100xEvent: ProcessEventFunction = async (
   token_id,
   project,
   context,
   conn,
+  script_inputs,
+  event_type,
 ) => {
+  context.log.info(
+    `ProcessEvent: Processing ${event_type} for ${project.project_name}.`,
+  );
+
   const {
     _id: project_id,
     project_name,
     project_slug,
     chain,
     contract_address,
+    collection_description,
   } = project;
 
-  const token = await getTokenDoc(project_slug, token_id, conn);
+  if (event_type === "Transfer") return null;
 
-  if (!token) {
-    throw new Error(`No token found for ${project_name} ${token_id}`);
-  }
+  const description = await getTokenZeroDescription(
+    chain,
+    contract_address,
+    collection_description,
+  );
 
-  const viemClient = getViem(chain);
-
-  const contractUsingViem = getContractViem({
-    address: contract_address as `0x${string}`,
-    abi: oneHundredxAbi,
-    publicClient: viemClient,
+  const updatedToken = await updateTokenInDb({
+    chain,
+    conn,
+    context,
+    contractAddress: contract_address,
+    description,
+    projectId: project_id,
+    projectName: project_name,
+    projectSlug: project_slug,
+    tokenId: 0,
   });
-
-  try {
-    const scriptInputsString = await contractUsingViem.read.scriptInputsOf([
-      BigInt(token_id),
-    ]);
-
-    const scriptInputs: IScriptInputs = JSON.parse(scriptInputsString);
-
-    if (!scriptInputs.svg_part) {
-      throw new Error(
-        `Failed to fetch script inputs for ${project_name} ${token_id} from blockchain`,
-      );
-    }
-
-    const attributes = parseSvgAttributes(scriptInputs.svg_part);
-
-    if (attributes) token.attributes = attributes;
-    token.svg = scriptInputs.svg_part;
-    token.script_inputs = scriptInputs;
-  } catch (err) {
-    context.log.error(
-      `Failed to fetch script inputs for ${project_name} ${token_id} from blockchain`,
-      err,
-    );
-  }
-
-  if (!token.svg) {
-    throw new Error(
-      `Failed to fetch svg for ${project_name} ${token_id} from blockchain`,
-    );
-  }
-
-  try {
-    const pngs = await svgToPngAndUpload(token.svg, project_id, project_slug, token_id);
-
-    token.image = pngs.image;
-    token.image_mid = pngs.image_mid;
-    token.image_small = pngs.image_small;
-  } catch (err) {
-    context.log.error(
-      `Failed to convert svg to png and upload for ${project_name} ${token_id}`,
-      err,
-    );
-  }
-
-  const updatedToken = await token.save();
 
   return updatedToken;
 };

@@ -1,20 +1,22 @@
-import { BlobServiceClient } from '@azure/storage-blob';
-import * as dotenv from 'dotenv';
-import { ProjectSlug } from '../projects';
+import { BlobServiceClient } from "@azure/storage-blob";
+import * as dotenv from "dotenv";
+
+import { ProjectSlug } from "../projects";
 
 dotenv.config();
 
-const azureStorageConnectionString = process.env.AZURE_STORAGE_CONNECTION_STRING;
+const azureStorageConnectionString =
+  process.env.AZURE_STORAGE_CONNECTION_STRING;
 
 if (!azureStorageConnectionString) {
-  throw new Error('AZURE_STORAGE_CONNECTION_STRING not found');
+  throw new Error("AZURE_STORAGE_CONNECTION_STRING not found");
 }
 
 export enum BlobFolder {
-  main = 'images',
-  mid = 'images-mid',
-  small = 'thumbnails',
-  mathare = 'mathare-images',
+  main = "images",
+  mid = "images-mid",
+  small = "thumbnails",
+  mathare = "mathare-images",
 }
 
 export const uploadImage = async (
@@ -27,13 +29,13 @@ export const uploadImage = async (
     azureStorageConnectionString,
   );
 
-  const containerName = 'images';
+  const containerName = "images";
 
   const containerClient = blobServiceClient.getContainerClient(
     folderName || containerName,
   );
   containerClient.createIfNotExists();
-  containerClient.setAccessPolicy('blob');
+  containerClient.setAccessPolicy("blob");
 
   const imageName = `${project_slug}_${token_id}.png`;
   const blockBlobClient = containerClient.getBlockBlobClient(imageName);
@@ -41,7 +43,7 @@ export const uploadImage = async (
   await blockBlobClient.upload(file, file.length);
 
   await blockBlobClient.setHTTPHeaders({
-    blobContentType: 'image/png',
+    blobContentType: "image/png",
   });
 
   return blockBlobClient.url;

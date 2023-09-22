@@ -1,14 +1,25 @@
-import { type ObjectId } from 'mongoose';
-import { type Viewport } from 'puppeteer';
-import type { ProjectSlug, ProjectId, Chain } from '../../projects';
+import { type ObjectId } from "mongoose";
+import { type Viewport } from "puppeteer";
 
-export interface IRoyaltyInfo {
-  royalty_fee_by_id: number;
-  artist_address?: string;
-  charity_address?: string;
+import type { Chain, ProjectId, ProjectSlug } from "../../projects";
+
+export type IRoyaltyInfo = (
+  | {
+      royalty_fee_by_id: number;
+      artist_address: string;
+    }
+  | {
+      royalty_bps: number;
+      royalty_address: string;
+    }
+  | {
+      charity_address: string;
+      royalty_fee_by_id: number;
+    }
+) & {
   additional_payee?: string;
   additional_payee_bps?: number;
-}
+};
 
 export interface GenScripts {
   main?: string;
@@ -25,6 +36,7 @@ export interface IDevParams {
   isBulkMint: boolean;
   usesPuppeteer: boolean;
   usesScriptInputs: boolean;
+  usesTokenDataOf?: boolean;
   usesSvgs: boolean;
 }
 
@@ -56,7 +68,7 @@ export interface IProject {
   creation_block: number;
   gen_scripts?: GenScripts;
   devParams: IDevParams;
-  [key: string]: any; // for future proofing ???
+  [key: string]: any; // for the mongo `updateProjectIfNeeded` function, not ideal
 }
 
 export interface IAttribute {
@@ -122,12 +134,12 @@ export interface ITransaction {
   transaction_hash: string;
   transaction_date: Date;
   event_type: string;
-  token_id: number;
+  token_id?: number;
 }
 
 export interface IThumbnail {
   _id?: ObjectId;
-  project_slug: 'focus' | 'enso';
+  project_slug: "focus" | "enso";
   project_id: 34 | 181;
   token_id: number;
   artblocks_id: string;

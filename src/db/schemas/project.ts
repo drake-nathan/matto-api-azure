@@ -1,5 +1,6 @@
-import { Schema } from 'mongoose';
-import { IProject } from './schemaTypes';
+import { Schema } from "mongoose";
+
+import { IProject } from "./schemaTypes";
 
 export const projectSchema = new Schema<IProject>({
   _id: { type: Number, required: true },
@@ -27,7 +28,9 @@ export const projectSchema = new Schema<IProject>({
   events: [{ type: String }],
   creation_block: { type: Number, required: true },
   royalty_info: {
-    royalty_fee_by_id: { type: Number, required: true },
+    royalty_fee_by_id: { type: Number },
+    royalty_bps: { type: Number },
+    royalty_address: { type: String },
     artist_address: { type: String },
     charity_address: { type: String },
     additional_payee: { type: String },
@@ -47,6 +50,7 @@ export const projectSchema = new Schema<IProject>({
     isBulkMint: { type: Boolean, required: true },
     usesPuppeteer: { type: Boolean, required: true },
     usesScriptInputs: { type: Boolean, required: true },
+    usesTokenDataOf: { type: Boolean },
     usesSvgs: { type: Boolean, required: true },
   },
 });

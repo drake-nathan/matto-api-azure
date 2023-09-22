@@ -1,8 +1,9 @@
-import { AzureFunction, Context } from '@azure/functions';
-import { Connection } from 'mongoose';
-import { connectionFactory } from '../src/db/connectionFactory';
-import { checkIfProjectExists } from '../src/db/queries/projectQueries';
-import { getTokenLean } from '../src/db/queries/tokenQueries';
+import { AzureFunction, Context } from "@azure/functions";
+import { Connection } from "mongoose";
+
+import { connectionFactory } from "../src/db/connectionFactory";
+import { checkIfProjectExists } from "../src/db/queries/projectQueries";
+import { getTokenLean } from "../src/db/queries/tokenQueries";
 
 const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
   const { project_slug, token_id } = context.bindingData;
@@ -16,7 +17,7 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
     if (!doesProjectExist) {
       context.res = {
         status: 404,
-        body: 'Project not found',
+        body: "Project not found",
       };
       return;
     }
@@ -26,7 +27,7 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
     if (!token) {
       context.res = {
         status: 404,
-        body: 'Token not found',
+        body: "Token not found",
       };
       return;
     }
@@ -37,10 +38,10 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
     };
   } catch (error) {
     context.log.error(error);
-    if (process.env.NODE_ENV === 'test') console.error(error);
+    if (process.env.NODE_ENV === "test") console.error(error);
     context.res = {
       status: 500,
-      body: 'Internal Server Error',
+      body: "Internal Server Error",
     };
   } finally {
     if (conn) await conn.close();

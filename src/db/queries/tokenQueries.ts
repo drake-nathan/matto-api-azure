@@ -1,19 +1,20 @@
-import { type Connection } from 'mongoose';
-import { ProjectId, ProjectSlug } from '../../projects';
+import { type Connection } from "mongoose";
+
+import { ProjectId, ProjectSlug } from "../../projects";
 import type {
-  IToken,
-  IScriptInputs,
   IAttribute,
-  TokenAbbr,
   ILevel,
-} from '../schemas/schemaTypes';
+  IScriptInputs,
+  IToken,
+  TokenAbbr,
+} from "../schemas/schemaTypes";
 
 export const checkIfTokenExists = async (
   token_id: number,
   project_slug: ProjectSlug,
   conn: Connection,
 ) => {
-  const Token = conn.model<IToken>('Token');
+  const Token = conn.model<IToken>("Token");
 
   const query = await Token.exists({ token_id, project_slug });
   return query;
@@ -24,7 +25,7 @@ export const getTokenDoc = (
   token_id: string | number,
   conn: Connection,
 ) => {
-  const Token = conn.model<IToken>('Token');
+  const Token = conn.model<IToken>("Token");
 
   return Token.findOne({ project_slug, token_id });
 };
@@ -34,11 +35,11 @@ export const getTokenLean = (
   token_id: string | number,
   conn: Connection,
 ) => {
-  const Token = conn.model<IToken>('Token');
+  const Token = conn.model<IToken>("Token");
 
   const query = Token.findOne({ project_slug, token_id });
 
-  query.select('-_id -__v -attributes._id -script_inputs._id');
+  query.select("-_id -__v -attributes._id -script_inputs._id");
 
   return query.lean().exec();
 };
@@ -48,23 +49,26 @@ export const getTokenAbbr = (
   token_id: string | number,
   conn: Connection,
 ): Promise<TokenAbbr> => {
-  const Token = conn.model<IToken>('Token');
+  const Token = conn.model<IToken>("Token");
 
   const query = Token.findOne({ project_slug, token_id });
 
   query.select(
-    'token_id name project_name project_slug artist image image_mid image_small thumbnail_url generator_url external_url script_inputs',
+    "token_id name project_name project_slug artist image image_mid image_small thumbnail_url generator_url external_url script_inputs",
   );
 
   return query.lean().exec() as Promise<TokenAbbr>;
 };
 
-export const getAllTokensFromProject = (project_slug: ProjectSlug, conn: Connection) => {
-  const Token = conn.model<IToken>('Token');
+export const getAllTokensFromProject = (
+  project_slug: ProjectSlug,
+  conn: Connection,
+) => {
+  const Token = conn.model<IToken>("Token");
 
   const query = Token.find({ project_slug });
 
-  query.select('-_id -__v -attributes._id -script_inputs._id');
+  query.select("-_id -__v -attributes._id -script_inputs._id");
 
   return query.lean().exec();
 };
@@ -74,16 +78,16 @@ export const getTokensTokenIdSort = (
   project_slug: ProjectSlug,
   limit: number,
   skip: number,
-  sort: 'asc' | 'desc',
+  sort: "asc" | "desc",
 ): Promise<TokenAbbr[]> => {
-  const Token = conn.model<IToken>('Token');
+  const Token = conn.model<IToken>("Token");
 
   const query = Token.find<TokenAbbr>({ project_slug })
-    .sort({ token_id: sort === 'asc' ? 1 : -1 })
+    .sort({ token_id: sort === "asc" ? 1 : -1 })
     .limit(Number(limit))
     .skip(Number(skip))
     .select(
-      'token_id name project_name project_slug artist image image_mid image_small thumbnail_url generator_url external_url script_inputs',
+      "token_id name project_name project_slug artist image image_mid image_small thumbnail_url generator_url external_url script_inputs",
     );
 
   return query.lean().exec() as Promise<TokenAbbr[]>;
@@ -94,9 +98,9 @@ export const getTokensWorldLevelSort = (
   project_slug: ProjectSlug,
   limit: number,
   skip: number,
-  sort: 'asc' | 'desc',
+  sort: "asc" | "desc",
 ): Promise<TokenAbbr[]> => {
-  const Token = conn.model<IToken>('Token');
+  const Token = conn.model<IToken>("Token");
 
   const query = Token.aggregate<TokenAbbr>([
     {
@@ -119,13 +123,13 @@ export const getTokensWorldLevelSort = (
         external_url: true,
         script_inputs: true,
         world_level: {
-          $add: ['$script_inputs.transfer_count', '$script_inputs.level_shift'],
+          $add: ["$script_inputs.transfer_count", "$script_inputs.level_shift"],
         },
       },
     },
     {
       $sort: {
-        world_level: sort === 'asc' ? 1 : -1,
+        world_level: sort === "asc" ? 1 : -1,
       },
     },
     {
@@ -144,11 +148,11 @@ export const getScriptInputsFromDb = async (
   token_id: string | number,
   conn: Connection,
 ) => {
-  const Token = conn.model<IToken>('Token');
+  const Token = conn.model<IToken>("Token");
 
   const query = Token.findOne({ project_slug, token_id });
 
-  query.select('-script_inputs._id');
+  query.select("-script_inputs._id");
 
   const result = await query.lean().exec();
 
@@ -156,7 +160,7 @@ export const getScriptInputsFromDb = async (
 };
 
 export const addToken = async (tokenToAdd: IToken, conn: Connection) => {
-  const Token = conn.model<IToken>('Token');
+  const Token = conn.model<IToken>("Token");
 
   const newToken = new Token(tokenToAdd);
 
@@ -165,8 +169,11 @@ export const addToken = async (tokenToAdd: IToken, conn: Connection) => {
   return query;
 };
 
-export const addManyTokens = async (tokensToAdd: IToken[], conn: Connection) => {
-  const Token = conn.model<IToken>('Token');
+export const addManyTokens = async (
+  tokensToAdd: IToken[],
+  conn: Connection,
+) => {
+  const Token = conn.model<IToken>("Token");
 
   const documents = await Token.create(tokensToAdd);
 
@@ -175,8 +182,11 @@ export const addManyTokens = async (tokensToAdd: IToken[], conn: Connection) => 
   return query;
 };
 
-export const getCurrentTokenSupply = async (project_id: number, conn: Connection) => {
-  const Token = conn.model<IToken>('Token');
+export const getCurrentTokenSupply = async (
+  project_id: number,
+  conn: Connection,
+) => {
+  const Token = conn.model<IToken>("Token");
 
   const query = Token.find({ project_id });
 
@@ -191,11 +201,13 @@ export const getLevels = async (
   project_slug: ProjectSlug,
   conn: Connection,
 ): Promise<ILevel[]> => {
-  const Token = conn.model<IToken>('Token');
+  const Token = conn.model<IToken>("Token");
 
   const query = Token.find({ project_slug });
 
-  query.select('token_id script_inputs.transfer_count script_inputs.level_shift');
+  query.select(
+    "token_id script_inputs.transfer_count script_inputs.level_shift",
+  );
 
   const results = await query.lean().exec();
 
@@ -222,7 +234,7 @@ export const updateTokenMetadataOnTransfer = async (
   attributes: IAttribute[],
   conn: Connection,
 ) => {
-  const Token = conn.model<IToken>('Token');
+  const Token = conn.model<IToken>("Token");
 
   const query = Token.findOneAndUpdate(
     { project_id, token_id },
@@ -235,8 +247,11 @@ export const updateTokenMetadataOnTransfer = async (
   return result;
 };
 
-export const removeDuplicateTokens = async (project_id: number, conn: Connection) => {
-  const Token = conn.model<IToken>('Token');
+export const removeDuplicateTokens = async (
+  project_id: number,
+  conn: Connection,
+) => {
+  const Token = conn.model<IToken>("Token");
 
   const query = Token.aggregate([
     {
@@ -246,7 +261,7 @@ export const removeDuplicateTokens = async (project_id: number, conn: Connection
     },
     {
       $group: {
-        _id: '$token_id',
+        _id: "$token_id",
         count: { $sum: 1 },
       },
     },
@@ -274,7 +289,7 @@ export const updateAllTokenDesc = async (
   project_id: ProjectId,
   newDesc: string,
 ) => {
-  const Token = conn.model<IToken>('Token');
+  const Token = conn.model<IToken>("Token");
 
   const query = Token.updateMany({ project_id }, { description: newDesc });
 
@@ -289,7 +304,7 @@ export const updateOneTokenDesc = (
   token_id: string | number,
   newDesc: string,
 ) => {
-  const Token = conn.model<IToken>('Token');
+  const Token = conn.model<IToken>("Token");
 
   const filter = { project_id, token_id };
   const update = { description: newDesc };
@@ -306,7 +321,7 @@ export const updateScriptInputs = (
   token_id: number,
   script_inputs: IScriptInputs,
 ) => {
-  const Token = conn.model<IToken>('Token');
+  const Token = conn.model<IToken>("Token");
 
   const filter = { project_id, token_id };
   const update = { script_inputs };
@@ -322,7 +337,7 @@ export const getSvg = async (
   project_slug: string,
   token_id: number,
 ) => {
-  const Token = conn.model<IToken>('Token');
+  const Token = conn.model<IToken>("Token");
 
   const token = await Token.findOne({ project_slug, token_id });
 

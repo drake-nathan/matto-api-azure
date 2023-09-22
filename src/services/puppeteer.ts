@@ -1,8 +1,9 @@
-import puppeteer, { type Viewport } from 'puppeteer';
-import sharp from 'sharp';
-import type { IAttribute, IScriptInputs } from '../db/schemas/schemaTypes';
-import { ProjectId, projectSizes, ProjectSlug } from '../projects';
-import { BlobFolder, uploadImage } from './azureStorage';
+import puppeteer, { type Viewport } from "puppeteer";
+import sharp from "sharp";
+
+import type { IAttribute, IScriptInputs } from "../db/schemas/schemaTypes";
+import { ProjectId, projectSizes, ProjectSlug } from "../projects";
+import { BlobFolder, uploadImage } from "./azureStorage";
 
 const runPuppeteer = async (
   url: string,
@@ -10,6 +11,7 @@ const runPuppeteer = async (
   projectId: ProjectId,
   size: Viewport,
   esoterra = false,
+  getAttributes = true,
 ) => {
   const browser = await puppeteer.launch({
     defaultViewport: size,
@@ -19,13 +21,13 @@ const runPuppeteer = async (
 
   await page.setRequestInterception(true);
 
-  page.once('request', (request) => {
+  page.once("request", (request) => {
     const data = {
-      method: 'POST',
+      method: "POST",
       postData: JSON.stringify({ scriptInputs }),
       headers: {
         ...request.headers(),
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     };
 
@@ -34,7 +36,7 @@ const runPuppeteer = async (
     page.setRequestInterception(false);
   });
 
-  const waitUntil = esoterra ? 'load' : 'networkidle0';
+  const waitUntil = esoterra ? "load" : "networkidle0";
 
   await page.goto(url, { waitUntil });
 
@@ -43,19 +45,22 @@ const runPuppeteer = async (
     await new Promise((resolve) => setTimeout(resolve, 10000));
   }
 
-  const screenshot = (await page.screenshot({ encoding: 'binary' })) as Buffer;
+  const screenshot = (await page.screenshot({ encoding: "binary" })) as Buffer;
 
-  const attributes = await page.evaluate(() => {
-    const newAttributes = sessionStorage.getItem('attributes');
+  let attributes: IAttribute[] = [];
+  if (getAttributes) {
+    attributes = await page.evaluate(() => {
+      const newAttributes = sessionStorage.getItem("attributes");
 
-    if (!newAttributes) {
-      throw new Error(
-        `No attributes found in sessionStorage for token ${scriptInputs.token_id}}`,
-      );
-    }
+      if (!newAttributes) {
+        throw new Error(
+          `No attributes found in sessionStorage for token ${scriptInputs.token_id}}`,
+        );
+      }
 
-    return JSON.parse(newAttributes) as IAttribute[];
-  });
+      return JSON.parse(newAttributes) as IAttribute[];
+    });
+  }
 
   await browser.close();
   return { screenshot, attributes };
@@ -67,10 +72,11 @@ export const getPuppeteerImageSet = async (
   tokenId: number,
   generatorUrl: string,
   scriptInputs: IScriptInputs,
+  getAttributes = true,
 ) => {
   const sizes = projectSizes[projectId];
 
-  const isEsoterra = generatorUrl.includes('esoterra=true');
+  const isEsoterra = generatorUrl.includes("esoterra=true");
 
   const { screenshot, attributes } = await runPuppeteer(
     generatorUrl,
@@ -78,10 +84,13 @@ export const getPuppeteerImageSet = async (
     projectId,
     isEsoterra ? { width: 1080, height: 1080 } : sizes.full,
     isEsoterra,
+    getAttributes,
   );
 
   const imageMidBuffer = await sharp(screenshot).resize(sizes.mid).toBuffer();
-  const thumbnailBuffer = await sharp(screenshot).resize(sizes.small).toBuffer();
+  const thumbnailBuffer = await sharp(screenshot)
+    .resize(sizes.small)
+    .toBuffer();
 
   const image = await uploadImage(screenshot, projectSlug, tokenId);
   const image_mid = await uploadImage(
@@ -110,13 +119,13 @@ export const getAttributes = async (
 
   await page.setRequestInterception(true);
 
-  page.once('request', (request) => {
+  page.once("request", (request) => {
     const data = {
-      method: 'POST',
+      method: "POST",
       postData: JSON.stringify({ scriptInputs }),
       headers: {
         ...request.headers(),
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     };
 
@@ -125,10 +134,10 @@ export const getAttributes = async (
     page.setRequestInterception(false);
   });
 
-  await page.goto(url, { waitUntil: 'networkidle0' });
+  await page.goto(url, { waitUntil: "networkidle0" });
 
   const attributes = await page.evaluate(() => {
-    const newAttributes = sessionStorage.getItem('attributes');
+    const newAttributes = sessionStorage.getItem("attributes");
 
     if (!newAttributes) {
       throw new Error(

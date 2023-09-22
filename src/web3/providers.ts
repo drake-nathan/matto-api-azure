@@ -1,8 +1,9 @@
-import Web3 from 'web3';
-import * as dotenv from 'dotenv';
-import { createPublicClient, http } from 'viem';
-import { mainnet, goerli } from 'viem/chains';
-import { Chain } from '../projects';
+import * as dotenv from "dotenv";
+import { createPublicClient, http } from "viem";
+import { goerli, mainnet } from "viem/chains";
+import Web3 from "web3";
+
+import { Chain } from "../projects";
 
 dotenv.config();
 
@@ -10,7 +11,7 @@ const mainnetNode = process.env.RPC_NODE_MAINNET;
 const goerliNode = process.env.RPC_NODE_GOERLI;
 
 if (!mainnetNode || !goerliNode) {
-  throw new Error('RPC_NODE_MAINNET or RPC_NODE_GOERLI not found in .env');
+  throw new Error("RPC_NODE_MAINNET or RPC_NODE_GOERLI not found in .env");
 }
 
 const nodes = {

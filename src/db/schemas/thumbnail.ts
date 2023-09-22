@@ -1,5 +1,6 @@
-import { Schema } from 'mongoose';
-import { IThumbnail } from './schemaTypes';
+import { Schema } from "mongoose";
+
+import { IThumbnail } from "./schemaTypes";
 
 export const thumbnailSchema = new Schema<IThumbnail>({
   project_slug: { type: String, required: true },

@@ -1,19 +1,24 @@
-import * as dotenv from 'dotenv';
-import { type Context } from '@azure/functions';
-import { type Connection } from 'mongoose';
-import type { IProject, IScriptInputs, IToken } from '../../../db/schemas/schemaTypes';
-import type { ProcessMintReturn, ProcessEventReturn } from '../types';
+import { type Context } from "@azure/functions";
+import * as dotenv from "dotenv";
+import { type Connection } from "mongoose";
+
 import {
   getProjectCurrentSupply,
   updateProjectSupplyAndCount,
-} from '../../../db/queries/projectQueries';
+} from "../../../db/queries/projectQueries";
 import {
   addToken,
   getAllTokensFromProject,
   updateTokenMetadataOnTransfer,
-} from '../../../db/queries/tokenQueries';
-import { getPuppeteerImageSet } from '../../../services/puppeteer';
-import { ProjectSlug } from '../../../projects';
+} from "../../../db/queries/tokenQueries";
+import type {
+  IProject,
+  IScriptInputs,
+  IToken,
+} from "../../../db/schemas/schemaTypes";
+import { ProjectSlug } from "../../../projects";
+import { getPuppeteerImageSet } from "../../../services/puppeteer";
+import type { ProcessEventFunction, ProcessMintReturn } from "../types";
 
 dotenv.config();
 const rootServerUrl = process.env.ROOT_URL;
@@ -53,7 +58,7 @@ export const processChainlifeMint = async (
     tx_count,
   } = project;
 
-  context.log.info('Adding token', token_id, 'to', project_name);
+  context.log.info("Adding token", token_id, "to", project_name);
 
   if (!script_inputs) {
     throw new Error(`No script inputs for ${project_name} token ${token_id}`);
@@ -70,13 +75,14 @@ export const processChainlifeMint = async (
     ? `${generator_url}?esoterra=true`
     : generator_url;
 
-  const { image, image_mid, image_small, attributes } = await getPuppeteerImageSet(
-    project_id,
-    project_slug,
-    token_id,
-    puppeteerGenUrl,
-    script_inputs,
-  );
+  const { image, image_mid, image_small, attributes } =
+    await getPuppeteerImageSet(
+      project_id,
+      project_slug,
+      token_id,
+      puppeteerGenUrl,
+      script_inputs,
+    );
 
   const newToken: IToken = {
     token_id,
@@ -86,7 +92,7 @@ export const processChainlifeMint = async (
     project_slug,
     artist,
     artist_address,
-    description: description || '',
+    description: description || "",
     collection_name,
     aspect_ratio,
     script_type,
@@ -116,20 +122,25 @@ export const processChainlifeMint = async (
   return { newTokenId, newSupply };
 };
 
-export const processChainlifeEvent = async (
-  token_id: number,
-  project: IProject,
-  context: Context,
-  conn: Connection,
-  script_inputs: IScriptInputs | null,
-): ProcessEventReturn => {
+export const processChainlifeEvent: ProcessEventFunction = async (
+  token_id,
+  project,
+  context,
+  conn,
+  script_inputs,
+) => {
   const { _id: project_id, project_name, project_slug, external_url } = project;
 
-  context.log.info('Updating token', token_id, 'on', project.project_name);
+  context.log.info("Updating token", token_id, "on", project.project_name);
 
   if (!script_inputs) {
     throw new Error(`No script inputs for ${project_name} token ${token_id}`);
   }
+
+  if (!token_id) {
+    throw new Error(`No token id for ${project_name}, (processChainlifeEvent)`);
+  }
+
   const { generator_url } = getUrls(project_slug, token_id, external_url);
 
   const regex = /esoterra/gi;
@@ -137,13 +148,14 @@ export const processChainlifeEvent = async (
     ? `${generator_url}?esoterra=true`
     : generator_url;
 
-  const { image, image_mid, image_small, attributes } = await getPuppeteerImageSet(
-    project_id,
-    project_slug,
-    token_id,
-    puppeteerGenUrl,
-    script_inputs,
-  );
+  const { image, image_mid, image_small, attributes } =
+    await getPuppeteerImageSet(
+      project_id,
+      project_slug,
+      token_id,
+      puppeteerGenUrl,
+      script_inputs,
+    );
 
   const updatedToken = await updateTokenMetadataOnTransfer(
     project_id,
@@ -165,7 +177,9 @@ export const checkIfTokensMissingAttributes = async (
 ) => {
   const allTokens = await getAllTokensFromProject(project_slug, conn);
 
-  const tokensMissingAttributes = allTokens.filter((token) => !token.attributes);
+  const tokensMissingAttributes = allTokens.filter(
+    (token) => !token.attributes,
+  );
   const numOfBadTokens = tokensMissingAttributes.length;
 
   return { tokensMissingAttributes, numOfBadTokens };
@@ -190,7 +204,7 @@ export const repairBadTokens = async (
     );
 
     if (!updatedToken) {
-      context.log.error('Failed to update token', token_id);
+      context.log.error("Failed to update token", token_id);
       continue;
     }
 
