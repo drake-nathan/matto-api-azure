@@ -10,6 +10,7 @@ import crystallizedIllusionsAbi from "./abis/CrystallizedIllusions.abi.json";
 import mathareAbi from "./abis/Mathare.abi.json";
 import negativeCarbonAbi from "./abis/NegativeCarbon.abi.json";
 import textureAndHuesAbi from "./abis/TextureAndHues.abi.json";
+import mfaAbi from "./mfa/abi/mfa.abi.json";
 
 export enum Chain {
   mainnet = "mainnet",
@@ -38,7 +39,7 @@ export enum ProjectId {
   textureAndHues,
   blonks,
   "100x10x1-a-goerli",
-  // mfa,
+  mfa,
   // '100x10x1-A',
   // nfn,
   // pfp,
@@ -66,7 +67,7 @@ export enum ProjectSlug {
   textureAndHues = "texture-and-hues",
   blonks = "blonks",
   "100x10x1-a-goerli" = "100x10x1-a-goerli",
-  // mfa = 'MFA',
+  mfa = "MFA",
   // '100x10x1-A' = '100x10x1-A',
   // nfn = 'non-fungible-novels',
   // pfp = 'PFP',
@@ -318,7 +319,7 @@ export const projects: IProject[] = [
     events: [],
     creation_block: 15415501,
     devParams: {
-      useInDev: true,
+      useInDev: false,
       useInProd: true,
       usesPuppeteer: false,
       isBulkMint: true,
@@ -397,6 +398,44 @@ export const projects: IProject[] = [
       usesSvgs: true,
     },
   },
+  {
+    _id: ProjectId.mfa,
+    chain: Chain.mainnet,
+    project_name: "MFA",
+    project_slug: ProjectSlug.mfa,
+    collection_name: "MFA (Mattos Fine Art)",
+    artist: "Matto",
+    artist_address: "0xF8d9056db2C2189155bc25A30269dc5dDeD15d46",
+    royalty_info: {
+      artist_address: "0xA6a4Fe416F8Bf46bc3bCA068aC8b1fC4DF760653",
+      royalty_fee_by_id: 10,
+    },
+    maximum_supply: 65535,
+    starting_index: 0,
+    tx_count: 0,
+    collection_description:
+      "MFA (Mattos Fine Art) is a collection of different fine art projects by Matto.",
+    mintable: false,
+    script_type: "p5",
+    aspect_ratio: 0.75,
+    website: "https://matto.xyz/project/mattos-fine-art",
+    external_url: "https://substratum.art/project/mattos-fine-art",
+    license: "All Rights Reserved",
+    contract_address: "0x8771c0c3929cf4ebc7b152B2A6337CB65977683F",
+    events: ["Transfer"],
+    creation_block: 16313524,
+    gen_scripts: {
+      main: "https://cdn.substratum.art/scripts/mfa/mfa.min.js",
+    },
+    devParams: {
+      useInDev: true,
+      useInProd: false,
+      usesPuppeteer: true,
+      isBulkMint: false,
+      usesScriptInputs: true,
+      usesSvgs: false,
+    },
+  },
 ];
 
 export const abis = {
@@ -408,6 +447,7 @@ export const abis = {
   [ProjectId.textureAndHues]: textureAndHuesAbi as AbiItem[],
   [ProjectId.blonks]: blonksAbi as AbiItem[],
   [ProjectId["100x10x1-a-goerli"]]: oneHundredxAbi as AbiItem[],
+  [ProjectId.mfa]: mfaAbi as AbiItem[],
 };
 
 export const projectSizes: ProjectSizes = {
@@ -450,6 +490,11 @@ export const projectSizes: ProjectSizes = {
     full: { width: 2160, height: 3840 },
     mid: { width: 1080, height: 1920 },
     small: { width: 338, height: 600 },
+  },
+  [ProjectId.mfa]: {
+    full: { width: 1620, height: 2160 },
+    mid: { width: 1440, height: 1920 },
+    small: { width: 450, height: 600 },
   },
 };
 
