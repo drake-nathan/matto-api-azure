@@ -61,6 +61,9 @@ export const tokenSchema = new Schema<IToken>({
       value: { type: Schema.Types.Mixed },
     },
   ],
+  transfer_count: { type: Number },
+  last_transfer_block: { type: Number },
+  token_data_frozen: { type: Boolean },
 });
 
 tokenSchema.index({ token_id: 1 });

@@ -1,6 +1,7 @@
 import { ProjectId } from "../../projects";
 import { process100xEvent } from "../../projects/100x10x1x/helpers/processEvent";
 import { process100xMint } from "../../projects/100x10x1x/helpers/processMint";
+import { processHaikuMint } from "../../projects/haiku/helpers/processMint";
 import { processMfaMint } from "../../projects/mfa/helpers/processMint";
 import {
   processBlonksEvent,
@@ -34,6 +35,7 @@ export const getProcessMintFunction = (
     [ProjectId.textureAndHues]: processTexturesMint,
     [ProjectId.blonks]: processBlonksMint,
     [ProjectId["100x10x1-a-goerli"]]: process100xMint,
+    [ProjectId.haiku]: processHaikuMint,
     [ProjectId.mfa]: processMfaMint,
   };
 
@@ -53,6 +55,7 @@ export const getProcessEventFunction = (
       [ProjectId.textureAndHues]: null,
       [ProjectId.blonks]: processBlonksEvent,
       [ProjectId["100x10x1-a-goerli"]]: process100xEvent,
+      [ProjectId.haiku]: null,
       [ProjectId.mfa]: null,
     };
 

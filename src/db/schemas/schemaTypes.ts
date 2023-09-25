@@ -125,6 +125,9 @@ export interface IToken {
   license: string; // project*
   royalty_info: IRoyaltyInfo; // project
   attributes: IAttribute[]; // script
+  transfer_count?: number;
+  last_transfer_block?: number;
+  token_data_frozen?: boolean;
 }
 
 export interface ITransaction {

@@ -1,4 +1,4 @@
-export const mfaAbi = [
+export const haikuAbi = [
   { inputs: [], stateMutability: "nonpayable", type: "constructor" },
   {
     anonymous: false,
@@ -110,6 +110,16 @@ export const mfaAbi = [
     ],
     name: "Transfer",
     type: "event",
+  },
+  {
+    inputs: [{ internalType: "string", name: "_str", type: "string" }],
+    name: "_strToUint",
+    outputs: [
+      { internalType: "uint256", name: "res", type: "uint256" },
+      { internalType: "bool", name: "success", type: "bool" },
+    ],
+    stateMutability: "pure",
+    type: "function",
   },
   {
     inputs: [{ internalType: "uint256", name: "_tokenId", type: "uint256" }],
@@ -235,7 +245,7 @@ export const mfaAbi = [
           { internalType: "string", name: "traitType", type: "string" },
           { internalType: "string", name: "value", type: "string" },
         ],
-        internalType: "struct Mattos_Fine_Art.Attribute[]",
+        internalType: "struct Freestyle_HAIKU.Attribute[]",
         name: "",
         type: "tuple[]",
       },
@@ -541,6 +551,7 @@ export const mfaAbi = [
       { internalType: "string", name: "_mediaAnimation", type: "string" },
       { internalType: "uint8", name: "_mediaType", type: "uint8" },
       { internalType: "string", name: "_description", type: "string" },
+      { internalType: "uint256", name: "_tokenEntropy", type: "uint256" },
       { internalType: "string", name: "_additionalData", type: "string" },
       { internalType: "string", name: "_externalUrl", type: "string" },
       { internalType: "string[]", name: "_attributesArray", type: "string[]" },

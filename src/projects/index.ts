@@ -10,6 +10,7 @@ import crystallizedIllusionsAbi from "./abis/CrystallizedIllusions.abi.json";
 import mathareAbi from "./abis/Mathare.abi.json";
 import negativeCarbonAbi from "./abis/NegativeCarbon.abi.json";
 import textureAndHuesAbi from "./abis/TextureAndHues.abi.json";
+import haikuAbi from "./haiku/abi/haiku.abi.json";
 import mfaAbi from "./mfa/abi/mfa.abi.json";
 
 export enum Chain {
@@ -28,7 +29,8 @@ export enum Chain {
  * 5 = Texture and Hues
  * 6 = BLONKS
  * 7 = 100x10x1 Goerli
- * 8 = 100x10x1
+ * 8 = haiku
+ * 9 = MFA
  */
 export enum ProjectId {
   chainlifeTestnet,
@@ -39,10 +41,8 @@ export enum ProjectId {
   textureAndHues,
   blonks,
   "100x10x1-a-goerli",
+  haiku,
   mfa,
-  // '100x10x1-A',
-  // nfn,
-  // pfp,
 }
 
 /**
@@ -55,8 +55,9 @@ export enum ProjectId {
  * crystallized-illusions = Crystallized Illusions
  * texture-and-hues = Texture and Hues
  * blonks = BLONKS
- * 100x10x1-A-goerli = 100x10x1-A Goerli
- * 100x10x1-A = 100x10x1-A
+ * 100x10x1-a-goerli = 100x10x1-a Goerli
+ * haiku
+ * mfa
  */
 export enum ProjectSlug {
   chainlifeTestnet = "chainlife-testnet",
@@ -67,10 +68,8 @@ export enum ProjectSlug {
   textureAndHues = "texture-and-hues",
   blonks = "blonks",
   "100x10x1-a-goerli" = "100x10x1-a-goerli",
-  mfa = "MFA",
-  // '100x10x1-A' = '100x10x1-A',
-  // nfn = 'non-fungible-novels',
-  // pfp = 'PFP',
+  haiku = "haiku",
+  mfa = "mfa",
 }
 
 export const projects: IProject[] = [
@@ -399,46 +398,77 @@ export const projects: IProject[] = [
     },
   },
   {
-    _id: ProjectId.mfa,
-    chain: Chain.mainnet,
-    project_name: "MFA",
-    project_slug: ProjectSlug.mfa,
-    collection_name: "MFA (Mattos Fine Art)",
+    _id: ProjectId.haiku,
+    chain: Chain.goerli,
+    project_name: "Haiku",
+    project_slug: ProjectSlug.haiku,
+    collection_name: "Freestyle H(ai)ku",
     artist: "Matto",
-    artist_address: "0xF8d9056db2C2189155bc25A30269dc5dDeD15d46",
+    artist_address: "0xA6a4Fe416F8Bf46bc3bCA068aC8b1fC4DF760653",
     royalty_info: {
-      artist_address: "0xA6a4Fe416F8Bf46bc3bCA068aC8b1fC4DF760653",
-      royalty_fee_by_id: 10,
+      royalty_address: "0xA6a4Fe416F8Bf46bc3bCA068aC8b1fC4DF760653",
+      royalty_bps: 700,
     },
-    maximum_supply: 65535,
-    starting_index: 0,
+    maximum_supply: 1000000000000,
+    starting_index: 1,
     tx_count: 0,
     collection_description:
-      "MFA (Mattos Fine Art) is a collection of different fine art projects by Matto.",
+      "Freestyle H(ai)ku is an extension of Matto's 'Freestyle Haiku' poetry project (https://freestylehaiku.com), where he uses various AI technologies to interpret each of his poems, visualize the interpretations, and enhance the resulting artworks detail. Upon mint, each poem is individually stored in the smart contract as the token's description (directly and individually accessible by the smart contract). Image media, AI-generated poem interpretations, and attributes metadata is stored on Arweave, and all metadata is assembled into the token by Substratum. The resulting work is more than a poem or a visual, it is also a vehicle for the introspection of the human condition through the lens of early Artificial Intelligence systems.",
     mintable: false,
-    script_type: "p5",
-    aspect_ratio: 0.75,
-    website: "https://matto.xyz/project/mattos-fine-art",
-    external_url: "https://substratum.art/project/mattos-fine-art",
+    aspect_ratio: 1,
+    website: "https://matto.xyz/project/freestyle-h-ai-ku",
+    external_url: "https://freestylehaiku.com/poem",
     license: "All Rights Reserved",
-    contract_address: "0x8771c0c3929cf4ebc7b152B2A6337CB65977683F",
-    events: ["Transfer"],
-    creation_block: 16313524,
-    gen_scripts: {
-      main: "https://cdn.substratum.art/scripts/mfa/mfa.min.js",
-    },
+    contract_address: "0xb022C98135b43e28389b174fa1423B61264e68dE",
+    events: ["Transfer", "TokenUpdated"],
+    creation_block: 0,
     devParams: {
       useInDev: true,
       useInProd: false,
+      usesPuppeteer: false,
+      isBulkMint: false,
+      usesScriptInputs: false,
+      usesSvgs: false,
+    },
+  },
+  {
+    _id: ProjectId.mfa,
+    chain: Chain.goerli,
+    project_name: "MFA",
+    project_slug: ProjectSlug.mfa,
+    collection_name: "MFA",
+    artist: "Matto",
+    artist_address: "0xA6a4Fe416F8Bf46bc3bCA068aC8b1fC4DF760653",
+    royalty_info: {
+      artist_address: "0xA6a4Fe416F8Bf46bc3bCA068aC8b1fC4DF760653",
+      royalty_fee_by_id: 7,
+    },
+    maximum_supply: 1000000000000,
+    starting_index: 1,
+    tx_count: 0,
+    collection_description:
+      "MFA is a varied collection of 1/1 fine artworks by Matto.",
+    mintable: false,
+    script_type: "",
+    aspect_ratio: 1, // This will vary by token, there is now width_ratio and height_ratio. MFA will be variable. Haiku will probably always be 1.
+    website: "https://matto.xyz/project/mfa",
+    external_url: "https://substratum.art/project/mfa",
+    license: "All Rights Reserved", // this can vary per token, but for curated work will typically default to all rights reserved
+    contract_address: "0x9c377a454f4792eAc40C65143B2D3b99f5f1bfb3",
+    events: ["Transfer", "TokenUpdated"],
+    creation_block: 0,
+    devParams: {
+      useInDev: false,
+      useInProd: false,
       usesPuppeteer: true,
       isBulkMint: false,
-      usesScriptInputs: true,
+      usesScriptInputs: false,
       usesSvgs: false,
     },
   },
 ];
 
-export const abis = {
+export const abis: Record<ProjectId, AbiItem[]> = {
   [ProjectId.chainlifeTestnet]: chainlifeGoerliAbi as AbiItem[],
   [ProjectId.chainlifeMainnet]: chainlifeMainnetAbi as AbiItem[],
   [ProjectId.mathareMemories]: mathareAbi as AbiItem[],
@@ -447,6 +477,7 @@ export const abis = {
   [ProjectId.textureAndHues]: textureAndHuesAbi as AbiItem[],
   [ProjectId.blonks]: blonksAbi as AbiItem[],
   [ProjectId["100x10x1-a-goerli"]]: oneHundredxAbi as AbiItem[],
+  [ProjectId.haiku]: haikuAbi as AbiItem[],
   [ProjectId.mfa]: mfaAbi as AbiItem[],
 };
 
@@ -490,6 +521,11 @@ export const projectSizes: ProjectSizes = {
     full: { width: 2160, height: 3840 },
     mid: { width: 1080, height: 1920 },
     small: { width: 338, height: 600 },
+  },
+  [ProjectId.haiku]: {
+    full: { width: 2160, height: 2160 },
+    mid: { width: 1080, height: 1080 },
+    small: { width: 600, height: 600 },
   },
   [ProjectId.mfa]: {
     full: { width: 1620, height: 2160 },

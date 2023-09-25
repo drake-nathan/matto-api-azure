@@ -61,7 +61,7 @@ export const processTexturesMint = async (
     projectExternalUrl,
   );
 
-  const { image_mid, image_small } = await fetchResizeUploadImages(
+  const [image_mid, image_small] = await fetchResizeUploadImages(
     project_id,
     project_slug,
     token_id,

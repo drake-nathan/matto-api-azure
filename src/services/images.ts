@@ -9,10 +9,7 @@ export const fetchResizeUploadImages = async (
   projectSlug: ProjectSlug,
   tokenId: number,
   imageUrl: string,
-): Promise<{
-  image_mid: string;
-  image_small: string;
-}> => {
+): Promise<string[]> => {
   const sizes = projectSizes[projectId];
 
   let imageBuffer: Buffer;
@@ -45,7 +42,7 @@ export const fetchResizeUploadImages = async (
     BlobFolder.small,
   );
 
-  return { image_mid, image_small };
+  return [image_mid, image_small];
 };
 
 export const svgToPngAndUpload = async (

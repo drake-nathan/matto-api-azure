@@ -1,15 +1,18 @@
-import * as dotenv from 'dotenv';
-import type { Context } from '@azure/functions';
-import type { Connection } from 'mongoose';
-import type { IProject, IScriptInputs, IToken } from '../../../db/schemas/schemaTypes';
-import type { ProcessMintReturn } from '../../../helpers/tokenHelpers/types';
-import { ProjectSlug } from '../..';
+import type { Context } from "@azure/functions";
+import * as dotenv from "dotenv";
+import type { Connection } from "mongoose";
+import { getContract } from "viem";
 
 import {
   getProjectCurrentSupply,
   updateProjectSupplyAndCount,
-} from '../../../db/queries/projectQueries';
-import { addToken } from '../../../db/queries/tokenQueries';
+} from "../../../db/queries/projectQueries";
+import { addToken } from "../../../db/queries/tokenQueries";
+import type { IProject, IToken } from "../../../db/schemas/schemaTypes";
+import type { ProcessMintFunction } from "../../../helpers/tokenHelpers/types";
+import { getViem } from "../../../web3/providers";
+import { ProjectSlug } from "../..";
+import { mfaAbi } from "../abi";
 
 dotenv.config();
 const rootServerUrl = process.env.ROOT_URL;
@@ -25,19 +28,20 @@ const getUrls = (
   return { generator_url, external_url, image };
 };
 
-export const processMfaMint = async (
+export const processMfaMint: ProcessMintFunction = async (
   token_id: number,
   project: IProject,
   context: Context,
   conn: Connection,
-  script_inputs?: IScriptInputs,
-): ProcessMintReturn => {
+) => {
   const {
     _id: project_id,
     project_name,
     project_slug,
     artist,
     artist_address,
+    chain,
+    contract_address: contractAddress,
     collection_name,
     script_type,
     aspect_ratio,
@@ -49,12 +53,17 @@ export const processMfaMint = async (
     description,
   } = project;
 
-  context.log.info('Adding token', token_id, 'to', project_name);
+  context.log.info("Adding token", token_id, "to", project_name);
 
-  if (!script_inputs) {
-    context.log.info('No script inputs for token', token_id, 'in project', project_name);
-    return;
-  }
+  // const viemClient = getViem(chain);
+
+  // const contract = getContract({
+  //   address: contractAddress as `0x${string}`,
+  //   abi: mfaAbi,
+  //   publicClient: viemClient,
+  // });
+
+  // const tokenData = contract.tokenDataOf([BigInt(token_id)]);
 
   const { generator_url, external_url, image } = getUrls(
     project_slug,
@@ -70,11 +79,10 @@ export const processMfaMint = async (
     project_slug,
     artist,
     artist_address,
-    description: description ?? '',
+    description: description ?? "",
     collection_name,
     aspect_ratio,
     script_type,
-    script_inputs,
     image,
     generator_url,
     animation_url: generator_url,
@@ -82,7 +90,7 @@ export const processMfaMint = async (
     website,
     license,
     royalty_info,
-    attributes: [{ trait_type: 'Minted', value: 'true' }],
+    attributes: [{ trait_type: "Minted", value: "true" }],
   };
 
   const { token_id: newTokenId } = await addToken(newToken, conn);
