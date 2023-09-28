@@ -12,6 +12,8 @@ export const tokenSchema = new Schema<IToken>({
   artist_address: { type: String, required: true },
   description: { type: String, required: true },
   collection_name: { type: String, required: true },
+  width_ratio: { type: Number },
+  height_ratio: { type: Number },
   aspect_ratio: { type: Number, required: true },
   script_type: { type: String },
   script_inputs: {

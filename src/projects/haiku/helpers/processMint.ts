@@ -1,24 +1,15 @@
 import type { Context } from "@azure/functions";
 import type { Connection } from "mongoose";
-import { getContract } from "viem";
+import { isAddress } from "viem";
 
 import {
   getProjectCurrentSupply,
   updateProjectSupplyAndCount,
 } from "../../../db/queries/projectQueries";
 import { addToken } from "../../../db/queries/tokenQueries";
-import type {
-  IAttribute,
-  IProject,
-  IToken,
-} from "../../../db/schemas/schemaTypes";
+import type { IProject, IToken } from "../../../db/schemas/schemaTypes";
 import type { ProcessMintFunction } from "../../../helpers/tokenHelpers/types";
-import { fetchResizeUploadImages } from "../../../services/images";
-import { getViem } from "../../../web3/providers";
-import { haikuAbi } from "../abi";
-import { fetchDescription } from "./fetchDescription";
-import { processAttributes } from "./processAttributes";
-import { type HaikuTokenData, haikuTokenDataSchema } from "./zod";
+import { getUpdatedTokenValues } from "./getUpdatedTokenValues";
 
 export const processHaikuMint: ProcessMintFunction = async (
   token_id: number,
@@ -38,58 +29,18 @@ export const processHaikuMint: ProcessMintFunction = async (
 
   context.log.info("Adding token", token_id, "to", project_name);
 
-  const viemClient = getViem(chain);
-
-  const contract = getContract({
-    address: contractAddress as `0x${string}`,
-    abi: haikuAbi,
-    publicClient: viemClient,
-  });
-
-  let tokenDataJson: string;
-  try {
-    tokenDataJson = await contract.read.tokenDataOf([BigInt(token_id)]);
-  } catch (error) {
-    throw new Error("Error fetching `tokenDataOf`", { cause: error });
+  if (!isAddress(contractAddress)) {
+    throw new Error("Invalid contract address");
   }
 
-  let tokenData: HaikuTokenData;
-  try {
-    const tokenDataOf = JSON.parse(tokenDataJson);
-
-    tokenData = haikuTokenDataSchema.parse(tokenDataOf);
-  } catch (error) {
-    throw new Error("Error parsing `tokenDataOf`", { cause: error });
-  }
-
-  let additionalDescription: string;
-  try {
-    additionalDescription = await fetchDescription(tokenData.additional_data);
-  } catch (error) {
-    throw new Error("Error fetching `additional_data`", { cause: error });
-  }
-
-  const description = `${tokenData.description}\n\n${additionalDescription}`;
-
-  let attributes: IAttribute[];
-  try {
-    attributes = await processAttributes(tokenData.attributes);
-  } catch (error) {
-    throw new Error("Error processing attributes", { cause: error });
-  }
-
-  let image_mid: string;
-  let image_small: string;
-  try {
-    [image_mid, image_small] = await fetchResizeUploadImages(
-      project_id,
-      project_slug,
-      token_id,
-      tokenData.image,
-    );
-  } catch (error) {
-    throw new Error("Error fetching and uploading images", { cause: error });
-  }
+  const { attributes, description, imageMid, imageSmall, tokenData } =
+    await getUpdatedTokenValues({
+      chain,
+      contractAddress,
+      projectId: project_id,
+      projectSlug: project_slug,
+      tokenId: token_id,
+    });
 
   const newToken: IToken = {
     token_id,
@@ -101,10 +52,12 @@ export const processHaikuMint: ProcessMintFunction = async (
     artist_address,
     description,
     collection_name: tokenData.collection,
+    width_ratio: tokenData.width_ratio,
+    height_ratio: tokenData.height_ratio,
     aspect_ratio: tokenData.width_ratio / tokenData.height_ratio,
     image: tokenData.image,
-    image_mid,
-    image_small,
+    image_mid: imageMid,
+    image_small: imageSmall,
     external_url: tokenData.external_url,
     website: tokenData.website,
     license: tokenData.license,
