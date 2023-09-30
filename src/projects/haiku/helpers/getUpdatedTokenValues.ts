@@ -58,12 +58,19 @@ export const getUpdatedTokenValues = async ({
 
   let additionalDescription: string;
   try {
-    additionalDescription = await fetchDescription(tokenData.additional_data);
+    if (tokenData.additional_data) {
+      additionalDescription = await fetchDescription(tokenData.additional_data);
+    } else {
+      additionalDescription = "";
+    }
   } catch (error) {
     throw new Error("Error fetching `additional_data`", { cause: error });
   }
 
-  const description = `${tokenData.description}\n\n${additionalDescription}`;
+  const description =
+    tokenData.description && additionalDescription
+      ? `${tokenData.description}\n\nAI Interpretation:\n${additionalDescription}`
+      : "";
 
   let attributes: IAttribute[];
   try {
@@ -75,12 +82,17 @@ export const getUpdatedTokenValues = async ({
   let imageMid: string;
   let imageSmall: string;
   try {
-    [imageMid, imageSmall] = await fetchResizeUploadImages(
-      projectId,
-      projectSlug,
-      tokenId,
-      tokenData.image,
-    );
+    if (tokenData.image) {
+      [imageMid, imageSmall] = await fetchResizeUploadImages(
+        projectId,
+        projectSlug,
+        tokenId,
+        tokenData.image,
+      );
+    } else {
+      imageMid = "";
+      imageSmall = "";
+    }
   } catch (error) {
     throw new Error("Error fetching and uploading images", { cause: error });
   }

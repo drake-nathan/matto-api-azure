@@ -42,6 +42,11 @@ export const processHaikuMint: ProcessMintFunction = async (
       tokenId: token_id,
     });
 
+  const aspect_ratio =
+    tokenData.width_ratio && tokenData.height_ratio
+      ? tokenData.width_ratio / tokenData.height_ratio
+      : 1;
+
   const newToken: IToken = {
     token_id,
     name: tokenData.name,
@@ -54,7 +59,7 @@ export const processHaikuMint: ProcessMintFunction = async (
     collection_name: tokenData.collection,
     width_ratio: tokenData.width_ratio,
     height_ratio: tokenData.height_ratio,
-    aspect_ratio: tokenData.width_ratio / tokenData.height_ratio,
+    aspect_ratio,
     image: tokenData.image,
     image_mid: imageMid,
     image_small: imageSmall,

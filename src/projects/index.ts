@@ -399,7 +399,7 @@ export const projects: IProject[] = [
   },
   {
     _id: ProjectId.haiku,
-    chain: Chain.goerli,
+    chain: Chain.mainnet,
     project_name: "Haiku",
     project_slug: ProjectSlug.haiku,
     collection_name: "Freestyle H(ai)ku",
@@ -407,7 +407,7 @@ export const projects: IProject[] = [
     artist_address: "0xA6a4Fe416F8Bf46bc3bCA068aC8b1fC4DF760653",
     royalty_info: {
       royalty_address: "0xA6a4Fe416F8Bf46bc3bCA068aC8b1fC4DF760653",
-      royalty_bps: 700,
+      royalty_bps: 1000,
     },
     maximum_supply: 1000000000000,
     starting_index: 1,
@@ -419,9 +419,9 @@ export const projects: IProject[] = [
     website: "https://matto.xyz/project/freestyle-h-ai-ku",
     external_url: "https://freestylehaiku.com/poem",
     license: "All Rights Reserved",
-    contract_address: "0xb022C98135b43e28389b174fa1423B61264e68dE",
+    contract_address: "0x74C093fD987Fff140677Aa83B6CC4680B8ef2956",
     events: ["Transfer", "TokenUpdated"],
-    creation_block: 0,
+    creation_block: 18243172,
     devParams: {
       useInDev: true,
       useInProd: true,

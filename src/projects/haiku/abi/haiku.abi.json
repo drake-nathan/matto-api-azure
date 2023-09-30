@@ -127,16 +127,6 @@
     "type": "event"
   },
   {
-    "inputs": [{ "internalType": "string", "name": "_str", "type": "string" }],
-    "name": "_strToUint",
-    "outputs": [
-      { "internalType": "uint256", "name": "res", "type": "uint256" },
-      { "internalType": "bool", "name": "success", "type": "bool" }
-    ],
-    "stateMutability": "pure",
-    "type": "function"
-  },
-  {
     "inputs": [
       { "internalType": "uint256", "name": "_tokenId", "type": "uint256" }
     ],
@@ -256,6 +246,15 @@
   },
   {
     "inputs": [
+      { "internalType": "uint256", "name": "_tokenId", "type": "uint256" }
+    ],
+    "name": "freezeToken",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
       { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
     ],
     "name": "getApproved",
@@ -274,11 +273,20 @@
           { "internalType": "string", "name": "traitType", "type": "string" },
           { "internalType": "string", "name": "value", "type": "string" }
         ],
-        "internalType": "struct Freestyle_HAIKU.Attribute[]",
+        "internalType": "struct FREESTYLE_HAIKU.Attribute[]",
         "name": "",
         "type": "tuple[]"
       }
     ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "_tokenId", "type": "uint256" }
+    ],
+    "name": "getDescription",
+    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
     "stateMutability": "view",
     "type": "function"
   },
