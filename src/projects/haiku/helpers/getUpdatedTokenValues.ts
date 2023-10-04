@@ -23,6 +23,7 @@ interface UpdatedValues {
   imageMid: string;
   imageSmall: string;
   tokenData: HaikuTokenData;
+  aspectRatio: number;
 }
 
 export const getUpdatedTokenValues = async ({
@@ -97,11 +98,17 @@ export const getUpdatedTokenValues = async ({
     throw new Error("Error fetching and uploading images", { cause: error });
   }
 
+  const aspectRatio =
+    tokenData.width_ratio && tokenData.height_ratio
+      ? tokenData.width_ratio / tokenData.height_ratio
+      : 1;
+
   return {
     attributes,
     description,
     imageMid,
     imageSmall,
     tokenData,
+    aspectRatio,
   };
 };

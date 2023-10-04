@@ -33,19 +33,20 @@ export const processHaikuMint: ProcessMintFunction = async (
     throw new Error("Invalid contract address");
   }
 
-  const { attributes, description, imageMid, imageSmall, tokenData } =
-    await getUpdatedTokenValues({
-      chain,
-      contractAddress,
-      projectId: project_id,
-      projectSlug: project_slug,
-      tokenId: token_id,
-    });
-
-  const aspect_ratio =
-    tokenData.width_ratio && tokenData.height_ratio
-      ? tokenData.width_ratio / tokenData.height_ratio
-      : 1;
+  const {
+    attributes,
+    description,
+    imageMid,
+    imageSmall,
+    tokenData,
+    aspectRatio,
+  } = await getUpdatedTokenValues({
+    chain,
+    contractAddress,
+    projectId: project_id,
+    projectSlug: project_slug,
+    tokenId: token_id,
+  });
 
   const newToken: IToken = {
     token_id,
@@ -59,7 +60,7 @@ export const processHaikuMint: ProcessMintFunction = async (
     collection_name: tokenData.collection,
     width_ratio: tokenData.width_ratio,
     height_ratio: tokenData.height_ratio,
-    aspect_ratio,
+    aspect_ratio: aspectRatio,
     image: tokenData.image,
     image_mid: imageMid,
     image_small: imageSmall,

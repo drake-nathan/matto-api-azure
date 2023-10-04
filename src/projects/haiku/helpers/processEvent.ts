@@ -31,21 +31,33 @@ export const processHaikuEvent: ProcessEventFunction = async (
     throw new Error("Invalid contract address");
   }
 
-  const { attributes, description, imageMid, imageSmall, tokenData } =
-    await getUpdatedTokenValues({
-      chain,
-      contractAddress,
-      projectId: project_id,
-      projectSlug: project_slug,
-      tokenId: token_id,
-    });
+  const {
+    attributes,
+    description,
+    imageMid,
+    imageSmall,
+    tokenData,
+    aspectRatio,
+  } = await getUpdatedTokenValues({
+    chain,
+    contractAddress,
+    projectId: project_id,
+    projectSlug: project_slug,
+    tokenId: token_id,
+  });
 
   const Token = conn.model<IToken>("Token");
 
   const query = Token.findOneAndUpdate(
     { project_id, token_id },
     {
+      name: tokenData.name,
+      artist: tokenData.artist,
       description,
+      collection_name: tokenData.collection,
+      width_ratio: tokenData.width_ratio,
+      height_ratio: tokenData.height_ratio,
+      aspect_ratio: aspectRatio,
       image: tokenData.image,
       image_mid: imageMid,
       image_small: imageSmall,
