@@ -38,6 +38,8 @@ export const processHaikuEvent: ProcessEventFunction = async (
     imageSmall,
     tokenData,
     aspectRatio,
+    poem,
+    additionalDescription,
   } = await getUpdatedTokenValues({
     chain,
     contractAddress,
@@ -54,6 +56,10 @@ export const processHaikuEvent: ProcessEventFunction = async (
       name: tokenData.name,
       artist: tokenData.artist,
       description,
+      additional_info: {
+        poem,
+        additional_description: additionalDescription,
+      },
       collection_name: tokenData.collection,
       width_ratio: tokenData.width_ratio,
       height_ratio: tokenData.height_ratio,

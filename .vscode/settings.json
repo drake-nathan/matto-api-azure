@@ -11,5 +11,10 @@
   "azureFunctions.projectRuntime": "~4",
   "debug.internalConsoleOptions": "neverOpen",
   // "azureFunctions.preDeployTask": "npm prune (functions)"
-  "azureFunctions.scmDoBuildDuringDeployment": true
+  "azureFunctions.scmDoBuildDuringDeployment": true,
+  "files.exclude": {
+    "__azurite*": true,
+    "__blobstorage__": true,
+    "__queuestorage__": true
+  }
 }

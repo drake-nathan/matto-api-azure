@@ -24,6 +24,8 @@ interface UpdatedValues {
   imageSmall: string;
   tokenData: HaikuTokenData;
   aspectRatio: number;
+  poem: string;
+  additionalDescription: string;
 }
 
 export const getUpdatedTokenValues = async ({
@@ -110,5 +112,7 @@ export const getUpdatedTokenValues = async ({
     imageSmall,
     tokenData,
     aspectRatio,
+    poem: tokenData.description,
+    additionalDescription,
   };
 };

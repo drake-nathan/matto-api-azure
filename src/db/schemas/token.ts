@@ -66,6 +66,10 @@ export const tokenSchema = new Schema<IToken>({
   transfer_count: { type: Number },
   last_transfer_block: { type: Number },
   token_data_frozen: { type: Boolean },
+  additional_info: {
+    poem: { type: String },
+    additional_description: { type: String },
+  },
 });
 
 tokenSchema.index({ token_id: 1 });

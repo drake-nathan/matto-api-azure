@@ -40,6 +40,8 @@ export const processHaikuMint: ProcessMintFunction = async (
     imageSmall,
     tokenData,
     aspectRatio,
+    poem,
+    additionalDescription,
   } = await getUpdatedTokenValues({
     chain,
     contractAddress,
@@ -57,6 +59,10 @@ export const processHaikuMint: ProcessMintFunction = async (
     artist: tokenData.artist,
     artist_address,
     description,
+    additional_info: {
+      poem,
+      additional_description: additionalDescription,
+    },
     collection_name: tokenData.collection,
     width_ratio: tokenData.width_ratio,
     height_ratio: tokenData.height_ratio,

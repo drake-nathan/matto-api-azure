@@ -37,16 +37,3 @@ export const haikuTokenDataSchema = z.object({
 });
 
 export type HaikuTokenData = z.infer<typeof haikuTokenDataSchema>;
-
-// const numericStringNullable = z.preprocess((val) => {
-//   if (val === "") {
-//     return null;
-//   }
-//   if (typeof val === "string") {
-//     return Number(val);
-//   }
-//   if (typeof val === "number") {
-//     return val;
-//   }
-//   return null;
-// }, z.number().nullable());

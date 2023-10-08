@@ -130,6 +130,10 @@ export interface IToken {
   transfer_count?: number;
   last_transfer_block?: number;
   token_data_frozen?: boolean;
+  additional_info?: {
+    poem?: string;
+    additional_description?: string;
+  };
 }
 
 export interface ITransaction {
