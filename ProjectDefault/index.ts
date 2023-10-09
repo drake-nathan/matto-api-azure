@@ -1,6 +1,6 @@
-import { AzureFunction, Context } from "@azure/functions";
+import type { AzureFunction, Context } from "@azure/functions";
 import * as dotenv from "dotenv";
-import { Connection } from "mongoose";
+import type { Connection } from "mongoose";
 
 import { connectionFactory } from "../src/db/connectionFactory";
 import { getAllProjects } from "../src/db/queries/projectQueries";
