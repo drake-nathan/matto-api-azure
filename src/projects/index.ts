@@ -163,7 +163,7 @@ export const projects: IProject[] = [
         "https://cdn.substratum.art/scripts/chainlife/chainlifePainting.min.js",
     },
     devParams: {
-      useInDev: false,
+      useInDev: true,
       useInProd: true,
       usesPuppeteer: true,
       isBulkMint: false,
@@ -207,7 +207,7 @@ export const projects: IProject[] = [
         "https://cdn.substratum.art/scripts/mathare/descriptions.min.js",
     },
     devParams: {
-      useInDev: false,
+      useInDev: true,
       useInProd: true,
       usesPuppeteer: false,
       isBulkMint: true,
@@ -245,7 +245,7 @@ export const projects: IProject[] = [
       main: "https://cdn.substratum.art/scripts/negativeCarbon/negativeCarbon.min.js",
     },
     devParams: {
-      useInDev: false,
+      useInDev: true,
       useInProd: true,
       usesPuppeteer: true,
       isBulkMint: false,
@@ -283,7 +283,7 @@ export const projects: IProject[] = [
       main: "https://cdn.substratum.art/scripts/crystallizedIllusions/crystallizedIllusions.min.js",
     },
     devParams: {
-      useInDev: false,
+      useInDev: true,
       useInProd: true,
       usesPuppeteer: true,
       isBulkMint: true,
@@ -318,7 +318,7 @@ export const projects: IProject[] = [
     events: [],
     creation_block: 15415501,
     devParams: {
-      useInDev: false,
+      useInDev: true,
       useInProd: true,
       usesPuppeteer: false,
       isBulkMint: true,
@@ -353,7 +353,7 @@ export const projects: IProject[] = [
     events: ["Transfer"],
     creation_block: 17315032, // not the real creation block
     devParams: {
-      useInDev: false,
+      useInDev: true,
       useInProd: true,
       usesPuppeteer: false,
       isBulkMint: true,

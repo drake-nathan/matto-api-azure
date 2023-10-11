@@ -67,7 +67,15 @@ export const processHaikuEvent: ProcessEventFunction = async (
       image: tokenData.image,
       image_mid: imageMid,
       image_small: imageSmall,
+      external_url: tokenData.external_url,
+      website: tokenData.website,
+      license: tokenData.license,
+      royalty_info: {
+        royalty_address: tokenData.royalty_address,
+        royalty_bps: tokenData.royalty_bps,
+      },
       attributes,
+      token_data_frozen: tokenData.token_data_frozen ?? false,
     },
     { new: true },
   );

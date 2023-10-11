@@ -15,6 +15,7 @@ const runPuppeteer = async (
 ) => {
   const browser = await puppeteer.launch({
     defaultViewport: size,
+    headless: "new",
   });
 
   const page = await browser.newPage();
@@ -113,7 +114,9 @@ export const getAttributes = async (
   url: string,
   scriptInputs: IScriptInputs,
 ): Promise<IAttribute[]> => {
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({
+    headless: "new",
+  });
 
   const page = await browser.newPage();
 
