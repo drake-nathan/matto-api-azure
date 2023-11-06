@@ -31,7 +31,7 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
         </head>
         <body>
           <div id="canvas-container"></div>
-          <script src="https://cdn.gengames.io/scripts/chainlife/chainlifeToken-Random.min.js"></script>
+          <script src="https://cdn.substratum.art/scripts/chainlife/chainlifeToken-Random.min.js"></script>
         </body>
       </html>
   `;
