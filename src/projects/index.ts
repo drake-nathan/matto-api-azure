@@ -389,8 +389,8 @@ export const projects: IProject[] = [
     events: ["Transfer", "OrderChanged"],
     creation_block: 9638558,
     devParams: {
-      useInDev: true,
-      useInProd: true,
+      useInDev: false,
+      useInProd: false,
       usesPuppeteer: false,
       isBulkMint: false,
       usesScriptInputs: false,
