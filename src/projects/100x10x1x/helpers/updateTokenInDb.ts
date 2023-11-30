@@ -1,20 +1,20 @@
 import type { Context } from "@azure/functions";
 import type { Connection } from "mongoose";
+import type { Address } from "viem";
 
-import { getTokenDoc } from "../../../db/queries/tokenQueries";
-import { Chain, ProjectId, ProjectSlug } from "../..";
+import type { IProject, IToken } from "../../../db/schemas/schemaTypes";
+import type { Chain } from "../..";
 import { getTokenZeroAttributes } from "./getTokenZeroAttributes";
+import { getTokenZeroDescription } from "./getTokenZeroDescription";
 import { getUpdatedTokenValues } from "./getUpdatedTokenValues";
 
 interface Params {
   chain: Chain;
   conn: Connection;
   context: Context;
-  contractAddress: string;
-  description?: string;
-  projectId: ProjectId;
-  projectName: string;
-  projectSlug: ProjectSlug;
+  contractAddress: Address;
+  collectionDescription: string;
+  project: IProject;
   tokenId: number;
 }
 
@@ -23,42 +23,62 @@ export const updateTokenInDb = async ({
   conn,
   context,
   contractAddress,
-  description,
-  projectId,
-  projectName,
-  projectSlug,
+  collectionDescription,
+  project,
   tokenId,
 }: Params) => {
-  const token = await getTokenDoc(projectSlug, tokenId, conn);
-
-  if (!token) {
-    throw new Error(`No token found for ${projectName} ${tokenId}`);
-  }
-
-  if (tokenId === 0) {
-    token.attributes = await getTokenZeroAttributes(conn);
-  }
-
-  const { svg, image, image_mid, image_small, attributes } =
+  const { tokenData, image, imageMid, imageSmall } =
     await getUpdatedTokenValues({
-      context,
-      tokenId,
-      contractAddress,
       chain,
-      projectName,
-      projectId,
-      projectSlug,
-      existingAttributes: token.attributes,
+      context,
+      contractAddress,
+      projectId: project.project_id,
+      projectName: project.project_name,
+      projectSlug: project.project_slug,
+      tokenId,
     });
 
-  token.svg = svg;
-  token.image = image;
-  token.image_mid = image_mid;
-  token.image_small = image_small;
-  token.attributes = attributes;
-  if (description) token.description = description;
+  const attributes =
+    tokenId === 0 ? await getTokenZeroAttributes(conn) : tokenData.attributes;
 
-  const updatedToken = await token.save();
+  const description =
+    tokenId === 0
+      ? await getTokenZeroDescription(
+          chain,
+          contractAddress,
+          collectionDescription,
+        )
+      : tokenData.description;
+
+  const Token = conn.model<IToken>("Token");
+
+  const query = Token.findOneAndUpdate(
+    { project_id: project.projectId, token_id: tokenId },
+    {
+      name: tokenData.name,
+      collection_name: tokenData.collection,
+      artist: tokenData.artist,
+      description,
+      width_ratio: tokenData.width_ratio,
+      height_ratio: tokenData.height_ratio,
+      license: tokenData.license,
+      additional_data: tokenData.additional_data,
+      svg: tokenData.image,
+      image,
+      image_mid: imageMid,
+      image_small: imageSmall,
+      external_url: tokenData.external_url,
+      website: tokenData.website,
+      royalty_info: {
+        royalty_address: tokenData.royalty_address,
+        royalty_bps: tokenData.royalty_bps,
+      },
+      attributes,
+    },
+    { new: true },
+  );
+
+  const result = await query.lean().exec();
 
   // if (tokenId === 0) {
   //   try {
@@ -68,5 +88,5 @@ export const updateTokenInDb = async ({
   //   }
   // }
 
-  return updatedToken;
+  return result;
 };

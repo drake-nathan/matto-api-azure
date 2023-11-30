@@ -10,7 +10,7 @@
     "prettify": "npm run prettier && npm run lint",
     "start": "func start",
     "test": "jest",
-    "typecheck": "tsc --noEmit",
+    "type": "tsc --pretty --noEmit",
     "watch": "tsc -w"
   },
   "jest": {
@@ -25,6 +25,7 @@
     "@azure/storage-blob": "^12.16.0",
     "@types/ws": "^8.5.6",
     "axios": "^1.5.1",
+    "canvas": "^2.11.2",
     "dotenv": "^16.3.1",
     "hjson": "^3.2.2",
     "jsdom": "^22.1.0",

@@ -1,42 +1,37 @@
 import type { Context } from "@azure/functions";
 import { getContract } from "viem";
 
-import type { IAttribute } from "../../../db/schemas/schemaTypes";
 import { svgToPngAndUpload } from "../../../services/images";
 import { getViem } from "../../../web3/providers";
-import { Chain, ProjectId, ProjectSlug } from "../..";
+import { Chain, type ProjectId, type ProjectSlug } from "../..";
 import { oneHundredxAbi } from "../abi";
-import { parseSvgAttributes } from "./parseSvgAttributes";
+import { type OneHundredXTokenData, oneHundredXTokenDataSchema } from "./zod";
 
 interface Params {
   chain: Chain;
   context: Context;
-  tokenId: number;
   contractAddress: string;
-  projectName: string;
   projectId: ProjectId;
+  projectName: string;
   projectSlug: ProjectSlug;
-  existingAttributes?: IAttribute[];
+  tokenId: number;
 }
 
 interface UpdatedValues {
-  svg: string;
-  attributes: IAttribute[];
+  tokenData: OneHundredXTokenData;
   image: string;
-  image_mid: string;
-  image_small: string;
-  compositeOrder?: string;
+  imageMid: string;
+  imageSmall: string;
 }
 
 export const getUpdatedTokenValues = async ({
-  context,
-  tokenId,
-  contractAddress,
   chain,
-  projectName,
+  context,
+  contractAddress,
   projectId,
+  projectName,
   projectSlug,
-  existingAttributes,
+  tokenId,
 }: Params): Promise<UpdatedValues> => {
   const viemClient = getViem(chain);
 
@@ -46,61 +41,50 @@ export const getUpdatedTokenValues = async ({
     publicClient: viemClient,
   });
 
-  // function state
-  const updatedValues: UpdatedValues = {
-    svg: "",
-    attributes: [],
-    image: "",
-    image_mid: "",
-    image_small: "",
-  };
-
+  let tokenDataJson: string;
   try {
-    updatedValues.svg = await contract.read.getTokenSVG([BigInt(tokenId)]);
-
-    if (!updatedValues.svg) {
-      throw new Error("No SVG");
-    }
-
-    updatedValues.attributes =
-      existingAttributes ?? parseSvgAttributes(updatedValues.svg) ?? [];
-  } catch (err) {
-    context.log.error(
-      `Failed to fetch SVG for ${projectName} ${tokenId} from blockchain`,
-      err,
-    );
+    tokenDataJson = await contract.read.tokenDataOf([BigInt(tokenId)]);
+  } catch (error) {
+    throw new Error("Error fetching `tokenDataOf`", { cause: error });
   }
 
-  if (!updatedValues.svg) {
-    throw new Error(
-      `Failed to fetch svg for ${projectName} ${tokenId} from blockchain`,
-    );
+  let tokenData: OneHundredXTokenData;
+  try {
+    const tokenDataOf = JSON.parse(tokenDataJson);
+
+    tokenData = oneHundredXTokenDataSchema.parse(tokenDataOf);
+  } catch (error) {
+    throw new Error("Error parsing `tokenDataOf`", { cause: error });
   }
 
+  let image = "";
+  let imageMid = "";
+  let imageSmall = "";
   // NOTE: temporarily disabling png conversion for token 0
   if (tokenId !== 0) {
     try {
       const pngs = await svgToPngAndUpload(
-        updatedValues.svg,
+        tokenData.image,
         projectId,
         projectSlug,
         tokenId,
       );
 
-      updatedValues.image = pngs.image;
-      updatedValues.image_mid = pngs.image_mid;
-      updatedValues.image_small = pngs.image_small;
+      image = pngs.image;
+      imageMid = pngs.image_mid;
+      imageSmall = pngs.image_small;
     } catch (err) {
       context.log.error(
         `Failed to convert svg to png and upload for ${projectName} ${tokenId}`,
         err,
       );
     }
-  } else {
-    updatedValues.image = "";
-    updatedValues.image_mid = "";
-    updatedValues.image_small = "";
   }
 
-  return updatedValues;
+  return {
+    tokenData,
+    image,
+    imageMid,
+    imageSmall,
+  };
 };

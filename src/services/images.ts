@@ -2,6 +2,7 @@ import axios from "axios";
 import sharp from "sharp";
 
 import { ProjectId, projectSizes, ProjectSlug } from "../projects";
+import { deEscapeSvg } from "../utils/deEscapeSvg";
 import { BlobFolder, uploadImage } from "./azureStorage";
 
 export const fetchResizeUploadImages = async (
@@ -57,7 +58,9 @@ export const svgToPngAndUpload = async (
 }> => {
   const sizes = projectSizes[projectId];
 
-  const buffer = await sharp(Buffer.from(svg)).png().toBuffer();
+  const svgParsed = deEscapeSvg(svg);
+
+  const buffer = await sharp(Buffer.from(svgParsed)).png().toBuffer();
   const midBuffer = await sharp(buffer).resize(sizes.mid).toBuffer();
   const smallBuffer = await sharp(buffer).resize(sizes.small).toBuffer();
 

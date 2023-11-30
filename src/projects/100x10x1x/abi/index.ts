@@ -258,7 +258,7 @@ export const oneHundredxAbi = [
   },
   {
     inputs: [],
-    name: "freezeLayerSVGs",
+    name: "freezeLayerContent",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -320,6 +320,13 @@ export const oneHundredxAbi = [
     type: "function",
   },
   {
+    inputs: [{ internalType: "uint256", name: "_tokenId", type: "uint256" }],
+    name: "getTokenTraits",
+    outputs: [{ internalType: "string", name: "", type: "string" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [
       { internalType: "address", name: "owner", type: "address" },
       { internalType: "address", name: "operator", type: "address" },
@@ -330,15 +337,8 @@ export const oneHundredxAbi = [
     type: "function",
   },
   {
-    inputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-    name: "layerContent",
-    outputs: [{ internalType: "string", name: "", type: "string" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
     inputs: [],
-    name: "layerSVGsFrozen",
+    name: "layerContentFrozen",
     outputs: [{ internalType: "bool", name: "", type: "bool" }],
     stateMutability: "view",
     type: "function",
@@ -770,6 +770,15 @@ export const oneHundredxAbi = [
   {
     inputs: [{ internalType: "address", name: "newOwner", type: "address" }],
     name: "transferOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "_delegateContract", type: "address" },
+    ],
+    name: "updateDelegateContract",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

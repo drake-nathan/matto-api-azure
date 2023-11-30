@@ -1,5 +1,6 @@
+import { isAddress } from "viem";
+
 import type { ProcessEventFunction } from "../../../helpers/tokenHelpers/types";
-import { getTokenZeroDescription } from "./getTokenZeroDescription";
 import { updateTokenInDb } from "./updateTokenInDb";
 
 export const process100xEvent: ProcessEventFunction = async (
@@ -15,31 +16,24 @@ export const process100xEvent: ProcessEventFunction = async (
   );
 
   const {
-    _id: project_id,
-    project_name,
-    project_slug,
     chain,
-    contract_address,
+    contract_address: contractAddress,
     collection_description,
   } = project;
 
-  if (event_type === "Transfer") return null;
+  if (!isAddress(contractAddress)) {
+    throw new Error("Invalid contract address");
+  }
 
-  const description = await getTokenZeroDescription(
-    chain,
-    contract_address,
-    collection_description,
-  );
+  if (event_type === "Transfer") return null;
 
   const updatedToken = await updateTokenInDb({
     chain,
     conn,
     context,
-    contractAddress: contract_address,
-    description,
-    projectId: project_id,
-    projectName: project_name,
-    projectSlug: project_slug,
+    contractAddress,
+    collectionDescription: collection_description,
+    project,
     tokenId: 0,
   });
 
