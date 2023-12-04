@@ -278,9 +278,9 @@ export const removeDuplicateTokens = async (
   const uniqueTokenIds = [...new Set(duplicateTokenIds)];
 
   await Promise.all(
-    uniqueTokenIds.map(async (token_id) => {
-      Token.findOneAndDelete({ project_id, token_id });
-    }),
+    uniqueTokenIds.map(async (token_id) =>
+      Token.findOneAndDelete({ project_id, token_id }),
+    ),
   );
 };
 
