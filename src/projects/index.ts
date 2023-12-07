@@ -409,7 +409,7 @@ export const projects: IProject[] = [
       royalty_address: "0xA6a4Fe416F8Bf46bc3bCA068aC8b1fC4DF760653",
       royalty_bps: 1000,
     },
-    maximum_supply: 1000000000000,
+    maximum_supply: 1000000,
     starting_index: 1,
     tx_count: 0,
     collection_description:

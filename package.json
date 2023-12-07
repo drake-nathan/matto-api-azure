@@ -19,7 +19,7 @@
     ]
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=16 <18"
   },
   "dependencies": {
     "@azure/storage-blob": "^12.17.0",
