@@ -1,9 +1,9 @@
 import { type AbiItem } from "web3-utils";
 
 import type { IProject, ProjectSizes } from "../db/schemas/schemaTypes";
+// abi's
 import oneHundredxAbi from "./100x10x1x/abi/100x10x1.abi.json";
 import blonksAbi from "./abis/BLONKS.abi.json";
-// abi's
 import chainlifeGoerliAbi from "./abis/ChainlifeGoerli.abi.json";
 import chainlifeMainnetAbi from "./abis/ChainlifeMainnet.abi.json";
 import crystallizedIllusionsAbi from "./abis/CrystallizedIllusions.abi.json";
@@ -385,12 +385,12 @@ export const projects: IProject[] = [
     website: "https://matto.xyz/project/100x10x1-a",
     external_url: "https://substratum.art/project/100x10x1-a",
     license: "CC BY-NC 4.0",
-    contract_address: "0xCC55af23d9861e41C5875F1e76fb3c4122E8C4Fa",
+    contract_address: "0x6aBf38A6cB1f0ab87047E80Efd1B109C8E5CeFF3",
     events: ["Transfer", "OrderChanged"],
     creation_block: 10129683,
     devParams: {
       useInDev: true,
-      useInProd: true,
+      useInProd: false,
       usesPuppeteer: false,
       isBulkMint: false,
       usesScriptInputs: false,
