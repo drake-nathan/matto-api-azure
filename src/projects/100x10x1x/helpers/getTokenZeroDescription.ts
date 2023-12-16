@@ -17,7 +17,9 @@ export const getTokenZeroDescription = async (
     publicClient: viemClient,
   });
 
-  const compositeOrder = await contract.read.getOrder();
+  const compositeOrderUnformatted = await contract.read.getOrder();
+  // add space between commas
+  const compositeOrder = compositeOrderUnformatted.replace(/,/g, ", ");
 
   const extraDescription =
     "Token 0 represents the composite artwork. It is owned by the smart-contract, and it can be leant out (and recalled back), by the artist at any time.";

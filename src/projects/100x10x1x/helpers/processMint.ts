@@ -85,6 +85,7 @@ export const process100xMint: ProcessMintFunction = async (
       royalty_bps: tokenData.royalty_bps,
     },
     attributes: tokenData.attributes,
+    ...(isTokenZero && { generator_url: "https://a.100x10x1.com/?png=true" }),
   };
 
   const { token_id: newTokenId } = await addToken(newToken, conn);
