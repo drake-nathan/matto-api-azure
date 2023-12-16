@@ -390,7 +390,7 @@ export const projects: IProject[] = [
     creation_block: 10129683,
     devParams: {
       useInDev: true,
-      useInProd: false,
+      useInProd: true,
       usesPuppeteer: false,
       isBulkMint: false,
       usesScriptInputs: false,
