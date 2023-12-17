@@ -7,6 +7,7 @@ import {
 import { addToken } from "../../../db/queries/tokenQueries";
 import type { IToken } from "../../../db/schemas/schemaTypes";
 import type { ProcessMintFunction } from "../../../helpers/tokenHelpers/types";
+import { fetchCompositeUpdate } from "../../../services/fetchCompositeUpdate";
 import { getTokenZeroAttributes } from "./getTokenZeroAttributes";
 import { getTokenZeroDescription } from "./getTokenZeroDescription";
 import { getUpdatedTokenValues } from "./getUpdatedTokenValues";
@@ -103,6 +104,9 @@ export const process100xMint: ProcessMintFunction = async (
     conn,
   );
 
+  // lazy update composite image
+  fetchCompositeUpdate({ projectSlug: project_slug });
+
   if (!isTokenZero) {
     await updateTokenInDb({
       chain,
@@ -114,6 +118,7 @@ export const process100xMint: ProcessMintFunction = async (
       tokenId: 0,
     });
   }
+
   context.log.info("Processed Mint for token", token_id, "in", project_name);
   return { newTokenId, newSupply };
 };

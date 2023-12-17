@@ -114,6 +114,7 @@ export interface IToken {
   image: string; // generation scripts
   image_mid?: string;
   image_small?: string;
+  image_updated_at?: Date; // made by db
   thumbnail_url?: string;
   svg?: string;
   svgGen?: string;

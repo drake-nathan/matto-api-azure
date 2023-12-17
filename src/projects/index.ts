@@ -520,7 +520,7 @@ export const projectSizes: ProjectSizes = {
   [ProjectId["100x10x1-a-goerli"]]: {
     full: { width: 2160, height: 3840 },
     mid: { width: 1080, height: 1920 },
-    small: { width: 338, height: 600 },
+    small: { width: 540, height: 960 },
   },
   [ProjectId.haiku]: {
     full: { width: 2160, height: 2160 },

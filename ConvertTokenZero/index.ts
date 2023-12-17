@@ -1,26 +1,47 @@
-import { AzureFunction, Context } from "@azure/functions";
-import { Connection } from "mongoose";
-import sharp from "sharp";
+import type { AzureFunction, Context, HttpRequest } from "@azure/functions";
+import type { Connection } from "mongoose";
 
 import { connectionFactory } from "../src/db/connectionFactory";
 import { getTokenLean } from "../src/db/queries/tokenQueries";
-import { ProjectSlug } from "../src/projects";
+import { updateCompositeImage } from "../src/projects/100x10x1x/helpers/updateCompositeImage";
 import { deEscapeSvg } from "../src/utils/deEscapeSvg";
 
 const convertTokenZero: AzureFunction = async (
   context: Context,
+  req: HttpRequest,
 ): Promise<void> => {
+  const { project_slug } = context.bindingData;
   let conn: Connection | undefined;
 
   try {
     conn = await connectionFactory(context);
 
-    const token = await getTokenLean(ProjectSlug["100x10x1-a-goerli"], 0, conn);
+    const token = await getTokenLean(project_slug, 0, conn);
 
     if (!token || !token.svg) {
       context.res = {
         status: 404,
-        body: "Could not fetch token",
+        body: "Could not fetch token, or token has no svg",
+      };
+      return;
+    }
+
+    const force = req.query.force === "true";
+
+    const imageLastUpdated = token.image_updated_at;
+
+    if (
+      !force &&
+      imageLastUpdated &&
+      imageLastUpdated > new Date(Date.now() - 1000 * 60 * 10)
+    ) {
+      // return current image
+      context.log.info(
+        `Image updated less than 10 minutes ago, returning current image`,
+      );
+      context.res = {
+        status: 200,
+        body: token,
       };
       return;
     }
@@ -29,18 +50,18 @@ const convertTokenZero: AzureFunction = async (
 
     const svg = deEscapeSvg(token.svg);
 
-    const buffer = await sharp(Buffer.from(svg))
-      .toFormat("png")
-      .resize({ height: 1920, width: 1080 })
-      .toBuffer();
+    const updatedToken = await updateCompositeImage({
+      conn,
+      svg,
+      projectId: token.project_id,
+      projectSlug: token.project_slug,
+      tokenId: token.token_id,
+    });
 
     context.log.info(`Converted to png, returning...`);
     context.res = {
-      headers: {
-        "Content-Type": "image/png",
-      },
       status: 200,
-      body: buffer,
+      body: updatedToken,
     };
   } catch (error) {
     context.log.error(error);

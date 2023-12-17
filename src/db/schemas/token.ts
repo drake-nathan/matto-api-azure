@@ -37,6 +37,7 @@ export const tokenSchema = new Schema<IToken>({
   image: { type: String },
   image_mid: { type: String },
   image_small: { type: String },
+  image_updated_at: { type: Date },
   thumbnail_url: { type: String },
   svg: { type: String },
   svgGen: { type: String },

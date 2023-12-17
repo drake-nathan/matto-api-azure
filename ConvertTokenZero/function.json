@@ -6,7 +6,7 @@
       "direction": "in",
       "name": "req",
       "methods": ["get"],
-      "route": "convert-token-zero"
+      "route": "convert-token-zero/{project_slug}"
     },
     {
       "type": "http",
