@@ -7,6 +7,7 @@ import {
 import { addToken } from "../../../db/queries/tokenQueries";
 import type { IToken } from "../../../db/schemas/schemaTypes";
 import type { ProcessMintFunction } from "../../../helpers/tokenHelpers/types";
+import { getTokenZeroAttributes } from "./getTokenZeroAttributes";
 import { getTokenZeroDescription } from "./getTokenZeroDescription";
 import { getUpdatedTokenValues } from "./getUpdatedTokenValues";
 import { updateTokenInDb } from "./updateTokenInDb";
@@ -59,6 +60,10 @@ export const process100xMint: ProcessMintFunction = async (
       )
     : tokenData.description;
 
+  const attributes = isTokenZero
+    ? await getTokenZeroAttributes(conn)
+    : tokenData.attributes;
+
   const newToken: IToken = {
     token_id,
     name: tokenData.name,
@@ -84,7 +89,7 @@ export const process100xMint: ProcessMintFunction = async (
       royalty_address: tokenData.royalty_address,
       royalty_bps: tokenData.royalty_bps,
     },
-    attributes: tokenData.attributes,
+    attributes,
     ...(isTokenZero && { generator_url: "https://a.100x10x1.com/?png=true" }),
   };
 
