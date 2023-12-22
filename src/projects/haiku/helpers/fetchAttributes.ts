@@ -10,7 +10,7 @@ export const fetchAttributes = async (url: string): Promise<IAttribute[]> => {
     attributes: z.array(
       z.object({
         trait_type: z.string(),
-        value: z.string(),
+        value: z.string().or(z.number()),
       }),
     ),
   });

@@ -31,7 +31,7 @@ export const haikuTokenDataSchema = z.object({
   attributes: z.array(
     z.object({
       trait_type: z.string(),
-      value: z.string(),
+      value: z.string().or(z.number()),
     }),
   ),
 });
