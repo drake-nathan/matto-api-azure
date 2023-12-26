@@ -12,11 +12,20 @@ if (!rootUrl) {
 }
 
 export const fetchCompositeUpdate = ({
+  force = false,
   projectSlug,
 }: {
+  force?: boolean;
   projectSlug: ProjectSlug;
 }) => {
   // we are not return anything here, or awaiting the response
   // this simply triggers the function to run
-  axios.get(`${rootUrl}/convert-token-zero/${projectSlug}`);
+  const url = "https://composite.substratum.art";
+
+  const params = {
+    force,
+    projectSlug,
+  };
+
+  axios.get(url, { params });
 };
