@@ -104,9 +104,6 @@ export const process100xMint: ProcessMintFunction = async (
     conn,
   );
 
-  // lazy update composite image
-  void fetchCompositeUpdate({ projectSlug: project_slug });
-
   if (!isTokenZero) {
     await updateTokenInDb({
       chain,
@@ -118,6 +115,9 @@ export const process100xMint: ProcessMintFunction = async (
       tokenId: 0,
     });
   }
+
+  // lazy update composite image
+  void fetchCompositeUpdate({ projectSlug: project_slug });
 
   context.log.info("Processed Mint for token", token_id, "in", project_name);
   return { newSupply, newTokenId };

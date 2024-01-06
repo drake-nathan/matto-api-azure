@@ -28,6 +28,8 @@ export const updateTokenInDb = async ({
   project,
   tokenId,
 }: Params) => {
+  if (tokenId === 0) context.log.info("Updating token zero");
+
   const { image, imageMid, imageSmall, tokenData } =
     await getUpdatedTokenValues({
       chain,
@@ -54,7 +56,7 @@ export const updateTokenInDb = async ({
   const Token = conn.model<IToken>("Token");
 
   const query = Token.findOneAndUpdate(
-    { project_id: project.projectId, token_id: tokenId },
+    { project_slug: project.project_slug, token_id: tokenId },
     {
       additional_data: tokenData.additional_data,
       artist: tokenData.artist,
@@ -63,9 +65,6 @@ export const updateTokenInDb = async ({
       description,
       external_url: tokenData.external_url,
       height_ratio: tokenData.height_ratio,
-      image,
-      image_mid: imageMid,
-      image_small: imageSmall,
       license: tokenData.license,
       name: tokenData.name,
       royalty_info: {
@@ -75,19 +74,13 @@ export const updateTokenInDb = async ({
       svg: tokenData.image,
       website: tokenData.website,
       width_ratio: tokenData.width_ratio,
+      // don't overwrite image if it's already there
+      ...(image ? { image, image_mid: imageMid, image_small: imageSmall } : {}),
     },
     { new: true },
   );
 
   const result = await query.lean().exec();
-
-  // if (tokenId === 0) {
-  //   try {
-  //     await openseaRefresh(contractAddress, tokenId);
-  //   } catch (error) {
-  //     context.log.error("Error refreshing opensea.");
-  //   }
-  // }
 
   return result;
 };

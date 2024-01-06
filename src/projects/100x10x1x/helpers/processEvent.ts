@@ -13,6 +13,8 @@ export const process100xEvent: ProcessEventFunction = async (
   script_inputs,
   event_type,
 ) => {
+  if (event_type === "Transfer") return null;
+
   context.log.info(
     `ProcessEvent: Processing ${event_type} for ${project.project_name}.`,
   );
@@ -26,8 +28,6 @@ export const process100xEvent: ProcessEventFunction = async (
   if (!isAddress(contractAddress)) {
     throw new Error("Invalid contract address");
   }
-
-  if (event_type === "Transfer") return null;
 
   // lazy update composite image
   void fetchCompositeUpdate({ projectSlug: project.project_slug });
