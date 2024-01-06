@@ -1,7 +1,8 @@
 import { Connection } from "mongoose";
 
-import { ProjectSlug } from "../../projects";
 import type { IProject } from "../schemas/schemaTypes";
+
+import { ProjectSlug } from "../../projects";
 
 export const addProject = async (projectToAdd: IProject, conn: Connection) => {
   const { _id } = projectToAdd;

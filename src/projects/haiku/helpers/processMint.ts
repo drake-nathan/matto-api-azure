@@ -1,14 +1,16 @@
 import type { Context } from "@azure/functions";
 import type { Connection } from "mongoose";
+
 import { isAddress } from "viem";
+
+import type { IProject, IToken } from "../../../db/schemas/schemaTypes";
+import type { ProcessMintFunction } from "../../../helpers/tokenHelpers/types";
 
 import {
   getProjectCurrentSupply,
   updateProjectSupplyAndCount,
 } from "../../../db/queries/projectQueries";
 import { addToken } from "../../../db/queries/tokenQueries";
-import type { IProject, IToken } from "../../../db/schemas/schemaTypes";
-import type { ProcessMintFunction } from "../../../helpers/tokenHelpers/types";
 import { getUpdatedTokenValues } from "./getUpdatedTokenValues";
 
 export const processHaikuMint: ProcessMintFunction = async (
@@ -19,11 +21,11 @@ export const processHaikuMint: ProcessMintFunction = async (
 ) => {
   const {
     _id: project_id,
-    project_name,
-    project_slug,
     artist_address,
     chain,
     contract_address: contractAddress,
+    project_name,
+    project_slug,
     tx_count,
   } = project;
 
@@ -34,14 +36,14 @@ export const processHaikuMint: ProcessMintFunction = async (
   }
 
   const {
+    additionalDescription,
+    aspectRatio,
     attributes,
     description,
     imageMid,
     imageSmall,
-    tokenData,
-    aspectRatio,
     poem,
-    additionalDescription,
+    tokenData,
   } = await getUpdatedTokenValues({
     chain,
     contractAddress,
@@ -51,34 +53,34 @@ export const processHaikuMint: ProcessMintFunction = async (
   });
 
   const newToken: IToken = {
-    token_id,
+    additional_info: {
+      additional_description: additionalDescription,
+      poem,
+    },
+    artist: tokenData.artist,
+    artist_address,
+    aspect_ratio: aspectRatio,
+    attributes,
+    collection_name: tokenData.collection,
+    description,
+    external_url: tokenData.external_url,
+    height_ratio: tokenData.height_ratio,
+    image: tokenData.image,
+    image_mid: imageMid,
+    image_small: imageSmall,
+    license: tokenData.license,
     name: tokenData.name,
     project_id,
     project_name,
     project_slug,
-    artist: tokenData.artist,
-    artist_address,
-    description,
-    additional_info: {
-      poem,
-      additional_description: additionalDescription,
-    },
-    collection_name: tokenData.collection,
-    width_ratio: tokenData.width_ratio,
-    height_ratio: tokenData.height_ratio,
-    aspect_ratio: aspectRatio,
-    image: tokenData.image,
-    image_mid: imageMid,
-    image_small: imageSmall,
-    external_url: tokenData.external_url,
-    website: tokenData.website,
-    license: tokenData.license,
     royalty_info: {
       royalty_address: tokenData.royalty_address,
       royalty_bps: tokenData.royalty_bps,
     },
-    attributes,
     token_data_frozen: tokenData.token_data_frozen ?? false,
+    token_id,
+    website: tokenData.website,
+    width_ratio: tokenData.width_ratio,
   };
 
   const { token_id: newTokenId } = await addToken(newToken, conn);
@@ -91,5 +93,5 @@ export const processHaikuMint: ProcessMintFunction = async (
     conn,
   );
 
-  return { newTokenId, newSupply };
+  return { newSupply, newTokenId };
 };

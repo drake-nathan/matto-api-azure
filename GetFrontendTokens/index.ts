@@ -41,8 +41,8 @@ const httpTrigger: AzureFunction = async (
 
   if (tokenIdQuery && !tokenId) {
     context.res = {
-      status: 404,
       body: "Invalid tokenId query",
+      status: 404,
     };
     return;
   }
@@ -54,8 +54,8 @@ const httpTrigger: AzureFunction = async (
 
     if (!project) {
       context.res = {
-        status: 404,
         body: "Project not found",
+        status: 404,
       };
       return;
     }
@@ -93,27 +93,27 @@ const httpTrigger: AzureFunction = async (
 
     if (!tokens.length) {
       context.res = {
-        status: 404,
         body: "Tokens not found",
+        status: 404,
       };
       return;
     }
 
     context.res = {
-      status: 200,
       body: {
+        currentSupply: project.current_supply,
         hasMore,
         skip,
-        currentSupply: project.current_supply,
         tokens,
       },
+      status: 200,
     };
   } catch (error) {
     context.log.error(error);
     if (process.env.NODE_ENV === "test") console.error(error);
     context.res = {
-      status: 500,
       body: "Internal Server Error",
+      status: 500,
     };
   } finally {
     if (conn) await conn.close();

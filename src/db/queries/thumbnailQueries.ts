@@ -1,7 +1,8 @@
 import type { Connection } from "mongoose";
 
-import { ProjectSlug } from "../../projects";
 import type { IThumbnail } from "../schemas/schemaTypes";
+
+import { ProjectSlug } from "../../projects";
 
 export const getThumbnailCounts = async (conn: Connection) => {
   const Thumbnail = conn.model<IThumbnail>("Thumbnail");
@@ -9,7 +10,7 @@ export const getThumbnailCounts = async (conn: Connection) => {
   const focus = await Thumbnail.countDocuments({ project_slug: "focus" });
   const enso = await Thumbnail.countDocuments({ project_slug: "enso" });
 
-  return { focus, enso };
+  return { enso, focus };
 };
 
 export const getThumbnail = async (conn: Connection, artblocks_id: number) => {

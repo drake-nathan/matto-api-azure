@@ -1,12 +1,13 @@
 import { isAddress } from "viem";
 
+import type { IToken } from "../../../db/schemas/schemaTypes";
+import type { ProcessMintFunction } from "../../../helpers/tokenHelpers/types";
+
 import {
   getProjectCurrentSupply,
   updateProjectSupplyAndCount,
 } from "../../../db/queries/projectQueries";
 import { addToken } from "../../../db/queries/tokenQueries";
-import type { IToken } from "../../../db/schemas/schemaTypes";
-import type { ProcessMintFunction } from "../../../helpers/tokenHelpers/types";
 import { fetchCompositeUpdate } from "../../../services/fetchCompositeUpdate";
 import { getTokenZeroAttributes } from "./getTokenZeroAttributes";
 import { getTokenZeroDescription } from "./getTokenZeroDescription";
@@ -21,17 +22,17 @@ export const process100xMint: ProcessMintFunction = async (
 ) => {
   const {
     _id: project_id,
-    project_name,
-    project_slug,
     artist_address,
+    aspect_ratio,
+    chain,
     collection_description,
     collection_name,
-    script_type,
-    aspect_ratio,
-    website,
-    tx_count,
     contract_address: contractAddress,
-    chain,
+    project_name,
+    project_slug,
+    script_type,
+    tx_count,
+    website,
   } = project;
 
   const isTokenZero = token_id === 0;
@@ -42,7 +43,7 @@ export const process100xMint: ProcessMintFunction = async (
     throw new Error("Invalid contract address");
   }
 
-  const { tokenData, image, imageMid, imageSmall } =
+  const { image, imageMid, imageSmall, tokenData } =
     await getUpdatedTokenValues({
       chain,
       context,
@@ -66,31 +67,31 @@ export const process100xMint: ProcessMintFunction = async (
     : tokenData.attributes;
 
   const newToken: IToken = {
-    token_id,
+    artist: tokenData.artist,
+    artist_address,
+    aspect_ratio,
+    attributes,
+    collection_name,
+    description,
+    external_url: tokenData.external_url,
+    height_ratio: tokenData.height_ratio,
+    image,
+    image_mid: imageMid,
+    image_small: imageSmall,
+    license: tokenData.license,
     name: tokenData.name,
     project_id,
     project_name,
     project_slug,
-    artist: tokenData.artist,
-    artist_address,
-    collection_name,
-    description,
-    script_type,
-    svg: tokenData.image,
-    image,
-    image_mid: imageMid,
-    image_small: imageSmall,
-    width_ratio: tokenData.width_ratio,
-    height_ratio: tokenData.height_ratio,
-    aspect_ratio,
-    website,
-    external_url: tokenData.external_url,
-    license: tokenData.license,
     royalty_info: {
       royalty_address: tokenData.royalty_address,
       royalty_bps: tokenData.royalty_bps,
     },
-    attributes,
+    script_type,
+    svg: tokenData.image,
+    token_id,
+    website,
+    width_ratio: tokenData.width_ratio,
   };
 
   const { token_id: newTokenId } = await addToken(newToken, conn);
@@ -109,15 +110,15 @@ export const process100xMint: ProcessMintFunction = async (
   if (!isTokenZero) {
     await updateTokenInDb({
       chain,
+      collectionDescription: collection_description,
       conn,
       context,
       contractAddress,
-      collectionDescription: collection_description,
       project,
       tokenId: 0,
     });
   }
 
   context.log.info("Processed Mint for token", token_id, "in", project_name);
-  return { newTokenId, newSupply };
+  return { newSupply, newTokenId };
 };

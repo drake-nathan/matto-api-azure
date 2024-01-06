@@ -8,8 +8,8 @@ describe("GetFrontendTokens", () => {
 
   beforeEach(() => {
     context = {
-      log: { error: jest.fn() },
       bindingData: { project_slug: "chainlife-testnet" },
+      log: { error: jest.fn() },
     } as unknown as Context;
     req = { query: {} } as unknown as HttpRequest;
   });

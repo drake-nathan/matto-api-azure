@@ -1,20 +1,22 @@
 import type { Context } from "@azure/functions";
-import * as dotenv from "dotenv";
 import type { Connection } from "mongoose";
+
+import * as dotenv from "dotenv";
+
+import type {
+  IProject,
+  IScriptInputs,
+  IToken,
+} from "../../../db/schemas/schemaTypes";
+import type { ProcessMintReturn } from "../types";
 
 import {
   getProjectCurrentSupply,
   updateProjectSupplyAndCount,
 } from "../../../db/queries/projectQueries";
 import { addToken } from "../../../db/queries/tokenQueries";
-import type {
-  IProject,
-  IScriptInputs,
-  IToken,
-} from "../../../db/schemas/schemaTypes";
 import { fetchResizeUploadImages } from "../../../services/images";
 import { getAttributes } from "../../../services/puppeteer";
-import type { ProcessMintReturn } from "../types";
 
 dotenv.config();
 const rootServerUrl = process.env.ROOT_URL;
@@ -28,7 +30,7 @@ const getCrystallizedIllusionsUrls = (
   const external_url = `${rootExternalUrl}/token/${tokenId}`;
   const image = `https://arweave.net/Mduh0JQesPrHJbyLcJLBDmXF368mbQqNF68V78DIMoI/${tokenId}.png`;
 
-  return { generator_url, external_url, image };
+  return { external_url, generator_url, image };
 };
 
 export const processCrystallizedIllusionsMint = async (
@@ -40,19 +42,19 @@ export const processCrystallizedIllusionsMint = async (
 ): ProcessMintReturn => {
   const {
     _id: project_id,
-    project_name,
-    project_slug,
     artist,
     artist_address,
+    aspect_ratio,
     collection_description,
     collection_name,
-    script_type,
-    aspect_ratio,
-    website,
     external_url: projectExternalUrl,
     license,
+    project_name,
+    project_slug,
     royalty_info,
+    script_type,
     tx_count,
+    website,
   } = project;
 
   context.log.info("Adding token", token_id, "to", project.project_name);
@@ -61,7 +63,7 @@ export const processCrystallizedIllusionsMint = async (
     throw new Error(`No script inputs for ${project_name} token ${token_id}`);
   }
 
-  const { generator_url, external_url, image } = getCrystallizedIllusionsUrls(
+  const { external_url, generator_url, image } = getCrystallizedIllusionsUrls(
     project_slug,
     token_id,
     projectExternalUrl,
@@ -86,28 +88,28 @@ export const processCrystallizedIllusionsMint = async (
       : `${project_name} ${token_id}`;
 
   const newToken: IToken = {
-    token_id,
+    animation_url: generator_url,
+    artist,
+    artist_address,
+    aspect_ratio,
+    attributes,
+    collection_name,
+    description: collection_description,
+    external_url,
+    generator_url,
+    image,
+    image_mid,
+    image_small,
+    license,
     name,
     project_id,
     project_name,
     project_slug,
-    artist,
-    artist_address,
-    description: collection_description,
-    collection_name,
-    aspect_ratio,
-    script_type,
-    script_inputs,
-    image,
-    image_mid,
-    image_small,
-    generator_url,
-    animation_url: generator_url,
-    external_url,
-    website,
-    license,
     royalty_info,
-    attributes,
+    script_inputs,
+    script_type,
+    token_id,
+    website,
   };
 
   const { token_id: newTokenId } = await addToken(newToken, conn);
@@ -120,5 +122,5 @@ export const processCrystallizedIllusionsMint = async (
     conn,
   );
 
-  return { newTokenId, newSupply };
+  return { newSupply, newTokenId };
 };

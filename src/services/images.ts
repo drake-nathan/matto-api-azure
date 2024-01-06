@@ -1,7 +1,7 @@
 import axios from "axios";
 import sharp from "sharp";
 
-import { ProjectId, projectSizes, ProjectSlug } from "../projects";
+import { ProjectId, ProjectSlug, projectSizes } from "../projects";
 import { deEscapeSvg } from "../utils/deEscapeSvg";
 import { BlobFolder, uploadImage } from "./azureStorage";
 

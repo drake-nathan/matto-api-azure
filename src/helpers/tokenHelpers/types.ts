@@ -9,8 +9,8 @@ import type {
 
 export type ProcessMintReturn = Promise<
   | {
-      newTokenId: number;
       newSupply: number | undefined;
+      newTokenId: number;
     }
   | undefined
 >;
@@ -24,13 +24,13 @@ export type ProcessMintFunction = (
 ) => ProcessMintReturn;
 
 export type ProcessEventReturn = Promise<
+  | Document<IToken>
   | LeanDocument<
       IToken &
         Required<{
           _id: Schema.Types.ObjectId;
         }>
     >
-  | Document<IToken>
   | null
 >;
 

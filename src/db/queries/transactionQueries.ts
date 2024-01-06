@@ -1,10 +1,11 @@
 import { type Connection } from "mongoose";
 import { type EventData } from "web3-eth-contract";
 
+import type { ITransaction } from "../schemas/schemaTypes";
+
 import { nullAddress } from "../../helpers/constants";
 import { Chain, ProjectId } from "../../projects";
 import { getViem } from "../../web3/providers";
-import type { ITransaction } from "../schemas/schemaTypes";
 
 export const addTransaction = async (
   incomingTx: EventData,
@@ -16,11 +17,11 @@ export const addTransaction = async (
   const Transaction = conn.model<ITransaction>("Transaction");
   const {
     blockNumber: block_number,
-    transactionHash,
-    returnValues,
     event,
+    returnValues,
+    transactionHash,
   } = incomingTx;
-  const { tokenId, from } = returnValues;
+  const { from, tokenId } = returnValues;
 
   const transaction_hash = transactionHash.toLowerCase();
 
@@ -28,10 +29,10 @@ export const addTransaction = async (
     event === "Transfer" && from === nullAddress ? "Mint" : event;
 
   const doesTxExist = await Transaction.findOne({
-    transaction_hash,
     block_number,
     event_type,
     project_id,
+    transaction_hash,
   });
 
   if (doesTxExist) return null;
@@ -40,12 +41,12 @@ export const addTransaction = async (
     .timestamp;
 
   const parsedTx: ITransaction = {
-    project_id,
     block_number,
-    transaction_hash,
-    transaction_date: new Date(Number(blockTime) * 1000),
     event_type,
+    project_id,
     token_id: event === "OrderChanged" ? undefined : parseInt(tokenId),
+    transaction_date: new Date(Number(blockTime) * 1000),
+    transaction_hash,
   };
 
   const newTx = new Transaction(parsedTx);
@@ -74,7 +75,7 @@ export const getTransactionsByEvent = async (
 ) => {
   const Transaction = conn.model<ITransaction>("Transaction");
 
-  const query = await Transaction.find({ project_id, event_type });
+  const query = await Transaction.find({ event_type, project_id });
 
   return query;
 };
@@ -86,7 +87,7 @@ export const getTransactionCountByEvent = (
 ) => {
   const Transaction = conn.model<ITransaction>("Transaction");
 
-  const query = Transaction.countDocuments({ project_id, event_type });
+  const query = Transaction.countDocuments({ event_type, project_id });
 
   return query.exec();
 };
@@ -100,12 +101,12 @@ export const removeDuplicateTransactions = async (
     {
       $group: {
         _id: {
-          transaction_hash: "$transaction_hash",
           event_type: "$event_type",
           project_id: "$project_id",
+          transaction_hash: "$transaction_hash",
         },
-        uniqueIds: { $addToSet: "$_id" },
         count: { $sum: 1 },
+        uniqueIds: { $addToSet: "$_id" },
       },
     },
     { $match: { count: { $gte: 2 } } },
@@ -130,11 +131,11 @@ export const getTxCounts = async (conn: Connection, project_id: number) => {
   const query = await Transaction.find({ project_id });
 
   const txCounts = {
-    total: query.length,
-    mints: query.filter((tx) => tx.event_type === "Mint").length,
-    transfers: query.filter((tx) => tx.event_type === "Transfer").length,
     customRules: query.filter((tx) => tx.event_type === "CustomRule").length,
     levelShifts: query.filter((tx) => tx.event_type === "ShiftLevel").length,
+    mints: query.filter((tx) => tx.event_type === "Mint").length,
+    total: query.length,
+    transfers: query.filter((tx) => tx.event_type === "Transfer").length,
   };
 
   return txCounts;
@@ -148,8 +149,8 @@ export const checkIfTransactionExists = (
   const Transaction = conn.model<ITransaction>("Transaction");
 
   const query = Transaction.exists({
-    transaction_hash,
     project_id,
+    transaction_hash,
   });
 
   return query.exec();

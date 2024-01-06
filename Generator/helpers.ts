@@ -13,20 +13,20 @@ const getScriptTag = (script: string) => `<script src="${script}"></script>`;
 export const getHtml = (
   projectName: string,
   genScripts: GenScripts,
-  scriptInputs: string | null,
+  scriptInputs: null | string,
   options: { mobile: boolean; scriptType: ScriptType },
 ): string => {
   const {
+    alt: altScript,
     main: mainScript,
     mobileControls,
-    alt: altScript,
     painting: paintingScript,
     preMainScript,
   } = genScripts;
 
   const scripts = {
-    [ScriptType.main]: mainScript,
     [ScriptType.alt]: altScript,
+    [ScriptType.main]: mainScript,
     [ScriptType.painting]: paintingScript,
   };
 

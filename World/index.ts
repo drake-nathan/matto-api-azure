@@ -16,8 +16,8 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
 
     if (!project) {
       context.res = {
-        status: 404,
         body: "Project not found.",
+        status: 404,
       };
       return;
     }
@@ -61,18 +61,18 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
   `;
 
     context.res = {
-      status: 200,
       body: generatorHtml,
       headers: {
         "Content-Type": "text/html",
       },
+      status: 200,
     };
   } catch (error) {
     context.log.error(error);
     if (process.env.NODE_ENV === "test") console.error(error);
     context.res = {
-      status: 500,
       body: "Something went wrong, ngmi.",
+      status: 500,
     };
   } finally {
     if (conn) await conn.close();

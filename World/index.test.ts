@@ -7,8 +7,8 @@ describe("World", () => {
 
   beforeEach(() => {
     context = {
-      log: { error: jest.fn(), info: jest.fn() },
       bindingData: { project_slug: "chainlife-testnet", token_id: "1" },
+      log: { error: jest.fn(), info: jest.fn() },
     } as unknown as Context;
   });
 

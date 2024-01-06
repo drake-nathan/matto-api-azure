@@ -14,9 +14,9 @@ if (!azureStorageConnectionString) {
 
 export enum BlobFolder {
   main = "images",
+  mathare = "mathare-images",
   mid = "images-mid",
   small = "thumbnails",
-  mathare = "mathare-images",
 }
 
 export const uploadImage = async (

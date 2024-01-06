@@ -49,8 +49,8 @@ const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
     });
   } catch (error) {
     context.res = {
-      status: 500,
       body: error,
+      status: 500,
     };
   } finally {
     if (conn) await conn.close();

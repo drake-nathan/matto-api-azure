@@ -1,3 +1,5 @@
+import type { ProcessEventFunction, ProcessMintFunction } from "./types";
+
 import { ProjectId } from "../../projects";
 import { process100xEvent } from "../../projects/100x10x1x/helpers/processEvent";
 import { process100xMint } from "../../projects/100x10x1x/helpers/processMint";
@@ -22,22 +24,21 @@ import {
   processNegativeCarbonMint,
 } from "./projects/negativeCarbonHelpers";
 import { processTexturesMint } from "./projects/textureHelpers";
-import type { ProcessEventFunction, ProcessMintFunction } from "./types";
 
 export const getProcessMintFunction = (
   projectId: ProjectId,
 ): ProcessMintFunction => {
   const processMintFunctions: Record<ProjectId, ProcessMintFunction> = {
+    [ProjectId.blonks]: processBlonksMint,
     [ProjectId.chainlifeMainnet]: processChainlifeMint,
     [ProjectId.chainlifeTestnet]: processChainlifeMint,
-    [ProjectId.mathareMemories]: processMathareMint,
-    [ProjectId.negativeCarbon]: processNegativeCarbonMint,
     [ProjectId.crystallizedIllusions]: processCrystallizedIllusionsMint,
-    [ProjectId.textureAndHues]: processTexturesMint,
-    [ProjectId.blonks]: processBlonksMint,
-    [ProjectId["100x10x1-a-goerli"]]: process100xMint,
     [ProjectId.haiku]: processHaikuMint,
+    [ProjectId.mathareMemories]: processMathareMint,
     [ProjectId.mfa]: processMfaMint,
+    [ProjectId.negativeCarbon]: processNegativeCarbonMint,
+    [ProjectId.textureAndHues]: processTexturesMint,
+    [ProjectId["100x10x1-a-goerli"]]: process100xMint,
   };
 
   return processMintFunctions[projectId];
@@ -48,16 +49,16 @@ export const getProcessEventFunction = (
 ): ProcessEventFunction | null => {
   const processEventFunctions: Record<ProjectId, ProcessEventFunction | null> =
     {
+      [ProjectId.blonks]: processBlonksEvent,
       [ProjectId.chainlifeMainnet]: processChainlifeEvent,
       [ProjectId.chainlifeTestnet]: processChainlifeEvent,
-      [ProjectId.mathareMemories]: processMathareEvent,
-      [ProjectId.negativeCarbon]: processNegativeCarbonEvent,
       [ProjectId.crystallizedIllusions]: null,
-      [ProjectId.textureAndHues]: null,
-      [ProjectId.blonks]: processBlonksEvent,
-      [ProjectId["100x10x1-a-goerli"]]: process100xEvent,
       [ProjectId.haiku]: processHaikuEvent,
+      [ProjectId.mathareMemories]: processMathareEvent,
       [ProjectId.mfa]: null,
+      [ProjectId.negativeCarbon]: processNegativeCarbonEvent,
+      [ProjectId.textureAndHues]: null,
+      [ProjectId["100x10x1-a-goerli"]]: process100xEvent,
     };
 
   return processEventFunctions[projectId];

@@ -15,8 +15,8 @@ if (!mainnetNode || !goerliNode) {
 }
 
 const nodes = {
-  [Chain.mainnet]: mainnetNode,
   [Chain.goerli]: goerliNode,
+  [Chain.mainnet]: mainnetNode,
 };
 
 export const getWeb3 = (chain: Chain): Web3 => {
@@ -29,8 +29,8 @@ export const getWeb3 = (chain: Chain): Web3 => {
 
 export const getViem = (chain: Chain) => {
   const chains = {
-    [Chain.mainnet]: mainnet,
     [Chain.goerli]: goerli,
+    [Chain.mainnet]: mainnet,
   };
 
   const client = createPublicClient({

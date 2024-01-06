@@ -7,8 +7,8 @@ describe("GetThumbnail", () => {
 
   beforeEach(() => {
     context = {
-      log: { error: jest.fn() },
       bindingData: { artblocks_id: 34000420 },
+      log: { error: jest.fn() },
     } as unknown as Context;
   });
 

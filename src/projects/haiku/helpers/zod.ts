@@ -11,29 +11,29 @@ const BooleanSchema = BooleanStringSchema.transform(
 );
 
 export const haikuTokenDataSchema = z.object({
-  collection: z.string(),
-  name: z.string(),
-  description: z.string(),
-  artist: z.string(),
-  image: z.string().url().or(z.literal("")),
-  animation: z.string().optional(),
-  width_ratio: numericString,
-  height_ratio: numericString,
-  media_type: numericString,
-  license: z.string(),
-  token_entropy: z.string(),
-  token_data_frozen: BooleanSchema.optional(),
   additional_data: z.string().url().or(z.literal("")),
-  website: z.string().url(),
-  external_url: z.string().url(),
-  royalty_address: z.string(),
-  royalty_bps: numericString,
+  animation: z.string().optional(),
+  artist: z.string(),
   attributes: z.array(
     z.object({
       trait_type: z.string(),
       value: z.string().or(z.number()),
     }),
   ),
+  collection: z.string(),
+  description: z.string(),
+  external_url: z.string().url(),
+  height_ratio: numericString,
+  image: z.string().url().or(z.literal("")),
+  license: z.string(),
+  media_type: numericString,
+  name: z.string(),
+  royalty_address: z.string(),
+  royalty_bps: numericString,
+  token_data_frozen: BooleanSchema.optional(),
+  token_entropy: z.string(),
+  website: z.string().url(),
+  width_ratio: numericString,
 });
 
 export type HaikuTokenData = z.infer<typeof haikuTokenDataSchema>;

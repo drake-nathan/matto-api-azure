@@ -18,9 +18,9 @@ const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
     const levels = await getLevels(project_slug, conn);
 
     const levelSnapshotToAdd: ILevelSnapshot = {
-      snapshot_date: new Date(),
-      project_slug,
       levels,
+      project_slug,
+      snapshot_date: new Date(),
     };
 
     const newLevelSnapshot = await addLevelSnapshot(levelSnapshotToAdd, conn);

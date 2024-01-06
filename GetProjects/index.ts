@@ -14,22 +14,22 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
 
     if (!projects) {
       context.res = {
-        status: 400,
         body: "No projects on this server.",
+        status: 400,
       };
       return;
     }
 
     context.res = {
-      status: 200,
       body: projects,
+      status: 200,
     };
   } catch (error) {
     context.log.error(error);
     if (process.env.NODE_ENV === "test") console.error(error);
     context.res = {
-      status: 500,
       body: "Internal Server Error",
+      status: 500,
     };
   } finally {
     if (conn) await conn.close();

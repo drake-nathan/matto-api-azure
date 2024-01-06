@@ -11,10 +11,10 @@ if (!openseaApiKey) {
 
 export const openseaRefresh = async (address: string, tokenId: number) => {
   const config: AxiosRequestConfig = {
-    url: `https://api.opensea.io/api/v1/asset/${address}/${tokenId}/?force_update=true`,
     headers: {
       "X-API-KEY": openseaApiKey,
     },
+    url: `https://api.opensea.io/api/v1/asset/${address}/${tokenId}/?force_update=true`,
   };
 
   const response = await axios(config);

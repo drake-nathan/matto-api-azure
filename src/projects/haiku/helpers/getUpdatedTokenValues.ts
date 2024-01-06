@@ -1,9 +1,10 @@
 import { type Address, getContract } from "viem";
 
 import type { IAttribute } from "../../../db/schemas/schemaTypes";
+
+import { Chain, ProjectId, ProjectSlug } from "../..";
 import { fetchResizeUploadImages } from "../../../services/images";
 import { getViem } from "../../../web3/providers";
-import { Chain, ProjectId, ProjectSlug } from "../..";
 import { haikuAbi } from "../abi";
 import { fetchDescription } from "./fetchDescription";
 import { processAttributes } from "./processAttributes";
@@ -18,14 +19,14 @@ interface Params {
 }
 
 interface UpdatedValues {
+  additionalDescription: string;
+  aspectRatio: number;
   attributes: IAttribute[];
   description: string;
   imageMid: string;
   imageSmall: string;
-  tokenData: HaikuTokenData;
-  aspectRatio: number;
   poem: string;
-  additionalDescription: string;
+  tokenData: HaikuTokenData;
 }
 
 export const getUpdatedTokenValues = async ({
@@ -38,8 +39,8 @@ export const getUpdatedTokenValues = async ({
   const viemClient = getViem(chain);
 
   const contract = getContract({
-    address: contractAddress,
     abi: haikuAbi,
+    address: contractAddress,
     publicClient: viemClient,
   });
 
@@ -106,13 +107,13 @@ export const getUpdatedTokenValues = async ({
       : 1;
 
   return {
+    additionalDescription,
+    aspectRatio,
     attributes,
     description,
     imageMid,
     imageSmall,
-    tokenData,
-    aspectRatio,
     poem: tokenData.description,
-    additionalDescription,
+    tokenData,
   };
 };

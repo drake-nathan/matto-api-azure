@@ -1,9 +1,10 @@
 import type { Context } from "@azure/functions";
+
 import { getContract } from "viem";
 
+import { Chain, type ProjectId, type ProjectSlug } from "../..";
 import { svgToPngAndUpload } from "../../../services/images";
 import { getViem } from "../../../web3/providers";
-import { Chain, type ProjectId, type ProjectSlug } from "../..";
 import { oneHundredxAbi } from "../abi";
 import { type OneHundredXTokenData, oneHundredXTokenDataSchema } from "./zod";
 
@@ -18,10 +19,10 @@ interface Params {
 }
 
 interface UpdatedValues {
-  tokenData: OneHundredXTokenData;
   image: string;
   imageMid: string;
   imageSmall: string;
+  tokenData: OneHundredXTokenData;
 }
 
 export const getUpdatedTokenValues = async ({
@@ -36,8 +37,8 @@ export const getUpdatedTokenValues = async ({
   const viemClient = getViem(chain);
 
   const contract = getContract({
-    address: contractAddress as `0x${string}`,
     abi: oneHundredxAbi,
+    address: contractAddress as `0x${string}`,
     publicClient: viemClient,
   });
 
@@ -82,9 +83,9 @@ export const getUpdatedTokenValues = async ({
   }
 
   return {
-    tokenData,
     image,
     imageMid,
     imageSmall,
+    tokenData,
   };
 };

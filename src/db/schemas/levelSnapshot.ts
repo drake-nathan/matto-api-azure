@@ -3,13 +3,13 @@ import { Schema } from "mongoose";
 import { ILevelSnapshot } from "./schemaTypes";
 
 export const levelSnapshotSchema = new Schema<ILevelSnapshot>({
-  snapshot_date: { type: Date, required: true },
-  project_slug: { type: String, required: true },
   levels: [
     {
-      token_id: { type: Number, required: true },
-      transfer_count: { type: Number, required: true },
-      level_shift: { type: Number, required: true },
+      level_shift: { required: true, type: Number },
+      token_id: { required: true, type: Number },
+      transfer_count: { required: true, type: Number },
     },
   ],
+  project_slug: { required: true, type: String },
+  snapshot_date: { required: true, type: Date },
 });

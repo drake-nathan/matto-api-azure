@@ -15,8 +15,8 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
 
     if (project_slug !== textureSlug) {
       context.res = {
-        status: 404,
         body: "Currently only supporting Texture and Hues.",
+        status: 404,
       };
       return;
     }
@@ -28,8 +28,8 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
     );
     if (!doesTokenExist) {
       context.res = {
-        status: 404,
         body: "Token does not exist. It may not have been minted yet.",
+        status: 404,
       };
       return;
     }
@@ -38,8 +38,8 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
 
     if (!svg) {
       context.res = {
-        status: 404,
         body: "Could not fetch SVG for this token.",
+        status: 404,
       };
       return;
     }
@@ -54,18 +54,18 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
     `;
 
     context.res = {
-      status: 200,
       body: generatorHtml,
       headers: {
         "Content-Type": "text/html",
       },
+      status: 200,
     };
   } catch (error) {
     context.log.error(error);
     if (process.env.NODE_ENV === "test") console.error(error);
     context.res = {
-      status: 500,
       body: "Something went wrong, ngmi.",
+      status: 500,
     };
   } finally {
     if (conn) await conn.close();

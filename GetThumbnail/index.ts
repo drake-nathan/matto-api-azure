@@ -15,22 +15,22 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
 
     if (!thumbnail) {
       context.res = {
-        status: 404,
         body: "Thumbnail not found",
+        status: 404,
       };
       return;
     }
 
     context.res = {
-      status: 200,
       body: thumbnail,
+      status: 200,
     };
   } catch (error) {
     context.log.error(error);
     if (process.env.NODE_ENV === "test") console.error(error);
     context.res = {
-      status: 500,
       body: "Internal Server Error",
+      status: 500,
     };
   } finally {
     if (conn) await conn.close();

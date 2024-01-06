@@ -2,7 +2,8 @@ import puppeteer, { type Viewport } from "puppeteer";
 import sharp from "sharp";
 
 import type { IAttribute, IScriptInputs } from "../db/schemas/schemaTypes";
-import { ProjectId, projectSizes, ProjectSlug } from "../projects";
+
+import { ProjectId, ProjectSlug, projectSizes } from "../projects";
 import { BlobFolder, uploadImage } from "./azureStorage";
 
 const runPuppeteer = async (
@@ -24,12 +25,12 @@ const runPuppeteer = async (
 
   page.once("request", (request) => {
     const data = {
-      method: "POST",
-      postData: JSON.stringify({ scriptInputs }),
       headers: {
         ...request.headers(),
         "Content-Type": "application/json",
       },
+      method: "POST",
+      postData: JSON.stringify({ scriptInputs }),
     };
 
     request.continue(data);
@@ -46,7 +47,7 @@ const runPuppeteer = async (
     await new Promise((resolve) => setTimeout(resolve, 10000));
   }
 
-  const screenshot = (await page.screenshot({ encoding: "binary" })) as Buffer;
+  const screenshot = (await page.screenshot({ encoding: "binary" }));
 
   let attributes: IAttribute[] = [];
   if (getAttributes) {
@@ -64,7 +65,7 @@ const runPuppeteer = async (
   }
 
   await browser.close();
-  return { screenshot, attributes };
+  return { attributes, screenshot };
 };
 
 export const getPuppeteerImageSet = async (
@@ -79,11 +80,11 @@ export const getPuppeteerImageSet = async (
 
   const isEsoterra = generatorUrl.includes("esoterra=true");
 
-  const { screenshot, attributes } = await runPuppeteer(
+  const { attributes, screenshot } = await runPuppeteer(
     generatorUrl,
     scriptInputs,
     projectId,
-    isEsoterra ? { width: 1080, height: 1080 } : sizes.full,
+    isEsoterra ? { height: 1080, width: 1080 } : sizes.full,
     isEsoterra,
     getAttributes,
   );
@@ -107,7 +108,7 @@ export const getPuppeteerImageSet = async (
     BlobFolder.small,
   );
 
-  return { image, image_mid, image_small, attributes };
+  return { attributes, image, image_mid, image_small };
 };
 
 export const getAttributes = async (
@@ -124,12 +125,12 @@ export const getAttributes = async (
 
   page.once("request", (request) => {
     const data = {
-      method: "POST",
-      postData: JSON.stringify({ scriptInputs }),
       headers: {
         ...request.headers(),
         "Content-Type": "application/json",
       },
+      method: "POST",
+      postData: JSON.stringify({ scriptInputs }),
     };
 
     request.continue(data);

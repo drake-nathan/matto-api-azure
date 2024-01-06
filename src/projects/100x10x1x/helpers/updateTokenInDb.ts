@@ -2,32 +2,33 @@ import type { Context } from "@azure/functions";
 import type { Connection } from "mongoose";
 import type { Address } from "viem";
 
-import type { IProject, IToken } from "../../../db/schemas/schemaTypes";
 import type { Chain } from "../..";
+import type { IProject, IToken } from "../../../db/schemas/schemaTypes";
+
 import { getTokenZeroAttributes } from "./getTokenZeroAttributes";
 import { getTokenZeroDescription } from "./getTokenZeroDescription";
 import { getUpdatedTokenValues } from "./getUpdatedTokenValues";
 
 interface Params {
   chain: Chain;
+  collectionDescription: string;
   conn: Connection;
   context: Context;
   contractAddress: Address;
-  collectionDescription: string;
   project: IProject;
   tokenId: number;
 }
 
 export const updateTokenInDb = async ({
   chain,
+  collectionDescription,
   conn,
   context,
   contractAddress,
-  collectionDescription,
   project,
   tokenId,
 }: Params) => {
-  const { tokenData, image, imageMid, imageSmall } =
+  const { image, imageMid, imageSmall, tokenData } =
     await getUpdatedTokenValues({
       chain,
       context,
@@ -55,25 +56,25 @@ export const updateTokenInDb = async ({
   const query = Token.findOneAndUpdate(
     { project_id: project.projectId, token_id: tokenId },
     {
-      name: tokenData.name,
-      collection_name: tokenData.collection,
-      artist: tokenData.artist,
-      description,
-      width_ratio: tokenData.width_ratio,
-      height_ratio: tokenData.height_ratio,
-      license: tokenData.license,
       additional_data: tokenData.additional_data,
-      svg: tokenData.image,
+      artist: tokenData.artist,
+      attributes,
+      collection_name: tokenData.collection,
+      description,
+      external_url: tokenData.external_url,
+      height_ratio: tokenData.height_ratio,
       image,
       image_mid: imageMid,
       image_small: imageSmall,
-      external_url: tokenData.external_url,
-      website: tokenData.website,
+      license: tokenData.license,
+      name: tokenData.name,
       royalty_info: {
         royalty_address: tokenData.royalty_address,
         royalty_bps: tokenData.royalty_bps,
       },
-      attributes,
+      svg: tokenData.image,
+      website: tokenData.website,
+      width_ratio: tokenData.width_ratio,
     },
     { new: true },
   );

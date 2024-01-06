@@ -7,8 +7,8 @@ describe("GetToken", () => {
 
   beforeEach(() => {
     context = {
-      log: { error: jest.fn() },
       bindingData: { project_slug: "chainlife-testnet", token_id: "1" },
+      log: { error: jest.fn() },
     } as unknown as Context;
   });
 

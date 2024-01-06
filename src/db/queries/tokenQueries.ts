@@ -1,6 +1,5 @@
 import { type Connection } from "mongoose";
 
-import { ProjectId, ProjectSlug } from "../../projects";
 import type {
   IAttribute,
   ILevel,
@@ -9,6 +8,8 @@ import type {
   TokenAbbr,
 } from "../schemas/schemaTypes";
 
+import { ProjectId, ProjectSlug } from "../../projects";
+
 export const checkIfTokenExists = async (
   token_id: number,
   project_slug: ProjectSlug,
@@ -16,13 +17,13 @@ export const checkIfTokenExists = async (
 ) => {
   const Token = conn.model<IToken>("Token");
 
-  const query = await Token.exists({ token_id, project_slug });
+  const query = await Token.exists({ project_slug, token_id });
   return query;
 };
 
 export const getTokenDoc = (
   project_slug: ProjectSlug,
-  token_id: string | number,
+  token_id: number | string,
   conn: Connection,
 ) => {
   const Token = conn.model<IToken>("Token");
@@ -32,7 +33,7 @@ export const getTokenDoc = (
 
 export const getTokenLean = (
   project_slug: ProjectSlug,
-  token_id: string | number,
+  token_id: number | string,
   conn: Connection,
 ) => {
   const Token = conn.model<IToken>("Token");
@@ -46,7 +47,7 @@ export const getTokenLean = (
 
 export const getTokenAbbr = (
   project_slug: ProjectSlug,
-  token_id: string | number,
+  token_id: number | string,
   conn: Connection,
 ): Promise<TokenAbbr> => {
   const Token = conn.model<IToken>("Token");
@@ -110,18 +111,18 @@ export const getTokensWorldLevelSort = (
     },
     {
       $project: {
-        token_id: true,
-        name: true,
-        project_name: true,
-        project_slug: true,
         artist: true,
+        external_url: true,
+        generator_url: true,
         image: true,
         image_mid: true,
         image_small: true,
-        thumbnail_url: true,
-        generator_url: true,
-        external_url: true,
+        name: true,
+        project_name: true,
+        project_slug: true,
         script_inputs: true,
+        thumbnail_url: true,
+        token_id: true,
         world_level: {
           $add: ["$script_inputs.transfer_count", "$script_inputs.level_shift"],
         },
@@ -145,7 +146,7 @@ export const getTokensWorldLevelSort = (
 
 export const getScriptInputsFromDb = async (
   project_slug: ProjectSlug,
-  token_id: string | number,
+  token_id: number | string,
   conn: Connection,
 ) => {
   const Token = conn.model<IToken>("Token");
@@ -212,11 +213,11 @@ export const getLevels = async (
   const results = await query.lean().exec();
 
   const resParsed = results.map((token) => {
-    const { token_id, script_inputs } = token;
+    const { script_inputs, token_id } = token;
 
-    const { transfer_count, level_shift } = script_inputs!;
+    const { level_shift, transfer_count } = script_inputs!;
 
-    return { token_id, transfer_count, level_shift: level_shift || 0 };
+    return { level_shift: level_shift || 0, token_id, transfer_count };
   });
 
   resParsed.sort((a, b) => a.token_id - b.token_id);
@@ -238,7 +239,7 @@ export const updateTokenMetadataOnTransfer = async (
 
   const query = Token.findOneAndUpdate(
     { project_id, token_id },
-    { script_inputs, image, image_mid, image_small, attributes },
+    { attributes, image, image_mid, image_small, script_inputs },
     { new: true },
   );
 
@@ -301,7 +302,7 @@ export const updateAllTokenDesc = async (
 export const updateOneTokenDesc = (
   conn: Connection,
   project_id: ProjectId,
-  token_id: string | number,
+  token_id: number | string,
   newDesc: string,
 ) => {
   const Token = conn.model<IToken>("Token");
