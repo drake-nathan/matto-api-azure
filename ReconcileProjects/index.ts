@@ -1,6 +1,7 @@
-import { AzureFunction, Context } from "@azure/functions";
+import type { AzureFunction, Context } from "@azure/functions";
+import type { Connection } from "mongoose";
+
 import * as dotenv from "dotenv";
-import { Connection } from "mongoose";
 
 import type { IProject } from "../src/db/schemas/schemaTypes";
 

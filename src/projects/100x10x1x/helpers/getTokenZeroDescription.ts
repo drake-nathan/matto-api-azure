@@ -1,6 +1,7 @@
 import { type Address, getContract } from "viem";
 
-import { Chain } from "../..";
+import type { Chain } from "../..";
+
 import { getViem } from "../../../web3/providers";
 import { oneHundredxAbi } from "../abi";
 

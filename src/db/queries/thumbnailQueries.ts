@@ -1,8 +1,7 @@
 import type { Connection } from "mongoose";
 
+import type { ProjectSlug } from "../../projects";
 import type { IThumbnail } from "../schemas/schemaTypes";
-
-import { ProjectSlug } from "../../projects";
 
 export const getThumbnailCounts = async (conn: Connection) => {
   const Thumbnail = conn.model<IThumbnail>("Thumbnail");

@@ -1,5 +1,6 @@
-import { type Connection } from "mongoose";
+import type { Connection } from "mongoose";
 
+import type { ProjectId, ProjectSlug } from "../../projects";
 import type {
   IAttribute,
   ILevel,
@@ -7,8 +8,6 @@ import type {
   IToken,
   TokenAbbr,
 } from "../schemas/schemaTypes";
-
-import { ProjectId, ProjectSlug } from "../../projects";
 
 export const checkIfTokenExists = async (
   token_id: number,

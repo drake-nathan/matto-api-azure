@@ -1,10 +1,10 @@
-import { type Connection } from "mongoose";
-import { type EventData } from "web3-eth-contract";
+import type { Connection } from "mongoose";
+import type { EventData } from "web3-eth-contract";
 
+import type { Chain, ProjectId } from "../../projects";
 import type { ITransaction } from "../schemas/schemaTypes";
 
 import { nullAddress } from "../../helpers/constants";
-import { Chain, ProjectId } from "../../projects";
 import { getViem } from "../../web3/providers";
 
 export const addTransaction = async (

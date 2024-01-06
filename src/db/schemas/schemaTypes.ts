@@ -1,5 +1,5 @@
-import { type ObjectId } from "mongoose";
-import { type Viewport } from "puppeteer";
+import type { ObjectId } from "mongoose";
+import type { Viewport } from "puppeteer";
 
 import type { Chain, ProjectId, ProjectSlug } from "../../projects";
 

@@ -8,6 +8,7 @@ import type {
   IScriptInputs,
   IToken,
 } from "../../../db/schemas/schemaTypes";
+import type { ProjectSlug } from "../../../projects";
 import type { ProcessEventFunction, ProcessMintReturn } from "../types";
 
 import {
@@ -19,7 +20,6 @@ import {
   updateOneTokenDesc,
   updateScriptInputs,
 } from "../../../db/queries/tokenQueries";
-import { ProjectSlug } from "../../../projects";
 import { attributes as mathareStartingAttr } from "../../../projects/mathareData/attributes";
 import mathareDescriptionsJson from "../../../projects/mathareData/descriptions.json";
 

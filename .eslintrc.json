@@ -20,6 +20,8 @@
   },
   "plugins": ["@typescript-eslint", "perfectionist"],
   "rules": {
+    "@typescript-eslint/consistent-type-exports": "error",
+    "@typescript-eslint/consistent-type-imports": "error",
     "@typescript-eslint/naming-convention": [
       "error",
       {
@@ -28,6 +30,7 @@
         "selector": "variable"
       }
     ],
+    "@typescript-eslint/no-import-type-side-effects": "error",
     "@typescript-eslint/no-unsafe-argument": "off",
     "@typescript-eslint/no-unsafe-assignment": "off",
     "@typescript-eslint/no-unsafe-member-access": "off",

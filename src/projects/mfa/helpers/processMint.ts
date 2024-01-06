@@ -3,10 +3,10 @@ import type { Connection } from "mongoose";
 
 import * as dotenv from "dotenv";
 
+import type { ProjectSlug } from "../..";
 import type { IProject, IToken } from "../../../db/schemas/schemaTypes";
 import type { ProcessMintFunction } from "../../../helpers/tokenHelpers/types";
 
-import { ProjectSlug } from "../..";
 import {
   getProjectCurrentSupply,
   updateProjectSupplyAndCount,

@@ -1,4 +1,4 @@
-import { type AbiItem } from "web3-utils";
+import type { AbiItem } from "web3-utils";
 
 import type { IProject, ProjectSizes } from "../db/schemas/schemaTypes";
 

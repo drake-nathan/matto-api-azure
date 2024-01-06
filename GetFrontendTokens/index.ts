@@ -1,5 +1,7 @@
-import { AzureFunction, Context, HttpRequest } from "@azure/functions";
-import { Connection } from "mongoose";
+import type { AzureFunction, Context, HttpRequest } from "@azure/functions";
+import type { Connection } from "mongoose";
+
+import type { TokenAbbr } from "../src/db/schemas/schemaTypes";
 
 import { connectionFactory } from "../src/db/connectionFactory";
 import { getProject } from "../src/db/queries/projectQueries";
@@ -8,7 +10,6 @@ import {
   getTokensTokenIdSort,
   getTokensWorldLevelSort,
 } from "../src/db/queries/tokenQueries";
-import { TokenAbbr } from "../src/db/schemas/schemaTypes";
 
 const httpTrigger: AzureFunction = async (
   context: Context,

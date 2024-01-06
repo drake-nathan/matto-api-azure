@@ -1,6 +1,6 @@
-import { type Context } from "@azure/functions";
-import { type Connection } from "mongoose";
-import { type Contract } from "web3-eth-contract";
+import type { Context } from "@azure/functions";
+import type { Connection } from "mongoose";
+import type { Contract } from "web3-eth-contract";
 
 import type { IProject, ITransaction } from "../db/schemas/schemaTypes";
 

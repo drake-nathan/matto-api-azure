@@ -1,7 +1,7 @@
 import { BlobServiceClient } from "@azure/storage-blob";
 import * as dotenv from "dotenv";
 
-import { ProjectSlug } from "../projects";
+import type { ProjectSlug } from "../projects";
 
 dotenv.config();
 

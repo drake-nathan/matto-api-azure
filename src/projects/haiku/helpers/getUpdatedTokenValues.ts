@@ -1,8 +1,8 @@
 import { type Address, getContract } from "viem";
 
+import type { Chain, ProjectId, ProjectSlug } from "../..";
 import type { IAttribute } from "../../../db/schemas/schemaTypes";
 
-import { Chain, ProjectId, ProjectSlug } from "../..";
 import { fetchResizeUploadImages } from "../../../services/images";
 import { getViem } from "../../../web3/providers";
 import { haikuAbi } from "../abi";

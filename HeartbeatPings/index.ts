@@ -1,4 +1,5 @@
-import { AzureFunction, Context } from "@azure/functions";
+import type { AzureFunction, Context } from "@azure/functions";
+
 import axios from "axios";
 
 const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {

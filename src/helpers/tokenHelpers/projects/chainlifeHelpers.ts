@@ -1,12 +1,14 @@
-import { type Context } from "@azure/functions";
+import type { Context } from "@azure/functions";
+import type { Connection } from "mongoose";
+
 import * as dotenv from "dotenv";
-import { type Connection } from "mongoose";
 
 import type {
   IProject,
   IScriptInputs,
   IToken,
 } from "../../../db/schemas/schemaTypes";
+import type { ProjectSlug } from "../../../projects";
 import type { ProcessEventFunction, ProcessMintReturn } from "../types";
 
 import {
@@ -18,7 +20,6 @@ import {
   getAllTokensFromProject,
   updateTokenMetadataOnTransfer,
 } from "../../../db/queries/tokenQueries";
-import { ProjectSlug } from "../../../projects";
 import { getPuppeteerImageSet } from "../../../services/puppeteer";
 
 dotenv.config();

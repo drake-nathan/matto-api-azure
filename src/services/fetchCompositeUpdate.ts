@@ -1,7 +1,7 @@
 import axios from "axios";
 import { configDotenv } from "dotenv";
 
-import { ProjectSlug } from "../projects";
+import type { ProjectSlug } from "../projects";
 
 configDotenv();
 

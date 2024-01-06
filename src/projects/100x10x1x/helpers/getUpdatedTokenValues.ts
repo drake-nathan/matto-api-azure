@@ -2,7 +2,9 @@ import type { Context } from "@azure/functions";
 
 import { getContract } from "viem";
 
-import { Chain, type ProjectId, type ProjectSlug } from "../..";
+import type { Chain} from "../..";
+import type { ProjectId, ProjectSlug } from "../..";
+
 import { svgToPngAndUpload } from "../../../services/images";
 import { getViem } from "../../../web3/providers";
 import { oneHundredxAbi } from "../abi";

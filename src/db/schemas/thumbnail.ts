@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
 
-import { IThumbnail } from "./schemaTypes";
+import type { IThumbnail } from "./schemaTypes";
 
 export const thumbnailSchema = new Schema<IThumbnail>({
   artblocks_id: { type: String, unique: true },

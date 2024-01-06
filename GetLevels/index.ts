@@ -1,5 +1,5 @@
-import { AzureFunction, Context } from "@azure/functions";
-import { Connection } from "mongoose";
+import type { AzureFunction, Context } from "@azure/functions";
+import type { Connection } from "mongoose";
 
 import { connectionFactory } from "../src/db/connectionFactory";
 import { checkIfProjectExists } from "../src/db/queries/projectQueries";

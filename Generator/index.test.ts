@@ -1,4 +1,4 @@
-import { Context, HttpRequest } from "@azure/functions";
+import type { Context, HttpRequest } from "@azure/functions";
 
 import httpTrigger from "./index";
 

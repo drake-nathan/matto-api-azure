@@ -8,6 +8,7 @@ import type {
   IScriptInputs,
   IToken,
 } from "../../../db/schemas/schemaTypes";
+import type { ProjectSlug } from "../../../projects";
 import type { ProcessEventFunction, ProcessMintReturn } from "../types";
 
 import {
@@ -15,7 +16,6 @@ import {
   updateProjectSupplyAndCount,
 } from "../../../db/queries/projectQueries";
 import { addToken, updateScriptInputs } from "../../../db/queries/tokenQueries";
-import { ProjectSlug } from "../../../projects";
 import { getPuppeteerImageSet } from "../../../services/puppeteer";
 
 dotenv.config();

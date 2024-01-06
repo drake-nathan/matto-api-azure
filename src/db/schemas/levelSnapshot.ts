@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
 
-import { ILevelSnapshot } from "./schemaTypes";
+import type { ILevelSnapshot } from "./schemaTypes";
 
 export const levelSnapshotSchema = new Schema<ILevelSnapshot>({
   levels: [

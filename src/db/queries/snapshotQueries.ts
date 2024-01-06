@@ -1,6 +1,6 @@
-import { Connection } from "mongoose";
+import type { Connection } from "mongoose";
 
-import { ILevelSnapshot } from "../schemas/schemaTypes";
+import type { ILevelSnapshot } from "../schemas/schemaTypes";
 
 export const addLevelSnapshot = async (
   levelSnapshotToAdd: ILevelSnapshot,

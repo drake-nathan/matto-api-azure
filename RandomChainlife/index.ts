@@ -1,4 +1,4 @@
-import { AzureFunction, Context } from "@azure/functions";
+import type { AzureFunction, Context } from "@azure/functions";
 
 const httpTrigger: AzureFunction = (context: Context) => {
   try {
