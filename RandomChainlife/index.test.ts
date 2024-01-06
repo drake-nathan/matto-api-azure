@@ -15,7 +15,7 @@ describe("Random Chainlife", () => {
     await httpTrigger(context);
 
     expect(context?.res?.status).toEqual(200);
-    expect(context.log.error).toBeCalledTimes(0);
+    expect(context.log.error).toHaveBeenCalledTimes(0);
     expect(typeof context?.res?.body).toBe("string");
   });
 });

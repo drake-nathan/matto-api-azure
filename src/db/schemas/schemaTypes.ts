@@ -41,6 +41,7 @@ export interface IDevParams {
 }
 
 export interface IProject {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any; // for the mongo `updateProjectIfNeeded` function, not ideal
   _id: ProjectId;
   appended_description?: string;

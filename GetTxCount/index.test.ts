@@ -17,7 +17,7 @@ describe("GetTxCount", () => {
 
     await httpTrigger(context);
 
-    expect(context.log.error).toBeCalledTimes(0);
+    expect(context.log.error).toHaveBeenCalledTimes(0);
     expect(context?.res?.status).toEqual(404);
     expect(context?.res?.body).toEqual("Invalid project slug");
   });
@@ -25,7 +25,7 @@ describe("GetTxCount", () => {
   it("should return a 200 with tx counts object", async () => {
     await httpTrigger(context);
 
-    expect(context.log.error).toBeCalledTimes(0);
+    expect(context.log.error).toHaveBeenCalledTimes(0);
     expect(context?.res?.status).toEqual(200);
     expect(typeof context?.res?.body).toBe("object");
     expect(context?.res?.body).toHaveProperty("total");

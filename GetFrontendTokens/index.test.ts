@@ -19,7 +19,7 @@ describe("GetFrontendTokens", () => {
 
     await GetFrontenTokens(context, req);
 
-    expect(context.log.error).toBeCalledTimes(0);
+    expect(context.log.error).toHaveBeenCalledTimes(0);
     expect(context?.res?.status).toEqual(404);
     expect(context?.res?.body).toEqual("Project not found");
   });
@@ -27,7 +27,7 @@ describe("GetFrontendTokens", () => {
   it("should return a response object with default values if no queries given", async () => {
     await GetFrontenTokens(context, req);
 
-    expect(context.log.error).toBeCalledTimes(0);
+    expect(context.log.error).toHaveBeenCalledTimes(0);
     expect(context?.res?.status).toEqual(200);
     expect(context?.res?.body).toHaveProperty("hasMore");
     expect(context?.res?.body).toHaveProperty("tokens");
@@ -41,7 +41,7 @@ describe("GetFrontendTokens", () => {
 
     await GetFrontenTokens(context, req);
 
-    expect(context.log.error).toBeCalledTimes(0);
+    expect(context.log.error).toHaveBeenCalledTimes(0);
     expect(context?.res?.status).toEqual(200);
     expect(context?.res?.body).toHaveProperty("hasMore");
     expect(context?.res?.body).toHaveProperty("tokens");
@@ -54,7 +54,7 @@ describe("GetFrontendTokens", () => {
 
     await GetFrontenTokens(context, req);
 
-    expect(context.log.error).toBeCalledTimes(0);
+    expect(context.log.error).toHaveBeenCalledTimes(0);
     expect(context?.res?.status).toEqual(200);
     expect(context?.res?.body).toHaveProperty("hasMore");
     expect(context?.res?.body).toHaveProperty("tokens");
@@ -67,7 +67,7 @@ describe("GetFrontendTokens", () => {
 
     await GetFrontenTokens(context, req);
 
-    expect(context.log.error).toBeCalledTimes(0);
+    expect(context.log.error).toHaveBeenCalledTimes(0);
     expect(context?.res?.status).toEqual(200);
     expect(context?.res?.body).toHaveProperty("hasMore");
     expect(context?.res?.body).toHaveProperty("tokens");
@@ -80,7 +80,7 @@ describe("GetFrontendTokens", () => {
 
     await GetFrontenTokens(context, req);
 
-    expect(context.log.error).toBeCalledTimes(0);
+    expect(context.log.error).toHaveBeenCalledTimes(0);
     expect(context?.res?.status).toEqual(200);
     expect(context?.res?.body).toHaveProperty("hasMore");
     expect(context?.res?.body).toHaveProperty("tokens");
@@ -93,7 +93,7 @@ describe("GetFrontendTokens", () => {
 
     await GetFrontenTokens(context, req);
 
-    expect(context.log.error).toBeCalledTimes(0);
+    expect(context.log.error).toHaveBeenCalledTimes(0);
     expect(context?.res?.status).toEqual(200);
     expect(context?.res?.body).toHaveProperty("hasMore");
     expect(context?.res?.body.hasMore).toEqual(true);
@@ -104,7 +104,7 @@ describe("GetFrontendTokens", () => {
 
     await GetFrontenTokens(context, req);
 
-    expect(context.log.error).toBeCalledTimes(0);
+    expect(context.log.error).toHaveBeenCalledTimes(0);
     expect(context?.res?.status).toEqual(200);
     expect(context?.res?.body).toHaveProperty("hasMore");
     expect(context?.res?.body.hasMore).toEqual(false);
@@ -118,7 +118,7 @@ describe("GetFrontendTokens", () => {
 
     await GetFrontenTokens(context, req);
 
-    expect(context.log.error).toBeCalledTimes(0);
+    expect(context.log.error).toHaveBeenCalledTimes(0);
     expect(context?.res?.status).toEqual(404);
     expect(context?.res?.body).toEqual("Tokens not found");
   });
@@ -128,7 +128,7 @@ describe("GetFrontendTokens", () => {
 
     await GetFrontenTokens(context, req);
 
-    expect(context.log.error).toBeCalledTimes(0);
+    expect(context.log.error).toHaveBeenCalledTimes(0);
     expect(context?.res?.status).toEqual(404);
     expect(context?.res?.body).toEqual("Invalid tokenId query");
   });

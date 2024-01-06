@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
 import type { AzureFunction, Context } from "@azure/functions";
 import type { Connection } from "mongoose";
 

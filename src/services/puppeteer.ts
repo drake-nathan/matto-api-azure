@@ -33,9 +33,9 @@ const runPuppeteer = async (
       postData: JSON.stringify({ scriptInputs }),
     };
 
-    request.continue(data);
+    void request.continue(data);
 
-    page.setRequestInterception(false);
+    void page.setRequestInterception(false);
   });
 
   const waitUntil = esoterra ? "load" : "networkidle0";
@@ -47,7 +47,7 @@ const runPuppeteer = async (
     await new Promise((resolve) => setTimeout(resolve, 10000));
   }
 
-  const screenshot = (await page.screenshot({ encoding: "binary" }));
+  const screenshot = await page.screenshot({ encoding: "binary" });
 
   let attributes: IAttribute[] = [];
   if (getAttributes) {
@@ -133,9 +133,9 @@ export const getAttributes = async (
       postData: JSON.stringify({ scriptInputs }),
     };
 
-    request.continue(data);
+    void request.continue(data);
 
-    page.setRequestInterception(false);
+    void page.setRequestInterception(false);
   });
 
   await page.goto(url, { waitUntil: "networkidle0" });

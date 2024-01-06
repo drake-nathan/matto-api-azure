@@ -2,16 +2,16 @@
   "bindings": [
     {
       "authLevel": "anonymous",
-      "type": "httpTrigger",
       "direction": "in",
-      "name": "req",
       "methods": ["get"],
-      "route": "thumbnail/{artblocks_id:int}"
+      "name": "req",
+      "route": "thumbnail/{artblocks_id:int}",
+      "type": "httpTrigger"
     },
     {
-      "type": "http",
       "direction": "out",
-      "name": "res"
+      "name": "res",
+      "type": "http"
     }
   ],
   "scriptFile": "../dist/GetThumbnail/index.js"

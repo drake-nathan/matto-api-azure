@@ -2,16 +2,16 @@
   "bindings": [
     {
       "authLevel": "anonymous",
-      "type": "httpTrigger",
       "direction": "in",
-      "name": "req",
       "methods": ["get"],
-      "route": "project/{project_slug}/txcount"
+      "name": "req",
+      "route": "project/{project_slug}/txcount",
+      "type": "httpTrigger"
     },
     {
-      "type": "http",
       "direction": "out",
-      "name": "res"
+      "name": "res",
+      "type": "http"
     }
   ],
   "scriptFile": "../dist/GetTxCount/index.js"

@@ -4,6 +4,7 @@ import type { Connection } from "mongoose";
 import { connectionFactory } from "../src/db/connectionFactory";
 import { getProject } from "../src/db/queries/projectQueries";
 import { getScriptInputsFromDb } from "../src/db/queries/tokenQueries";
+import { isNumber, isProjectSlug } from "../src/utils/typeChecks";
 import { getHtml, getScriptType } from "./helpers";
 
 const httpTrigger: AzureFunction = async (
@@ -12,6 +13,22 @@ const httpTrigger: AzureFunction = async (
 ): Promise<void> => {
   const { project_slug, token_id } = context.bindingData;
   let conn: Connection | undefined;
+
+  if (!isProjectSlug(project_slug)) {
+    context.res = {
+      body: "Invalid project slug.",
+      status: 400,
+    };
+    return;
+  }
+
+  if (!isNumber(token_id)) {
+    context.res = {
+      body: "Invalid token id.",
+      status: 400,
+    };
+    return;
+  }
 
   try {
     conn = await connectionFactory(context);

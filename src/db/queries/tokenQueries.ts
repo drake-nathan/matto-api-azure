@@ -40,9 +40,10 @@ export const getTokenLean = (
 
   const query = Token.findOne({ project_slug, token_id });
 
-  query.select("-_id -__v -attributes._id -script_inputs._id");
-
-  return query.lean().exec();
+  return query
+    .select("-_id -__v -attributes._id -script_inputs._id")
+    .lean()
+    .exec();
 };
 
 export const getTokenAbbr = (
@@ -54,11 +55,12 @@ export const getTokenAbbr = (
 
   const query = Token.findOne({ project_slug, token_id });
 
-  query.select(
-    "token_id name project_name project_slug artist image image_mid image_small thumbnail_url generator_url external_url script_inputs",
-  );
-
-  return query.lean().exec() as Promise<TokenAbbr>;
+  return query
+    .select(
+      "token_id name project_name project_slug artist image image_mid image_small thumbnail_url generator_url external_url script_inputs",
+    )
+    .lean()
+    .exec() as Promise<TokenAbbr>;
 };
 
 export const getAllTokensFromProject = (
@@ -69,9 +71,10 @@ export const getAllTokensFromProject = (
 
   const query = Token.find({ project_slug });
 
-  query.select("-_id -__v -attributes._id -script_inputs._id");
-
-  return query.lean().exec();
+  return query
+    .select("-_id -__v -attributes._id -script_inputs._id")
+    .lean()
+    .exec();
 };
 
 export const getTokensTokenIdSort = (
@@ -153,9 +156,7 @@ export const getScriptInputsFromDb = async (
 
   const query = Token.findOne({ project_slug, token_id });
 
-  query.select("-script_inputs._id");
-
-  const result = await query.lean().exec();
+  const result = await query.select("-script_inputs._id").lean().exec();
 
   return result?.script_inputs;
 };
@@ -206,11 +207,10 @@ export const getLevels = async (
 
   const query = Token.find({ project_slug });
 
-  query.select(
-    "token_id script_inputs.transfer_count script_inputs.level_shift",
-  );
-
-  const results = await query.lean().exec();
+  const results = await query
+    .select("token_id script_inputs.transfer_count script_inputs.level_shift")
+    .lean()
+    .exec();
 
   const resParsed = results.map((token) => {
     const { script_inputs, token_id } = token;

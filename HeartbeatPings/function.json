@@ -1,11 +1,11 @@
 {
   "bindings": [
     {
-      "name": "myTimer",
-      "type": "timerTrigger",
       "direction": "in",
+      "name": "myTimer",
+      "runOnStartup": false,
       "schedule": "0 */5 * * * *",
-      "runOnStartup": false
+      "type": "timerTrigger"
     }
   ],
   "scriptFile": "../dist/HeartbeatPings/index.js"

@@ -105,7 +105,7 @@ export const process100xMint: ProcessMintFunction = async (
   );
 
   // lazy update composite image
-  fetchCompositeUpdate({ projectSlug: project_slug });
+  void fetchCompositeUpdate({ projectSlug: project_slug });
 
   if (!isTokenZero) {
     await updateTokenInDb({

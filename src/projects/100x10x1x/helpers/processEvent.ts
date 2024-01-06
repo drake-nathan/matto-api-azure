@@ -30,7 +30,7 @@ export const process100xEvent: ProcessEventFunction = async (
   if (event_type === "Transfer") return null;
 
   // lazy update composite image
-  fetchCompositeUpdate({ projectSlug: project.project_slug });
+  void fetchCompositeUpdate({ projectSlug: project.project_slug });
 
   const updatedToken = await updateTokenInDb({
     chain,

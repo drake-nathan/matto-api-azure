@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import type { Context } from "@azure/functions";
 import type { Connection } from "mongoose";
 import type { Contract } from "web3-eth-contract";

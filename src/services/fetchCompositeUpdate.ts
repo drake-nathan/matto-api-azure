@@ -11,7 +11,7 @@ if (!rootUrl) {
   throw new Error("ROOT_URL not set");
 }
 
-export const fetchCompositeUpdate = ({
+export const fetchCompositeUpdate = async ({
   force = false,
   projectSlug,
 }: {
@@ -27,5 +27,5 @@ export const fetchCompositeUpdate = ({
     projectSlug,
   };
 
-  axios.get(url, { params });
+  await axios.get(url, { params });
 };

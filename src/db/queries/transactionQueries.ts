@@ -112,6 +112,7 @@ export const removeDuplicateTransactions = async (
     { $match: { count: { $gte: 2 } } },
   ]);
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   const duplicateIds = query.flatMap((q) => q.uniqueIds.slice(1));
 
   if (duplicateIds.length) {

@@ -115,6 +115,8 @@ export const getScriptType = (
     return ScriptType.painting;
 
   if (projectSlug === "chainlife" || projectSlug === "chainlife-testnet") {
+    // FIXME
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const scriptInputs: IScriptInputs = JSON.parse(scriptInputsJson);
     const { custom_rule } = scriptInputs;
 

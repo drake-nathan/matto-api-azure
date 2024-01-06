@@ -192,6 +192,7 @@ export const repairBadTokens = async (
   context: Context,
   conn: Connection,
 ) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const updatedTokens: any[] = [];
 
   for await (const token of bumTokens) {

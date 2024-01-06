@@ -1,11 +1,11 @@
 {
   "bindings": [
     {
-      "name": "myTimer",
-      "type": "timerTrigger",
       "direction": "in",
+      "name": "myTimer",
+      "runOnStartup": true,
       "schedule": "0 */10 * * * *",
-      "runOnStartup": true
+      "type": "timerTrigger"
     }
   ],
   "scriptFile": "../dist/ReconcileProjects/index.js"

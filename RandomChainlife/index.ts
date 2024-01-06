@@ -1,6 +1,6 @@
 import { AzureFunction, Context } from "@azure/functions";
 
-const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
+const httpTrigger: AzureFunction = (context: Context) => {
   try {
     const generatorHtml = `
       <!DOCTYPE html>

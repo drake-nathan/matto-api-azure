@@ -2,7 +2,6 @@ import type { Context } from "@azure/functions";
 import type { Connection } from "mongoose";
 
 import * as dotenv from "dotenv";
-import { getContract } from "viem";
 
 import type { IProject, IToken } from "../../../db/schemas/schemaTypes";
 import type { ProcessMintFunction } from "../../../helpers/tokenHelpers/types";
@@ -13,8 +12,6 @@ import {
   updateProjectSupplyAndCount,
 } from "../../../db/queries/projectQueries";
 import { addToken } from "../../../db/queries/tokenQueries";
-import { getViem } from "../../../web3/providers";
-import { mfaAbi } from "../abi";
 
 dotenv.config();
 const rootServerUrl = process.env.ROOT_URL;
@@ -41,9 +38,7 @@ export const processMfaMint: ProcessMintFunction = async (
     artist,
     artist_address,
     aspect_ratio,
-    chain,
     collection_name,
-    contract_address: contractAddress,
     description,
     external_url: projectExternalUrl,
     license,

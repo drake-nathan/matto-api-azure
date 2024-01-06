@@ -22,9 +22,13 @@ export const fetchResizeUploadImages = async (
 
     imageBuffer = data;
   } catch (error) {
-    throw new Error(
-      `Error fetching image for ${projectSlug} ${tokenId}: ${error}`,
-    );
+    if (error instanceof Error) {
+      throw new Error(
+        `Error fetching image for ${projectSlug} ${tokenId}: ${error.message}`,
+      );
+    } else {
+      throw new Error(`Error fetching image for ${projectSlug} ${tokenId}.`);
+    }
   }
 
   const midBuffer = await sharp(imageBuffer).resize(sizes.mid).toBuffer();
