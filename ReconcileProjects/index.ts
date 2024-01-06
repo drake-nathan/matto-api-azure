@@ -1,10 +1,12 @@
-import { AzureFunction, Context } from "@azure/functions";
+import type { AzureFunction, Context } from "@azure/functions";
+import type { Connection } from "mongoose";
+
 import * as dotenv from "dotenv";
-import { Connection } from "mongoose";
+
+import type { IProject } from "../src/db/schemas/schemaTypes";
 
 import { connectionFactory } from "../src/db/connectionFactory";
 import { removeDuplicateTransactions } from "../src/db/queries/transactionQueries";
-import type { IProject } from "../src/db/schemas/schemaTypes";
 import {
   checkForNewProjects,
   reconcileProject,
@@ -52,8 +54,8 @@ const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
     context.log.error(error);
     if (process.env.NODE_ENV === "test") console.error(error);
     context.res = {
-      status: 500,
       body: error,
+      status: 500,
     };
   } finally {
     if (conn) await conn.close();

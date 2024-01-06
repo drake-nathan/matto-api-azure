@@ -1,5 +1,7 @@
-import { AzureFunction, Context, HttpRequest } from "@azure/functions";
-import { Connection } from "mongoose";
+import type { AzureFunction, Context, HttpRequest } from "@azure/functions";
+import type { Connection } from "mongoose";
+
+import type { TokenAbbr } from "../src/db/schemas/schemaTypes";
 
 import { connectionFactory } from "../src/db/connectionFactory";
 import { getProject } from "../src/db/queries/projectQueries";
@@ -8,7 +10,6 @@ import {
   getTokensTokenIdSort,
   getTokensWorldLevelSort,
 } from "../src/db/queries/tokenQueries";
-import { TokenAbbr } from "../src/db/schemas/schemaTypes";
 
 const httpTrigger: AzureFunction = async (
   context: Context,
@@ -41,8 +42,8 @@ const httpTrigger: AzureFunction = async (
 
   if (tokenIdQuery && !tokenId) {
     context.res = {
-      status: 404,
       body: "Invalid tokenId query",
+      status: 404,
     };
     return;
   }
@@ -54,8 +55,8 @@ const httpTrigger: AzureFunction = async (
 
     if (!project) {
       context.res = {
-        status: 404,
         body: "Project not found",
+        status: 404,
       };
       return;
     }
@@ -65,7 +66,7 @@ const httpTrigger: AzureFunction = async (
 
     if (tokenId) {
       const token = await getTokenAbbr(project_slug, tokenId, conn);
-      if (token) tokens.push(token);
+      tokens.push(token);
       hasMore = false;
     } else if (sortType === "tokenId") {
       tokens = await getTokensTokenIdSort(
@@ -78,7 +79,7 @@ const httpTrigger: AzureFunction = async (
       hasMore = project.current_supply
         ? project.current_supply > skip + limit
         : false;
-    } else if (sortType === "worldLevel") {
+    } else {
       tokens = await getTokensWorldLevelSort(
         conn,
         project_slug,
@@ -93,27 +94,27 @@ const httpTrigger: AzureFunction = async (
 
     if (!tokens.length) {
       context.res = {
-        status: 404,
         body: "Tokens not found",
+        status: 404,
       };
       return;
     }
 
     context.res = {
-      status: 200,
       body: {
+        currentSupply: project.current_supply,
         hasMore,
         skip,
-        currentSupply: project.current_supply,
         tokens,
       },
+      status: 200,
     };
   } catch (error) {
     context.log.error(error);
     if (process.env.NODE_ENV === "test") console.error(error);
     context.res = {
-      status: 500,
       body: "Internal Server Error",
+      status: 500,
     };
   } finally {
     if (conn) await conn.close();

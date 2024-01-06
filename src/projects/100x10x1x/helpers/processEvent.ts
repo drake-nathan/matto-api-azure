@@ -1,6 +1,7 @@
 import { isAddress } from "viem";
 
 import type { ProcessEventFunction } from "../../../helpers/tokenHelpers/types";
+
 import { fetchCompositeUpdate } from "../../../services/fetchCompositeUpdate";
 import { updateTokenInDb } from "./updateTokenInDb";
 
@@ -12,31 +13,31 @@ export const process100xEvent: ProcessEventFunction = async (
   script_inputs,
   event_type,
 ) => {
+  if (event_type === "Transfer") return null;
+
   context.log.info(
     `ProcessEvent: Processing ${event_type} for ${project.project_name}.`,
   );
 
   const {
     chain,
-    contract_address: contractAddress,
     collection_description,
+    contract_address: contractAddress,
   } = project;
 
   if (!isAddress(contractAddress)) {
     throw new Error("Invalid contract address");
   }
 
-  if (event_type === "Transfer") return null;
-
   // lazy update composite image
-  fetchCompositeUpdate({ projectSlug: project.project_slug });
+  void fetchCompositeUpdate({ projectSlug: project.project_slug });
 
   const updatedToken = await updateTokenInDb({
     chain,
+    collectionDescription: collection_description,
     conn,
     context,
     contractAddress,
-    collectionDescription: collection_description,
     project,
     tokenId: 0,
   });

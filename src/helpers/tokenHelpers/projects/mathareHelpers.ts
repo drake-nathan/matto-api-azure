@@ -1,6 +1,15 @@
 import type { Context } from "@azure/functions";
-import * as dotenv from "dotenv";
 import type { Connection } from "mongoose";
+
+import * as dotenv from "dotenv";
+
+import type {
+  IProject,
+  IScriptInputs,
+  IToken,
+} from "../../../db/schemas/schemaTypes";
+import type { ProjectSlug } from "../../../projects";
+import type { ProcessEventFunction, ProcessMintReturn } from "../types";
 
 import {
   getProjectCurrentSupply,
@@ -11,15 +20,8 @@ import {
   updateOneTokenDesc,
   updateScriptInputs,
 } from "../../../db/queries/tokenQueries";
-import type {
-  IProject,
-  IScriptInputs,
-  IToken,
-} from "../../../db/schemas/schemaTypes";
-import { ProjectSlug } from "../../../projects";
 import { attributes as mathareStartingAttr } from "../../../projects/mathareData/attributes";
 import mathareDescriptionsJson from "../../../projects/mathareData/descriptions.json";
-import type { ProcessEventFunction, ProcessMintReturn } from "../types";
 
 dotenv.config();
 const rootServerUrl = process.env.ROOT_URL;
@@ -35,7 +37,7 @@ const getUrls = (
   const image_mid = `https://mattoapi.blob.core.windows.net/mathare-images/mid-${token_id}.png`;
   const thumbnail_url = `https://mattoapi.blob.core.windows.net/mathare-images/thumb-${token_id}.png`;
 
-  return { generator_url, external_url, image, image_mid, thumbnail_url };
+  return { external_url, generator_url, image, image_mid, thumbnail_url };
 };
 
 export const processMathareMint = async (
@@ -47,19 +49,19 @@ export const processMathareMint = async (
 ): ProcessMintReturn => {
   const {
     _id: project_id,
-    project_name,
-    project_slug,
+    appended_description,
     artist,
     artist_address,
-    collection_name,
-    script_type,
     aspect_ratio,
-    website,
+    collection_name,
     external_url: projectExternalUrl,
     license,
+    project_name,
+    project_slug,
     royalty_info,
+    script_type,
     tx_count,
-    appended_description,
+    website,
   } = project;
 
   context.log.info("Adding token", token_id, "to", project_name);
@@ -74,34 +76,34 @@ export const processMathareMint = async (
     return;
   }
 
-  const { generator_url, external_url, image, image_mid, thumbnail_url } =
+  const { external_url, generator_url, image, image_mid, thumbnail_url } =
     getUrls(project_slug, token_id, projectExternalUrl);
 
   const newToken: IToken = {
-    token_id,
+    animation_url: generator_url,
+    artist,
+    artist_address,
+    aspect_ratio,
+    attributes: mathareStartingAttr,
+    collection_name,
+    description: `${
+      mathareDescriptionsJson[token_id - 1]
+    }${appended_description}`,
+    external_url,
+    generator_url,
+    image,
+    image_mid,
+    license,
     name: `${project.project_name} ${token_id}`,
     project_id,
     project_name,
     project_slug,
-    artist,
-    artist_address,
-    description: `${
-      mathareDescriptionsJson[token_id - 1]
-    }${appended_description}`,
-    collection_name,
-    aspect_ratio,
-    script_type,
-    script_inputs,
-    image,
-    image_mid,
-    thumbnail_url,
-    generator_url,
-    animation_url: generator_url,
-    external_url,
-    website,
-    license,
     royalty_info,
-    attributes: mathareStartingAttr,
+    script_inputs,
+    script_type,
+    thumbnail_url,
+    token_id,
+    website,
   };
 
   const { token_id: newTokenId } = await addToken(newToken, conn);
@@ -114,7 +116,7 @@ export const processMathareMint = async (
     conn,
   );
 
-  return { newTokenId, newSupply };
+  return { newSupply, newTokenId };
 };
 
 export const processMathareEvent: ProcessEventFunction = async (
@@ -150,7 +152,7 @@ export const updateMathareDescriptions = async (
   conn: Connection,
   project: IProject,
 ) => {
-  const { _id: project_id, maximum_supply, appended_description } = project;
+  const { _id: project_id, appended_description, maximum_supply } = project;
 
   // create array of token ids starting from 1 to maximum_supply
   const tokenIds = Array.from(Array(maximum_supply).keys()).map((i) => i + 1);

@@ -1,17 +1,17 @@
 {
-  "editor.formatOnSave": true,
+  "azureFunctions.deploySubpath": ".",
+  // "azureFunctions.postDeployTask": "npm install (functions)",
+  "azureFunctions.projectLanguage": "TypeScript",
+  "azureFunctions.projectRuntime": "~4",
+  // "azureFunctions.preDeployTask": "npm prune (functions)"
+  "azureFunctions.scmDoBuildDuringDeployment": true,
+  "debug.internalConsoleOptions": "neverOpen",
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },
   "editor.defaultFormatter": "esbenp.prettier-vscode",
 
-  "azureFunctions.deploySubpath": ".",
-  // "azureFunctions.postDeployTask": "npm install (functions)",
-  "azureFunctions.projectLanguage": "TypeScript",
-  "azureFunctions.projectRuntime": "~4",
-  "debug.internalConsoleOptions": "neverOpen",
-  // "azureFunctions.preDeployTask": "npm prune (functions)"
-  "azureFunctions.scmDoBuildDuringDeployment": true,
+  "editor.formatOnSave": true,
   "files.exclude": {
     "__azurite*": true,
     "__blobstorage__": true,

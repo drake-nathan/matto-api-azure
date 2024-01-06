@@ -1,9 +1,10 @@
 import type { Connection } from "mongoose";
 
+import type { IAttribute } from "../../../db/schemas/schemaTypes";
+
+import { ProjectId, ProjectSlug } from "../..";
 import { getAllTokensFromProject } from "../../../db/queries/tokenQueries";
 import { getTransactionCountByEvent } from "../../../db/queries/transactionQueries";
-import type { IAttribute } from "../../../db/schemas/schemaTypes";
-import { ProjectId, ProjectSlug } from "../..";
 
 export const getTokenZeroAttributes = async (
   conn: Connection,
@@ -22,17 +23,17 @@ export const getTokenZeroAttributes = async (
   const shuffles = orderChangedCount - tokenCount;
 
   const cummulativeValues: Record<string, number> = {
+    "Complex Curves": 0,
+    "Complex Lines": 0,
     Curves: 0,
+    Ellipses: 0,
     Lines: 0,
     "Simple Curves": 0,
-    "Complex Curves": 0,
     "Simple Lines": 0,
-    "Complex Lines": 0,
-    Ellipses: 0,
   };
 
   tokens.forEach((token) => {
-    const { token_id, attributes } = token;
+    const { attributes, token_id } = token;
     if (token_id === 0) return;
 
     Object.keys(cummulativeValues).forEach((trait_type) => {

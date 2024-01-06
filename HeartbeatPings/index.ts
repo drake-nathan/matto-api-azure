@@ -1,4 +1,5 @@
-import { AzureFunction, Context } from "@azure/functions";
+import type { AzureFunction, Context } from "@azure/functions";
+
 import axios from "axios";
 
 const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
@@ -10,8 +11,8 @@ const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
     context.log.error(error);
     if (process.env.NODE_ENV === "test") console.error(error);
     context.res = {
-      status: 500,
       body: error,
+      status: 500,
     };
   }
 };

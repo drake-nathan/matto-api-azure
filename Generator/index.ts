@@ -4,6 +4,7 @@ import type { Connection } from "mongoose";
 import { connectionFactory } from "../src/db/connectionFactory";
 import { getProject } from "../src/db/queries/projectQueries";
 import { getScriptInputsFromDb } from "../src/db/queries/tokenQueries";
+import { isNumber, isProjectSlug } from "../src/utils/typeChecks";
 import { getHtml, getScriptType } from "./helpers";
 
 const httpTrigger: AzureFunction = async (
@@ -13,6 +14,22 @@ const httpTrigger: AzureFunction = async (
   const { project_slug, token_id } = context.bindingData;
   let conn: Connection | undefined;
 
+  if (!isProjectSlug(project_slug)) {
+    context.res = {
+      body: "Invalid project slug.",
+      status: 400,
+    };
+    return;
+  }
+
+  if (!isNumber(token_id)) {
+    context.res = {
+      body: "Invalid token id.",
+      status: 400,
+    };
+    return;
+  }
+
   try {
     conn = await connectionFactory(context);
 
@@ -20,18 +37,18 @@ const httpTrigger: AzureFunction = async (
 
     if (!project) {
       context.res = {
-        status: 404,
         body: "Project not found.",
+        status: 404,
       };
       return;
     }
 
-    const { project_name, gen_scripts } = project;
+    const { gen_scripts, project_name } = project;
 
     if (!gen_scripts) {
       context.res = {
-        status: 404,
         body: "This project does not have a generator.",
+        status: 404,
       };
       return;
     }
@@ -52,8 +69,8 @@ const httpTrigger: AzureFunction = async (
 
       if (!scriptInputsDb) {
         context.res = {
-          status: 404,
           body: "This token may not be minted yet.",
+          status: 404,
         };
         return;
       }
@@ -63,8 +80,8 @@ const httpTrigger: AzureFunction = async (
 
     if (!scriptInputsJson) {
       context.res = {
-        status: 400,
         body: "Something went wrong, ngmi.",
+        status: 400,
       };
       return;
     }
@@ -80,7 +97,7 @@ const httpTrigger: AzureFunction = async (
     };
 
     // adds mobile controls script if query param ?mobile=true
-    if (req.query?.mobile && req.query.mobile === "true")
+    if (req.query.mobile && req.query.mobile === "true")
       genOptions.mobile = true;
 
     const generatorHtml = getHtml(
@@ -91,18 +108,18 @@ const httpTrigger: AzureFunction = async (
     );
 
     context.res = {
-      status: 200,
       body: generatorHtml,
       headers: {
         "Content-Type": "text/html",
       },
+      status: 200,
     };
   } catch (error) {
     context.log.error(error);
     if (process.env.NODE_ENV === "test") console.error(error);
     context.res = {
-      status: 500,
       body: "Something went wrong, ngmi.",
+      status: 500,
     };
   } finally {
     if (conn) await conn.close();

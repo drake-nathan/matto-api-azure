@@ -2,6 +2,7 @@ import { isAddress } from "viem";
 
 import type { IToken } from "../../../db/schemas/schemaTypes";
 import type { ProcessEventFunction } from "../../../helpers/tokenHelpers/types";
+
 import { getUpdatedTokenValues } from "./getUpdatedTokenValues";
 
 export const processHaikuEvent: ProcessEventFunction = async (
@@ -14,10 +15,10 @@ export const processHaikuEvent: ProcessEventFunction = async (
 ) => {
   const {
     _id: project_id,
-    project_slug,
-    project_name,
     chain,
     contract_address: contractAddress,
+    project_name,
+    project_slug,
   } = project;
 
   context.log.info(
@@ -32,14 +33,14 @@ export const processHaikuEvent: ProcessEventFunction = async (
   }
 
   const {
+    additionalDescription,
+    aspectRatio,
     attributes,
     description,
     imageMid,
     imageSmall,
-    tokenData,
-    aspectRatio,
     poem,
-    additionalDescription,
+    tokenData,
   } = await getUpdatedTokenValues({
     chain,
     contractAddress,
@@ -53,29 +54,29 @@ export const processHaikuEvent: ProcessEventFunction = async (
   const query = Token.findOneAndUpdate(
     { project_id, token_id },
     {
-      name: tokenData.name,
-      artist: tokenData.artist,
-      description,
       additional_info: {
-        poem,
         additional_description: additionalDescription,
+        poem,
       },
-      collection_name: tokenData.collection,
-      width_ratio: tokenData.width_ratio,
-      height_ratio: tokenData.height_ratio,
+      artist: tokenData.artist,
       aspect_ratio: aspectRatio,
+      attributes,
+      collection_name: tokenData.collection,
+      description,
+      external_url: tokenData.external_url,
+      height_ratio: tokenData.height_ratio,
       image: tokenData.image,
       image_mid: imageMid,
       image_small: imageSmall,
-      external_url: tokenData.external_url,
-      website: tokenData.website,
       license: tokenData.license,
+      name: tokenData.name,
       royalty_info: {
         royalty_address: tokenData.royalty_address,
         royalty_bps: tokenData.royalty_bps,
       },
-      attributes,
       token_data_frozen: tokenData.token_data_frozen ?? false,
+      website: tokenData.website,
+      width_ratio: tokenData.width_ratio,
     },
     { new: true },
   );

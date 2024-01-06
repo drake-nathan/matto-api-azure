@@ -13,20 +13,20 @@ const getScriptTag = (script: string) => `<script src="${script}"></script>`;
 export const getHtml = (
   projectName: string,
   genScripts: GenScripts,
-  scriptInputs: string | null,
+  scriptInputs: null | string,
   options: { mobile: boolean; scriptType: ScriptType },
 ): string => {
   const {
+    alt: altScript,
     main: mainScript,
     mobileControls,
-    alt: altScript,
     painting: paintingScript,
     preMainScript,
   } = genScripts;
 
   const scripts = {
-    [ScriptType.main]: mainScript,
     [ScriptType.alt]: altScript,
+    [ScriptType.main]: mainScript,
     [ScriptType.painting]: paintingScript,
   };
 
@@ -37,7 +37,7 @@ export const getHtml = (
         : ""
     }
     ${preMainScript ? getScriptTag(preMainScript) : ""}
-    ${getScriptTag(scripts[options.scriptType] || mainScript!)}
+    ${getScriptTag(scripts[options.scriptType] ?? mainScript ?? "")}
     ${
       options.mobile && mobileControls && options.scriptType !== ScriptType.alt
         ? getScriptTag(mobileControls)
@@ -98,20 +98,20 @@ export const getScriptType = (
   if (!genScripts.alt && !genScripts.painting) return ScriptType.main;
 
   if (
-    (req.query?.alt === "false" || req.query?.esoterra === "false") &&
-    req.query?.painting === "false"
+    (req.query.alt === "false" || req.query.esoterra === "false") &&
+    req.query.painting === "false"
   ) {
     return ScriptType.main;
   }
 
   if (
-    (req.query?.alt && req.query.alt === "true") ||
-    (req.query?.esoterra && req.query.esoterra === "true")
+    (req.query.alt && req.query.alt === "true") ||
+    (req.query.esoterra && req.query.esoterra === "true")
   ) {
     return ScriptType.alt;
   }
 
-  if (req.query?.painting && req.query.painting === "true")
+  if (req.query.painting && req.query.painting === "true")
     return ScriptType.painting;
 
   if (projectSlug === "chainlife" || projectSlug === "chainlife-testnet") {

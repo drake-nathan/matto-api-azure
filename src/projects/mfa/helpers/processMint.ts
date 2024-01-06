@@ -1,18 +1,17 @@
 import type { Context } from "@azure/functions";
-import * as dotenv from "dotenv";
 import type { Connection } from "mongoose";
-import { getContract } from "viem";
+
+import * as dotenv from "dotenv";
+
+import type { ProjectSlug } from "../..";
+import type { IProject, IToken } from "../../../db/schemas/schemaTypes";
+import type { ProcessMintFunction } from "../../../helpers/tokenHelpers/types";
 
 import {
   getProjectCurrentSupply,
   updateProjectSupplyAndCount,
 } from "../../../db/queries/projectQueries";
 import { addToken } from "../../../db/queries/tokenQueries";
-import type { IProject, IToken } from "../../../db/schemas/schemaTypes";
-import type { ProcessMintFunction } from "../../../helpers/tokenHelpers/types";
-import { getViem } from "../../../web3/providers";
-import { ProjectSlug } from "../..";
-import { mfaAbi } from "../abi";
 
 dotenv.config();
 const rootServerUrl = process.env.ROOT_URL;
@@ -25,7 +24,7 @@ const getUrls = (
   const generator_url = `${rootServerUrl}/project/${project_slug}/generator/${token_id}`;
   const external_url = `${rootExternalUrl}/token/${token_id}`;
   const image = `test.png`;
-  return { generator_url, external_url, image };
+  return { external_url, generator_url, image };
 };
 
 export const processMfaMint: ProcessMintFunction = async (
@@ -36,21 +35,19 @@ export const processMfaMint: ProcessMintFunction = async (
 ) => {
   const {
     _id: project_id,
-    project_name,
-    project_slug,
     artist,
     artist_address,
-    chain,
-    contract_address: contractAddress,
-    collection_name,
-    script_type,
     aspect_ratio,
-    website,
+    collection_name,
+    description,
     external_url: projectExternalUrl,
     license,
+    project_name,
+    project_slug,
     royalty_info,
+    script_type,
     tx_count,
-    description,
+    website,
   } = project;
 
   context.log.info("Adding token", token_id, "to", project_name);
@@ -65,32 +62,32 @@ export const processMfaMint: ProcessMintFunction = async (
 
   // const tokenData = contract.tokenDataOf([BigInt(token_id)]);
 
-  const { generator_url, external_url, image } = getUrls(
+  const { external_url, generator_url, image } = getUrls(
     project_slug,
     token_id,
     projectExternalUrl,
   );
 
   const newToken: IToken = {
-    token_id,
+    animation_url: generator_url,
+    artist,
+    artist_address,
+    aspect_ratio,
+    attributes: [{ trait_type: "Minted", value: "true" }],
+    collection_name,
+    description: description ?? "",
+    external_url,
+    generator_url,
+    image,
+    license,
     name: `${project.project_name} ${token_id}`,
     project_id,
     project_name,
     project_slug,
-    artist,
-    artist_address,
-    description: description ?? "",
-    collection_name,
-    aspect_ratio,
-    script_type,
-    image,
-    generator_url,
-    animation_url: generator_url,
-    external_url,
-    website,
-    license,
     royalty_info,
-    attributes: [{ trait_type: "Minted", value: "true" }],
+    script_type,
+    token_id,
+    website,
   };
 
   const { token_id: newTokenId } = await addToken(newToken, conn);
@@ -103,5 +100,5 @@ export const processMfaMint: ProcessMintFunction = async (
     conn,
   );
 
-  return { newTokenId, newSupply };
+  return { newSupply, newTokenId };
 };

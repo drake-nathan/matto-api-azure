@@ -1,18 +1,20 @@
 import type { Context } from "@azure/functions";
 import type { Connection } from "mongoose";
+
 import { getContract as getContractViem } from "viem";
+
+import type { IProject, IToken } from "../../../db/schemas/schemaTypes";
+import type { ProcessEventReturn, ProcessMintFunction } from "../types";
 
 import {
   getProjectCurrentSupply,
   updateProjectSupplyAndCount,
 } from "../../../db/queries/projectQueries";
 import { addToken, getTokenDoc } from "../../../db/queries/tokenQueries";
-import type { IProject, IToken } from "../../../db/schemas/schemaTypes";
 import { blonksAbi } from "../../../projects/abis/blonksAbi";
 import { svgToPngAndUpload } from "../../../services/images";
 import { getViem } from "../../../web3/providers";
 import { allBLONKStraits } from "../../constants";
-import type { ProcessEventReturn, ProcessMintFunction } from "../types";
 
 export const processBlonksMint: ProcessMintFunction = async (
   token_id,
@@ -22,50 +24,50 @@ export const processBlonksMint: ProcessMintFunction = async (
 ) => {
   const {
     _id: project_id,
-    project_name,
-    project_slug,
     artist,
     artist_address,
-    description,
-    collection_name,
-    script_type,
     aspect_ratio,
-    website,
+    chain,
+    collection_name,
+    contract_address,
+    description,
     external_url,
     license,
+    project_name,
+    project_slug,
     royalty_info,
+    script_type,
     tx_count,
-    contract_address,
-    chain,
+    website,
   } = project;
 
   context.log.info("Adding token", token_id, "to", project_name);
 
   const newToken: IToken = {
-    token_id,
+    artist,
+    artist_address,
+    aspect_ratio,
+    attributes: allBLONKStraits[token_id],
+    collection_name,
+    description: description || "",
+    external_url,
+    image: "",
+    license,
     name: `BLONK #${token_id}`,
     project_id,
     project_name,
     project_slug,
-    artist,
-    artist_address,
-    collection_name,
-    description: description || "",
-    script_type,
-    image: "",
-    aspect_ratio,
-    website,
-    external_url,
-    license,
     royalty_info,
-    attributes: allBLONKStraits[token_id],
+    script_type,
+    token_id,
+    website,
   };
 
   const viemClient = getViem(chain);
 
   const contractUsingViem = getContractViem({
-    address: contract_address as `0x${string}`,
     abi: blonksAbi,
+    address: contract_address as `0x${string}`,
     publicClient: viemClient,
   });
 
@@ -110,7 +112,7 @@ export const processBlonksMint: ProcessMintFunction = async (
     conn,
   );
 
-  return { newTokenId, newSupply };
+  return { newSupply, newTokenId };
 };
 
 export const processBlonksEvent = async (
@@ -121,10 +123,10 @@ export const processBlonksEvent = async (
 ): ProcessEventReturn => {
   const {
     _id: project_id,
-    project_name,
-    project_slug,
     chain,
     contract_address,
+    project_name,
+    project_slug,
   } = project;
 
   if (!token_id) {
@@ -140,8 +142,8 @@ export const processBlonksEvent = async (
   const viemClient = getViem(chain);
 
   const contractUsingViem = getContractViem({
-    address: contract_address as `0x${string}`,
     abi: blonksAbi,
+    address: contract_address as `0x${string}`,
     publicClient: viemClient,
   });
 
@@ -154,9 +156,13 @@ export const processBlonksEvent = async (
     );
   }
 
+  if (!token.svg) {
+    throw new Error(`No svg for ${project_name} ${token_id}`);
+  }
+
   try {
     const pngs = await svgToPngAndUpload(
-      token.svg!,
+      token.svg,
       project_id,
       project_slug,
       token_id,

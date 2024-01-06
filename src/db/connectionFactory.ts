@@ -1,6 +1,7 @@
 import type { Context } from "@azure/functions";
+
 import * as dotenv from "dotenv";
-import { createConnection, Schema } from "mongoose";
+import { Schema, createConnection } from "mongoose";
 
 import { levelSnapshotSchema } from "./schemas/levelSnapshot";
 import { projectSchema } from "./schemas/project";

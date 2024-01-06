@@ -1,17 +1,17 @@
 import axios from "axios";
 import { configDotenv } from "dotenv";
 
-import { ProjectSlug } from "../projects";
+import type { ProjectSlug } from "../projects";
 
 configDotenv();
 
-const rootUrl = process.env.ROOT_URL;
+const compositeUpdateUrl = process.env.COMPOSITE_UPDATE_URL;
 
-if (!rootUrl) {
-  throw new Error("ROOT_URL not set");
+if (!compositeUpdateUrl) {
+  throw new Error("COMPOSITE_UPDATE_URL not set");
 }
 
-export const fetchCompositeUpdate = ({
+export const fetchCompositeUpdate = async ({
   force = false,
   projectSlug,
 }: {
@@ -20,12 +20,10 @@ export const fetchCompositeUpdate = ({
 }) => {
   // we are not return anything here, or awaiting the response
   // this simply triggers the function to run
-  const url = "https://composite.substratum.art";
-
   const params = {
     force,
     projectSlug,
   };
 
-  axios.get(url, { params });
+  await axios.get(compositeUpdateUrl, { params });
 };

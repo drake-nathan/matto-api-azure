@@ -1,4 +1,4 @@
-import { Context } from "@azure/functions";
+import type { Context } from "@azure/functions";
 
 import httpTrigger from "./index";
 
@@ -7,8 +7,8 @@ describe("GetThumbnail", () => {
 
   beforeEach(() => {
     context = {
-      log: { error: jest.fn() },
       bindingData: { artblocks_id: 34000420 },
+      log: { error: jest.fn() },
     } as unknown as Context;
   });
 
@@ -17,16 +17,16 @@ describe("GetThumbnail", () => {
 
     await httpTrigger(context);
 
-    expect(context.log.error).toBeCalledTimes(0);
-    expect(context?.res?.status).toEqual(404);
-    expect(context?.res?.body).toEqual("Thumbnail not found");
+    expect(context.log.error).toHaveBeenCalledTimes(0);
+    expect(context.res?.status).toEqual(404);
+    expect(context.res?.body).toEqual("Thumbnail not found");
   });
 
   it("should return a 200 with a real artblocks id", async () => {
     await httpTrigger(context);
 
-    expect(context.log.error).toBeCalledTimes(0);
-    expect(context?.res?.status).toEqual(200);
-    expect(typeof context?.res?.body).toBe("object");
+    expect(context.log.error).toHaveBeenCalledTimes(0);
+    expect(context.res?.status).toEqual(200);
+    expect(typeof context.res?.body).toBe("object");
   });
 });

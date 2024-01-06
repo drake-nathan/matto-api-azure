@@ -2,8 +2,6 @@ import axios from "axios";
 
 export const fetchFocusSupply = async () => {
   const response = await axios({
-    url: "https://api.thegraph.com/subgraphs/name/artblocks/art-blocks",
-    method: "post",
     data: {
       query: `
         {
@@ -19,6 +17,8 @@ export const fetchFocusSupply = async () => {
         }
         `,
     },
+    method: "post",
+    url: "https://api.thegraph.com/subgraphs/name/artblocks/art-blocks",
   });
 
   return response.data.data.project.tokens.length;

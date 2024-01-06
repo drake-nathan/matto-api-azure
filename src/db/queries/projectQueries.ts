@@ -1,6 +1,6 @@
-import { Connection } from "mongoose";
+import type { Connection } from "mongoose";
 
-import { ProjectSlug } from "../../projects";
+import type { ProjectSlug } from "../../projects";
 import type { IProject } from "../schemas/schemaTypes";
 
 export const addProject = async (projectToAdd: IProject, conn: Connection) => {
@@ -21,15 +21,17 @@ export const getProject = (project_slug: ProjectSlug, conn: Connection) => {
 
   const query = Project.findOne({ project_slug });
 
-  query.select("-__v -gen_scripts._id -dev_params -royalty_info._id");
-
-  return query.lean().exec();
+  return query
+    .select("-__v -gen_scripts._id -dev_params -royalty_info._id")
+    .lean()
+    .exec();
 };
 
-export const getAllProjects = async (conn: Connection) => {
+export const getAllProjects = (conn: Connection) => {
   const Project = conn.model<IProject>("Project");
 
-  const query = await Project.find();
+  const query = Project.find();
+
   return query;
 };
 

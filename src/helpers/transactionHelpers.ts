@@ -1,12 +1,13 @@
-import { type Context } from "@azure/functions";
-import { type Connection } from "mongoose";
-import { type Contract } from "web3-eth-contract";
+import type { Context } from "@azure/functions";
+import type { Connection } from "mongoose";
+import type { Contract } from "web3-eth-contract";
+
+import type { IProject, ITransaction } from "../db/schemas/schemaTypes";
 
 import { getProjectCurrentSupply } from "../db/queries/projectQueries";
 import { checkIfTokenExists } from "../db/queries/tokenQueries";
 import { addTransaction } from "../db/queries/transactionQueries";
-import type { IProject, ITransaction } from "../db/schemas/schemaTypes";
-import { abis, ProjectSlug } from "../projects";
+import { ProjectSlug, abis } from "../projects";
 import { getContractWeb3 } from "../web3/contractWeb3";
 import { getWeb3 } from "../web3/providers";
 import { fetchEvents, fetchScriptInputs } from "../web3/web3Fetches";
@@ -16,10 +17,10 @@ import {
 } from "./tokenHelpers";
 
 export interface ILogValues {
-  project_name: string;
-  numOfTxsAdded: number;
-  newTokens: number[];
   currentSupply: number;
+  newTokens: number[];
+  numOfTxsAdded: number;
+  project_name: string;
 }
 
 export const processNewTransactions = async (
@@ -30,9 +31,9 @@ export const processNewTransactions = async (
   conn: Connection,
 ) => {
   const {
-    project_slug,
     devParams: { isBulkMint, usesScriptInputs },
     events,
+    project_slug,
   } = project;
   const newTokenIds: number[] = [];
 
@@ -109,21 +110,21 @@ export const checkForNewTransactions = async (
 ) => {
   const {
     _id: project_id,
-    contract_address,
     chain,
+    contract_address,
+    creation_block,
     events,
     project_name,
-    creation_block,
   } = project;
   context.log(`Checking for new transactions for ${project_name}...`);
   const web3 = getWeb3(chain);
   const contract = getContractWeb3(web3, abis[project_id], contract_address);
 
   const logValues: ILogValues = {
-    project_name,
-    numOfTxsAdded: 0,
-    newTokens: [],
     currentSupply: 0,
+    newTokens: [],
+    numOfTxsAdded: 0,
+    project_name,
   };
 
   if (!conn) {

@@ -2,6 +2,8 @@ import type { Context } from "@azure/functions";
 import type { Connection } from "mongoose";
 import type { Contract, EventData } from "web3-eth-contract";
 
+import type { IProject } from "../../db/schemas/schemaTypes";
+
 import {
   addProject,
   checkIfNewProjects,
@@ -22,8 +24,7 @@ import {
   getTransactionsByEvent,
   getTxCounts,
 } from "../../db/queries/transactionQueries";
-import type { IProject } from "../../db/schemas/schemaTypes";
-import { abis, ProjectId, ProjectSlug } from "../../projects";
+import { ProjectId, ProjectSlug, abis } from "../../projects";
 import { getContractWeb3 } from "../../web3/contractWeb3";
 import { getWeb3 } from "../../web3/providers";
 import { fetchEvents, fetchScriptInputs } from "../../web3/web3Fetches";
@@ -54,9 +55,9 @@ const processNewProjects = async (projects: IProject[], conn: Connection) => {
       return addProject(
         {
           ...project,
-          tx_count: total,
-          current_supply: tokens.length,
           creation_block,
+          current_supply: tokens.length,
+          tx_count: total,
         },
         conn,
       );
@@ -68,7 +69,7 @@ const processNewProjects = async (projects: IProject[], conn: Connection) => {
     (project) => project?.project_name,
   );
 
-  return { projectsAdded, namesOfProjectsAdded };
+  return { namesOfProjectsAdded, projectsAdded };
 };
 
 export const checkForNewProjects = async (
@@ -96,7 +97,7 @@ const checkForMissingAttributes = async (
 ) => {
   const { project_name, project_slug } = project;
 
-  const { tokensMissingAttributes, numOfBadTokens } =
+  const { numOfBadTokens, tokensMissingAttributes } =
     await checkIfTokensMissingAttributes(project_slug, conn);
 
   if (!numOfBadTokens) {
@@ -131,7 +132,7 @@ const reconcileTransactions = async (
   project: IProject,
   contract: Contract,
 ) => {
-  const { _id: project_id, events, creation_block, chain } = project;
+  const { _id: project_id, chain, creation_block, events } = project;
 
   const { filteredTransactions: allTransactions, totalTxCount } =
     await fetchEvents(contract, events, project_id, conn, creation_block, true);
@@ -231,11 +232,11 @@ const reconcileBulkMint = async (
 ) => {
   const {
     _id: projectId,
+    devParams: { usesScriptInputs },
+    maximum_supply: maxSupply,
     project_name: projectName,
     project_slug,
-    maximum_supply: maxSupply,
     starting_index: startingIndex,
-    devParams: { usesScriptInputs },
   } = project;
 
   if (totalTokensInDb === maxSupply) {
@@ -298,10 +299,10 @@ const reconcileDescriptions = async (
   projectLocal: IProject,
 ) => {
   const {
-    project_slug,
+    appended_description: appendedDescLocal,
     collection_description: collDescLocal,
     description: tokenDescLocal,
-    appended_description: appendedDescLocal,
+    project_slug,
   } = projectLocal;
 
   const projectDb = await getProject(project_slug, conn);
@@ -312,9 +313,9 @@ const reconcileDescriptions = async (
   }
 
   const {
+    appended_description: appendedDescDb,
     collection_description: collDescDb,
     description: tokenDescDb,
-    appended_description: appendedDescDb,
   } = projectDb;
 
   // if needed, update collection description on project in db
@@ -398,11 +399,11 @@ export const reconcileProject = async (
 ) => {
   const {
     _id: project_id,
-    project_name,
     chain,
     contract_address,
-    events,
     devParams: { isBulkMint, usesPuppeteer },
+    events,
+    project_name,
   } = project;
 
   context.log.info(`Reconciling ${project_name} database to blockchain.`);

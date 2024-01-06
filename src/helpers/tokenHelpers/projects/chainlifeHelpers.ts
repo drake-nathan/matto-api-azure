@@ -1,6 +1,15 @@
-import { type Context } from "@azure/functions";
+import type { Context } from "@azure/functions";
+import type { Connection } from "mongoose";
+
 import * as dotenv from "dotenv";
-import { type Connection } from "mongoose";
+
+import type {
+  IProject,
+  IScriptInputs,
+  IToken,
+} from "../../../db/schemas/schemaTypes";
+import type { ProjectSlug } from "../../../projects";
+import type { ProcessEventFunction, ProcessMintReturn } from "../types";
 
 import {
   getProjectCurrentSupply,
@@ -11,14 +20,7 @@ import {
   getAllTokensFromProject,
   updateTokenMetadataOnTransfer,
 } from "../../../db/queries/tokenQueries";
-import type {
-  IProject,
-  IScriptInputs,
-  IToken,
-} from "../../../db/schemas/schemaTypes";
-import { ProjectSlug } from "../../../projects";
 import { getPuppeteerImageSet } from "../../../services/puppeteer";
-import type { ProcessEventFunction, ProcessMintReturn } from "../types";
 
 dotenv.config();
 const rootServerUrl = process.env.ROOT_URL;
@@ -31,7 +33,7 @@ const getUrls = (
   const generator_url = `${rootServerUrl}/project/${project_slug}/generator/${token_id}`;
   const external_url = `${rootExternalUrl}/token/${token_id}`;
 
-  return { generator_url, external_url };
+  return { external_url, generator_url };
 };
 
 export const processChainlifeMint = async (
@@ -43,19 +45,19 @@ export const processChainlifeMint = async (
 ): ProcessMintReturn => {
   const {
     _id: project_id,
-    project_name,
-    project_slug,
     artist,
     artist_address,
-    description,
-    collection_name,
-    script_type,
     aspect_ratio,
-    website,
+    collection_name,
+    description,
     external_url: projectExternalUrl,
     license,
+    project_name,
+    project_slug,
     royalty_info,
+    script_type,
     tx_count,
+    website,
   } = project;
 
   context.log.info("Adding token", token_id, "to", project_name);
@@ -64,7 +66,7 @@ export const processChainlifeMint = async (
     throw new Error(`No script inputs for ${project_name} token ${token_id}`);
   }
 
-  const { generator_url, external_url } = getUrls(
+  const { external_url, generator_url } = getUrls(
     project_slug,
     token_id,
     projectExternalUrl,
@@ -75,7 +77,7 @@ export const processChainlifeMint = async (
     ? `${generator_url}?esoterra=true`
     : generator_url;
 
-  const { image, image_mid, image_small, attributes } =
+  const { attributes, image, image_mid, image_small } =
     await getPuppeteerImageSet(
       project_id,
       project_slug,
@@ -85,28 +87,28 @@ export const processChainlifeMint = async (
     );
 
   const newToken: IToken = {
-    token_id,
+    animation_url: generator_url,
+    artist,
+    artist_address,
+    aspect_ratio,
+    attributes,
+    collection_name,
+    description: description || "",
+    external_url,
+    generator_url,
+    image,
+    image_mid,
+    image_small,
+    license,
     name: `${project_name} ${token_id}`,
     project_id,
     project_name,
     project_slug,
-    artist,
-    artist_address,
-    description: description || "",
-    collection_name,
-    aspect_ratio,
-    script_type,
-    script_inputs,
-    image,
-    image_mid,
-    image_small,
-    generator_url,
-    animation_url: generator_url,
-    external_url,
-    website,
-    license,
     royalty_info,
-    attributes,
+    script_inputs,
+    script_type,
+    token_id,
+    website,
   };
 
   const { token_id: newTokenId } = await addToken(newToken, conn);
@@ -119,7 +121,7 @@ export const processChainlifeMint = async (
     conn,
   );
 
-  return { newTokenId, newSupply };
+  return { newSupply, newTokenId };
 };
 
 export const processChainlifeEvent: ProcessEventFunction = async (
@@ -129,7 +131,7 @@ export const processChainlifeEvent: ProcessEventFunction = async (
   conn,
   script_inputs,
 ) => {
-  const { _id: project_id, project_name, project_slug, external_url } = project;
+  const { _id: project_id, external_url, project_name, project_slug } = project;
 
   context.log.info("Updating token", token_id, "on", project.project_name);
 
@@ -148,7 +150,7 @@ export const processChainlifeEvent: ProcessEventFunction = async (
     ? `${generator_url}?esoterra=true`
     : generator_url;
 
-  const { image, image_mid, image_small, attributes } =
+  const { attributes, image, image_mid, image_small } =
     await getPuppeteerImageSet(
       project_id,
       project_slug,
@@ -178,11 +180,11 @@ export const checkIfTokensMissingAttributes = async (
   const allTokens = await getAllTokensFromProject(project_slug, conn);
 
   const tokensMissingAttributes = allTokens.filter(
-    (token) => !token.attributes,
+    (token) => !token.attributes.length,
   );
   const numOfBadTokens = tokensMissingAttributes.length;
 
-  return { tokensMissingAttributes, numOfBadTokens };
+  return { numOfBadTokens, tokensMissingAttributes };
 };
 
 export const repairBadTokens = async (
@@ -191,16 +193,17 @@ export const repairBadTokens = async (
   context: Context,
   conn: Connection,
 ) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const updatedTokens: any[] = [];
 
   for await (const token of bumTokens) {
-    const { token_id, script_inputs } = token;
+    const { script_inputs, token_id } = token;
     const updatedToken = await processChainlifeEvent(
       token_id,
       project,
       context,
       conn,
-      script_inputs!,
+      script_inputs,
     );
 
     if (!updatedToken) {

@@ -1,36 +1,42 @@
 {
-  "extends": ["airbnb-base", "airbnb-typescript/base", "prettier"],
-  "plugins": ["simple-import-sort"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/strict-type-checked",
+    "plugin:perfectionist/recommended-natural",
+    "prettier"
+  ],
+  "overrides": [
+    {
+      "extends": ["plugin:jest/recommended"],
+      "files": ["**/*.{spec,test}.{js,ts}"],
+      "plugins": ["jest"],
+      "rules": {
+        "@typescript-eslint/unbound-method": "off"
+      }
+    }
+  ],
   "parserOptions": {
     "project": "./tsconfig.json"
   },
+  "plugins": ["@typescript-eslint", "perfectionist"],
   "rules": {
-    "@typescript-eslint/no-unused-vars": "warn",
+    "@typescript-eslint/consistent-type-exports": "error",
+    "@typescript-eslint/consistent-type-imports": "error",
     "@typescript-eslint/naming-convention": [
       "error",
       {
-        "selector": "variable",
         "format": ["camelCase", "UPPER_CASE", "PascalCase", "snake_case"],
-        "leadingUnderscore": "allow"
+        "leadingUnderscore": "allow",
+        "selector": "variable"
       }
     ],
-    "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
-    "no-unused-vars": "off",
-    "import/prefer-default-export": "off",
-    "radix": "off",
-    "no-console": ["warn", { "allow": ["error"] }],
-    "no-debugger": "warn",
-    "no-continue": "off",
-    "implicit-arrow-linebreak": "off",
-    "function-paren-newline": "off",
-    "no-underscore-dangle": "off",
-    "consistent-return": "off",
-    "no-return-assign": "off",
-    "object-curly-newline": "off",
-    "no-restricted-syntax": "off",
-    "no-promise-executor-return": "off",
-    "simple-import-sort/imports": "error",
-    "simple-import-sort/exports": "error"
+    "@typescript-eslint/no-import-type-side-effects": "error",
+    "@typescript-eslint/no-unsafe-argument": "off",
+    "@typescript-eslint/no-unsafe-assignment": "off",
+    "@typescript-eslint/no-unsafe-member-access": "off",
+    "@typescript-eslint/no-unsafe-return": "off",
+    "@typescript-eslint/no-unused-vars": "warn",
+    "no-console": ["warn", { "allow": ["error"] }]
   },
   "settings": {
     "import/resolver": {

@@ -1,7 +1,7 @@
 import { BlobServiceClient } from "@azure/storage-blob";
 import * as dotenv from "dotenv";
 
-import { ProjectSlug } from "../projects";
+import type { ProjectSlug } from "../projects";
 
 dotenv.config();
 
@@ -14,9 +14,9 @@ if (!azureStorageConnectionString) {
 
 export enum BlobFolder {
   main = "images",
+  mathare = "mathare-images",
   mid = "images-mid",
   small = "thumbnails",
-  mathare = "mathare-images",
 }
 
 export const uploadImage = async (
@@ -34,8 +34,9 @@ export const uploadImage = async (
   const containerClient = blobServiceClient.getContainerClient(
     folderName || containerName,
   );
-  containerClient.createIfNotExists();
-  containerClient.setAccessPolicy("blob");
+
+  await containerClient.createIfNotExists();
+  await containerClient.setAccessPolicy("blob");
 
   const imageName = `${project_slug}_${token_id}.png`;
   const blockBlobClient = containerClient.getBlockBlobClient(imageName);

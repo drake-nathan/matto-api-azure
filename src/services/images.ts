@@ -1,7 +1,9 @@
 import axios from "axios";
 import sharp from "sharp";
 
-import { ProjectId, projectSizes, ProjectSlug } from "../projects";
+import type { ProjectId, ProjectSlug} from "../projects";
+
+import { projectSizes } from "../projects";
 import { deEscapeSvg } from "../utils/deEscapeSvg";
 import { BlobFolder, uploadImage } from "./azureStorage";
 
@@ -22,9 +24,13 @@ export const fetchResizeUploadImages = async (
 
     imageBuffer = data;
   } catch (error) {
-    throw new Error(
-      `Error fetching image for ${projectSlug} ${tokenId}: ${error}`,
-    );
+    if (error instanceof Error) {
+      throw new Error(
+        `Error fetching image for ${projectSlug} ${tokenId}: ${error.message}`,
+      );
+    } else {
+      throw new Error(`Error fetching image for ${projectSlug} ${tokenId}.`);
+    }
   }
 
   const midBuffer = await sharp(imageBuffer).resize(sizes.mid).toBuffer();

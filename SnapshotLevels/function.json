@@ -1,11 +1,11 @@
 {
   "bindings": [
     {
-      "name": "myTimer",
-      "type": "timerTrigger",
       "direction": "in",
+      "name": "myTimer",
+      "runOnStartup": false,
       "schedule": "0 0 * * * *",
-      "runOnStartup": false
+      "type": "timerTrigger"
     }
   ],
   "scriptFile": "../dist/SnapshotLevels/index.js"

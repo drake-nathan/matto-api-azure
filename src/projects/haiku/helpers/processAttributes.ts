@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import type { IAttribute } from "../../../db/schemas/schemaTypes";
+
 import { fetchAttributes } from "./fetchAttributes";
 
 export const processAttributes = async (

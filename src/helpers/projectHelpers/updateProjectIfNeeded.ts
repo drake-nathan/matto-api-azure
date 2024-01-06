@@ -1,6 +1,7 @@
 import type { Context } from "@azure/functions";
-import { isEqual } from "lodash";
 import type { Connection } from "mongoose";
+
+import { isEqual } from "lodash";
 
 import type { IProject } from "../../db/schemas/schemaTypes";
 

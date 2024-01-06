@@ -2,16 +2,16 @@
   "bindings": [
     {
       "authLevel": "anonymous",
-      "type": "httpTrigger",
       "direction": "in",
-      "name": "req",
       "methods": ["get"],
-      "route": "project"
+      "name": "req",
+      "route": "project",
+      "type": "httpTrigger"
     },
     {
-      "type": "http",
       "direction": "out",
-      "name": "res"
+      "name": "res",
+      "type": "http"
     }
   ],
   "scriptFile": "../dist/ProjectDefault/index.js"

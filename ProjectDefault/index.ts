@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
 import type { AzureFunction, Context } from "@azure/functions";
-import * as dotenv from "dotenv";
 import type { Connection } from "mongoose";
+
+import * as dotenv from "dotenv";
 
 import { connectionFactory } from "../src/db/connectionFactory";
 import { getAllProjects } from "../src/db/queries/projectQueries";
@@ -16,10 +18,10 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
 
     const projects = await getAllProjects(conn);
 
-    if (!projects) {
+    if (!projects.length) {
       context.res = {
-        status: 400,
         body: "No projects on this server.",
+        status: 400,
       };
       return;
     }
@@ -74,18 +76,18 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
   `;
 
     context.res = {
-      status: 200,
       body: html,
       headers: {
         "Content-Type": "text/html",
       },
+      status: 200,
     };
   } catch (error) {
     context.log.error(error);
     if (process.env.NODE_ENV === "test") console.error(error);
     context.res = {
-      status: 500,
       body: "Something went wrong, ngmi.",
+      status: 500,
     };
   } finally {
     if (conn) await conn.close();

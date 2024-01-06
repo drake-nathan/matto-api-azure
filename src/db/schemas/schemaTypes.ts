@@ -1,20 +1,20 @@
-import { type ObjectId } from "mongoose";
-import { type Viewport } from "puppeteer";
+import type { ObjectId } from "mongoose";
+import type { Viewport } from "puppeteer";
 
 import type { Chain, ProjectId, ProjectSlug } from "../../projects";
 
 export type IRoyaltyInfo = (
   | {
-      royalty_fee_by_id: number;
       artist_address: string;
-    }
-  | {
-      royalty_bps: number;
-      royalty_address: string;
+      royalty_fee_by_id: number;
     }
   | {
       charity_address: string;
       royalty_fee_by_id: number;
+    }
+  | {
+      royalty_address: string;
+      royalty_bps: number;
     }
 ) & {
   additional_payee?: string;
@@ -22,175 +22,176 @@ export type IRoyaltyInfo = (
 };
 
 export interface GenScripts {
-  main?: string;
   alt?: string;
-  world?: string;
-  painting?: string;
+  main?: string;
   mobileControls?: string;
+  painting?: string;
   preMainScript?: string;
+  world?: string;
 }
 
 export interface IDevParams {
+  isBulkMint: boolean;
   useInDev: boolean;
   useInProd: boolean;
-  isBulkMint: boolean;
   usesPuppeteer: boolean;
   usesScriptInputs: boolean;
-  usesTokenDataOf?: boolean;
   usesSvgs: boolean;
+  usesTokenDataOf?: boolean;
 }
 
 export interface IProject {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any; // for the mongo `updateProjectIfNeeded` function, not ideal
   _id: ProjectId;
-  project_name: string;
-  project_slug: ProjectSlug;
+  appended_description?: string;
   artist: string;
   artist_address: string;
-  royalty_info: IRoyaltyInfo;
-  description?: string;
-  appended_description?: string;
-  maximum_supply: number;
-  starting_index: number;
-  current_supply?: number;
-  tx_count: number;
-  collection_name: string;
-  collection_image?: string;
-  collection_description: string;
-  mintable: boolean;
-  script_type?: string;
   aspect_ratio: number;
-  website: string;
-  external_url: string;
-  license: string;
-  contract_address: string;
   chain: Chain;
-  events: string[];
+  collection_description: string;
+  collection_image?: string;
+  collection_name: string;
+  contract_address: string;
   creation_block: number;
-  gen_scripts?: GenScripts;
+  current_supply?: number;
+  description?: string;
   devParams: IDevParams;
-  [key: string]: any; // for the mongo `updateProjectIfNeeded` function, not ideal
+  events: string[];
+  external_url: string;
+  gen_scripts?: GenScripts;
+  license: string;
+  maximum_supply: number;
+  mintable: boolean;
+  project_name: string;
+  project_slug: ProjectSlug;
+  royalty_info: IRoyaltyInfo;
+  script_type?: string;
+  starting_index: number;
+  tx_count: number;
+  website: string;
 }
 
 export interface IAttribute {
   trait_type: string;
-  value: string | number;
+  value: number | string;
 }
 
 export interface IScriptInputs {
-  token_id?: number;
-  transfer_count?: number;
-  token_entropy?: string;
-  current_owner?: string;
-  previous_owner?: string;
-  custom_rule?: string;
-  custom_data?: string;
-  level_shift?: number;
-  imageURI_base?: string;
-  audioURI_base?: string;
-  media_URI?: string;
   approved_shuffler?: `0x${string}`;
+  audioURI_base?: string;
+  current_owner?: string;
+  custom_data?: string;
+  custom_rule?: string;
+  description?: string;
+  imageURI_base?: string;
+  level_shift?: number;
+  media_URI?: string;
+  previous_owner?: string;
   svg_part?: string;
   svg_parts?: string;
   title?: string;
-  description?: string;
+  token_entropy?: string;
+  token_id?: number;
+  transfer_count?: number;
 }
 
 export interface IToken {
   _id?: ObjectId; // made by db
-  token_id: number; // get from blockchain
+  additional_info?: {
+    additional_description?: string;
+    poem?: string;
+  };
+  animation_url?: string; // generation script
+  artist: string; // project
+  artist_address: string; // project
+  aspect_ratio: number; // project
+  attributes: IAttribute[]; // script
+  collection_name: string; // project
+  description: string; // project
+  external_url: string; // project
+  generator_alt?: string;
+  generator_mobile?: string;
+  generator_url?: string; // same as animation_url
+  height_ratio?: number; // project
+  image: string; // generation scripts
+  image_data?: string; // not used for Chainlife
+  image_mid?: string;
+  image_small?: string;
+  image_updated_at?: Date; // made by db
+  last_transfer_block?: number;
+  license: string; // project*
   name: string; // projectname + tokenId 'Chainlife 9'
   project_id: number; // project
   project_name: string; // project
   project_slug: ProjectSlug; // project
-  artist: string; // project
-  artist_address: string; // project
-  description: string; // project
-  collection_name: string; // project
-  width_ratio?: number; // project
-  height_ratio?: number; // project
-  aspect_ratio: number; // project
-  script_type?: string; // project
+  royalty_info: IRoyaltyInfo; // project
   script_inputs?: IScriptInputs;
-  image: string; // generation scripts
-  image_mid?: string;
-  image_small?: string;
-  image_updated_at?: Date; // made by db
-  thumbnail_url?: string;
+  script_type?: string; // project
   svg?: string;
   svgGen?: string;
-  image_data?: string; // not used for Chainlife
-  animation_url?: string; // generation script
-  generator_url?: string; // same as animation_url
-  generator_mobile?: string;
-  generator_alt?: string;
-  website: string; // project
-  external_url: string; // project
-  license: string; // project*
-  royalty_info: IRoyaltyInfo; // project
-  attributes: IAttribute[]; // script
-  transfer_count?: number;
-  last_transfer_block?: number;
+  thumbnail_url?: string;
   token_data_frozen?: boolean;
-  additional_info?: {
-    poem?: string;
-    additional_description?: string;
-  };
+  token_id: number; // get from blockchain
+  transfer_count?: number;
+  website: string; // project
+  width_ratio?: number; // project
 }
 
 export interface ITransaction {
   _id?: ObjectId;
-  project_id: ProjectId;
   block_number: number;
-  transaction_hash: string;
-  transaction_date: Date;
   event_type: string;
+  project_id: ProjectId;
   token_id?: number;
+  transaction_date: Date;
+  transaction_hash: string;
 }
 
 export interface IThumbnail {
   _id?: ObjectId;
-  project_slug: "focus" | "enso";
-  project_id: 34 | 181;
-  token_id: number;
   artblocks_id: string;
   image_full: string;
   image_thumbnail: string;
+  project_id: 34 | 181;
+  project_slug: "enso" | "focus";
+  token_id: number;
 }
 
 export interface ILevel {
+  level_shift: number;
   token_id: number;
   transfer_count: number | undefined;
-  level_shift: number;
 }
 
 export interface ILevelSnapshot {
   _id?: ObjectId;
-  snapshot_date: Date;
-  project_slug: ProjectSlug;
   levels: ILevel[];
+  project_slug: ProjectSlug;
+  snapshot_date: Date;
 }
 
 export interface TokenAbbr {
-  token_id: number;
-  name: string;
-  project_name: string;
-  project_slug: ProjectSlug;
   artist: string;
+  external_url: string;
+  generator_url: string;
   image: string;
   image_mid?: string;
   image_small?: string;
-  thumbnail_url: string;
-  generator_url: string;
-  svgGen?: string;
-  external_url: string;
+  name: string;
+  project_name: string;
+  project_slug: ProjectSlug;
   script_inputs?: IScriptInputs;
+  svgGen?: string;
+  thumbnail_url: string;
+  token_id: number;
   world_level?: number;
 }
 
 export interface CollectionResponse {
+  currentSupply: number;
   hasMore: boolean;
   skip: number;
-  currentSupply: number;
   tokens: TokenAbbr[];
 }
 

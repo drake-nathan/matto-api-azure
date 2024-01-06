@@ -1,4 +1,4 @@
-import { Context } from "@azure/functions";
+import type { Context } from "@azure/functions";
 
 import httpTrigger from "./index";
 
@@ -14,8 +14,8 @@ describe("Random Chainlife", () => {
   it("should return a 200", async () => {
     await httpTrigger(context);
 
-    expect(context?.res?.status).toEqual(200);
-    expect(context.log.error).toBeCalledTimes(0);
-    expect(typeof context?.res?.body).toBe("string");
+    expect(context.res?.status).toEqual(200);
+    expect(context.log.error).toHaveBeenCalledTimes(0);
+    expect(typeof context.res?.body).toBe("string");
   });
 });

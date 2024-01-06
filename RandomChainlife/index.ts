@@ -1,6 +1,6 @@
-import { AzureFunction, Context } from "@azure/functions";
+import type { AzureFunction, Context } from "@azure/functions";
 
-const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
+const httpTrigger: AzureFunction = (context: Context) => {
   try {
     const generatorHtml = `
       <!DOCTYPE html>
@@ -37,18 +37,18 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
   `;
 
     context.res = {
-      status: 200,
       body: generatorHtml,
       headers: {
         "Content-Type": "text/html",
       },
+      status: 200,
     };
   } catch (error) {
     context.log.error(error);
     if (process.env.NODE_ENV === "test") console.error(error);
     context.res = {
-      status: 500,
       body: "Something went wrong, ngmi.",
+      status: 500,
     };
   }
 };

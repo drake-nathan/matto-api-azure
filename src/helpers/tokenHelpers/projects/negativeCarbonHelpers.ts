@@ -1,20 +1,22 @@
 import type { Context } from "@azure/functions";
-import * as dotenv from "dotenv";
 import type { Connection } from "mongoose";
+
+import * as dotenv from "dotenv";
+
+import type {
+  IProject,
+  IScriptInputs,
+  IToken,
+} from "../../../db/schemas/schemaTypes";
+import type { ProjectSlug } from "../../../projects";
+import type { ProcessEventFunction, ProcessMintReturn } from "../types";
 
 import {
   getProjectCurrentSupply,
   updateProjectSupplyAndCount,
 } from "../../../db/queries/projectQueries";
 import { addToken, updateScriptInputs } from "../../../db/queries/tokenQueries";
-import type {
-  IProject,
-  IScriptInputs,
-  IToken,
-} from "../../../db/schemas/schemaTypes";
-import { ProjectSlug } from "../../../projects";
 import { getPuppeteerImageSet } from "../../../services/puppeteer";
-import type { ProcessEventFunction, ProcessMintReturn } from "../types";
 
 dotenv.config();
 const rootServerUrl = process.env.ROOT_URL;
@@ -27,7 +29,7 @@ const getNegativeCarbonUrls = (
   const generator_url = `${rootServerUrl}/project/${project_slug}/generator/${token_id}`;
   const external_url = `${rootExternalUrl}/token/${token_id}`;
 
-  return { generator_url, external_url };
+  return { external_url, generator_url };
 };
 
 export const processNegativeCarbonMint = async (
@@ -39,19 +41,19 @@ export const processNegativeCarbonMint = async (
 ): ProcessMintReturn => {
   const {
     _id: project_id,
-    project_name,
-    project_slug,
     artist,
     artist_address,
+    aspect_ratio,
     collection_description,
     collection_name,
-    script_type,
-    aspect_ratio,
-    website,
     external_url: projectExternalUrl,
     license,
+    project_name,
+    project_slug,
     royalty_info,
+    script_type,
     tx_count,
+    website,
   } = project;
 
   context.log.info("Adding token", token_id, "to", project.project_name);
@@ -60,13 +62,13 @@ export const processNegativeCarbonMint = async (
     throw new Error(`No script inputs for ${project_name} token ${token_id}`);
   }
 
-  const { generator_url, external_url } = getNegativeCarbonUrls(
+  const { external_url, generator_url } = getNegativeCarbonUrls(
     project_slug,
     token_id,
     projectExternalUrl,
   );
 
-  const { image, image_mid, image_small, attributes } =
+  const { attributes, image, image_mid, image_small } =
     await getPuppeteerImageSet(
       project_id,
       project_slug,
@@ -76,28 +78,28 @@ export const processNegativeCarbonMint = async (
     );
 
   const newToken: IToken = {
-    token_id,
+    animation_url: generator_url,
+    artist,
+    artist_address,
+    aspect_ratio,
+    attributes,
+    collection_name,
+    description: collection_description,
+    external_url,
+    generator_url,
+    image,
+    image_mid,
+    image_small,
+    license,
     name: `${project_name} ${token_id}`,
     project_id,
     project_name,
     project_slug,
-    artist,
-    artist_address,
-    description: collection_description,
-    collection_name,
-    aspect_ratio,
-    script_type,
-    script_inputs,
-    image,
-    image_mid,
-    image_small,
-    generator_url,
-    animation_url: generator_url,
-    external_url,
-    website,
-    license,
     royalty_info,
-    attributes,
+    script_inputs,
+    script_type,
+    token_id,
+    website,
   };
 
   const { token_id: newTokenId } = await addToken(newToken, conn);
@@ -110,7 +112,7 @@ export const processNegativeCarbonMint = async (
     conn,
   );
 
-  return { newTokenId, newSupply };
+  return { newSupply, newTokenId };
 };
 
 export const processNegativeCarbonEvent: ProcessEventFunction = async (

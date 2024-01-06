@@ -1,7 +1,8 @@
 import { type Address, getContract } from "viem";
 
+import type { Chain } from "../..";
+
 import { getViem } from "../../../web3/providers";
-import { Chain } from "../..";
 import { oneHundredxAbi } from "../abi";
 
 export const getTokenZeroDescription = async (
@@ -12,8 +13,8 @@ export const getTokenZeroDescription = async (
   const viemClient = getViem(chain);
 
   const contract = getContract({
-    address: contractAddress,
     abi: oneHundredxAbi,
+    address: contractAddress,
     publicClient: viemClient,
   });
 

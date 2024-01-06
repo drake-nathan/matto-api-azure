@@ -1,4 +1,4 @@
-import { IAttribute } from "../../db/schemas/schemaTypes";
+import type { IAttribute } from "../../db/schemas/schemaTypes";
 
 export const attributes: IAttribute[] = [
   {

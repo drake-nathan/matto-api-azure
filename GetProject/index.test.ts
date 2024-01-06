@@ -1,4 +1,4 @@
-import { Context } from "@azure/functions";
+import type { Context } from "@azure/functions";
 
 import httpTrigger from "./index";
 
@@ -7,8 +7,8 @@ describe("GetProject", () => {
 
   beforeEach(() => {
     context = {
-      log: { error: jest.fn() },
       bindingData: { project_slug: "chainlife-testnet" },
+      log: { error: jest.fn() },
     } as unknown as Context;
   });
 
@@ -17,15 +17,15 @@ describe("GetProject", () => {
 
     await httpTrigger(context);
 
-    expect(context.log.error).toBeCalledTimes(0);
-    expect(context?.res?.status).toEqual(404);
+    expect(context.log.error).toHaveBeenCalledTimes(0);
+    expect(context.res?.status).toEqual(404);
   });
 
   it("should return a 200 with a real project slug", async () => {
     await httpTrigger(context);
 
-    expect(context.log.error).toBeCalledTimes(0);
-    expect(context?.res?.status).toEqual(200);
-    expect(typeof context?.res?.body).toBe("object");
+    expect(context.log.error).toHaveBeenCalledTimes(0);
+    expect(context.res?.status).toEqual(200);
+    expect(typeof context.res?.body).toBe("object");
   });
 });
