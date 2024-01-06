@@ -195,7 +195,7 @@ export const getCurrentTokenSupply = async (
   const tokens = await query.lean().exec();
   const tokensNoNull = tokens.filter(Boolean);
 
-  const currentTokenSupply = tokensNoNull?.length || 0;
+  const currentTokenSupply = tokensNoNull.length || 0;
   return currentTokenSupply;
 };
 
@@ -215,7 +215,9 @@ export const getLevels = async (
   const resParsed = results.map((token) => {
     const { script_inputs, token_id } = token;
 
-    const { level_shift, transfer_count } = script_inputs!;
+    if (!script_inputs) return { level_shift: 0, token_id, transfer_count: 0 };
+
+    const { level_shift, transfer_count } = script_inputs;
 
     return { level_shift: level_shift || 0, token_id, transfer_count };
   });

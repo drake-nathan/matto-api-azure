@@ -18,7 +18,7 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
 
     const projects = await getAllProjects(conn);
 
-    if (!projects) {
+    if (!projects.length) {
       context.res = {
         body: "No projects on this server.",
         status: 400,

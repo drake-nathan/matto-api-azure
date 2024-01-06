@@ -37,7 +37,7 @@ export const getHtml = (
         : ""
     }
     ${preMainScript ? getScriptTag(preMainScript) : ""}
-    ${getScriptTag(scripts[options.scriptType] || mainScript!)}
+    ${getScriptTag(scripts[options.scriptType] ?? mainScript ?? "")}
     ${
       options.mobile && mobileControls && options.scriptType !== ScriptType.alt
         ? getScriptTag(mobileControls)
@@ -98,25 +98,23 @@ export const getScriptType = (
   if (!genScripts.alt && !genScripts.painting) return ScriptType.main;
 
   if (
-    (req.query?.alt === "false" || req.query?.esoterra === "false") &&
-    req.query?.painting === "false"
+    (req.query.alt === "false" || req.query.esoterra === "false") &&
+    req.query.painting === "false"
   ) {
     return ScriptType.main;
   }
 
   if (
-    (req.query?.alt && req.query.alt === "true") ||
-    (req.query?.esoterra && req.query.esoterra === "true")
+    (req.query.alt && req.query.alt === "true") ||
+    (req.query.esoterra && req.query.esoterra === "true")
   ) {
     return ScriptType.alt;
   }
 
-  if (req.query?.painting && req.query.painting === "true")
+  if (req.query.painting && req.query.painting === "true")
     return ScriptType.painting;
 
   if (projectSlug === "chainlife" || projectSlug === "chainlife-testnet") {
-    // FIXME
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const scriptInputs: IScriptInputs = JSON.parse(scriptInputsJson);
     const { custom_rule } = scriptInputs;
 

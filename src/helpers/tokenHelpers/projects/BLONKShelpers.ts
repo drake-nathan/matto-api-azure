@@ -156,9 +156,13 @@ export const processBlonksEvent = async (
     );
   }
 
+  if (!token.svg) {
+    throw new Error(`No svg for ${project_name} ${token_id}`);
+  }
+
   try {
     const pngs = await svgToPngAndUpload(
-      token.svg!,
+      token.svg,
       project_id,
       project_slug,
       token_id,

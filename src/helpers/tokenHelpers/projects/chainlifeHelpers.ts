@@ -179,7 +179,7 @@ export const checkIfTokensMissingAttributes = async (
   const allTokens = await getAllTokensFromProject(project_slug, conn);
 
   const tokensMissingAttributes = allTokens.filter(
-    (token) => !token.attributes,
+    (token) => !token.attributes.length,
   );
   const numOfBadTokens = tokensMissingAttributes.length;
 

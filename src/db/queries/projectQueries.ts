@@ -28,10 +28,11 @@ export const getProject = (project_slug: ProjectSlug, conn: Connection) => {
     .exec();
 };
 
-export const getAllProjects = async (conn: Connection) => {
+export const getAllProjects = (conn: Connection) => {
   const Project = conn.model<IProject>("Project");
 
-  const query = await Project.find();
+  const query = Project.find();
+
   return query;
 };
 

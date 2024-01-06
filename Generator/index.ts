@@ -97,7 +97,7 @@ const httpTrigger: AzureFunction = async (
     };
 
     // adds mobile controls script if query param ?mobile=true
-    if (req.query?.mobile && req.query.mobile === "true")
+    if (req.query.mobile && req.query.mobile === "true")
       genOptions.mobile = true;
 
     const generatorHtml = getHtml(

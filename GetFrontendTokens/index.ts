@@ -65,7 +65,7 @@ const httpTrigger: AzureFunction = async (
 
     if (tokenId) {
       const token = await getTokenAbbr(project_slug, tokenId, conn);
-      if (token) tokens.push(token);
+      tokens.push(token);
       hasMore = false;
     } else if (sortType === "tokenId") {
       tokens = await getTokensTokenIdSort(
@@ -78,7 +78,7 @@ const httpTrigger: AzureFunction = async (
       hasMore = project.current_supply
         ? project.current_supply > skip + limit
         : false;
-    } else if (sortType === "worldLevel") {
+    } else {
       tokens = await getTokensWorldLevelSort(
         conn,
         project_slug,
