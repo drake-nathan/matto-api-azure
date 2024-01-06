@@ -1,9 +1,14 @@
 {
-  "extends": ["airbnb-base", "airbnb-typescript/base", "prettier"],
-  "plugins": ["simple-import-sort"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended-type-checked",
+    "plugin:perfectionist/recommended-natural",
+    "prettier"
+  ],
   "parserOptions": {
     "project": "./tsconfig.json"
   },
+  "plugins": ["simple-import-sort"],
   "rules": {
     "@typescript-eslint/no-unused-vars": "warn",
     "@typescript-eslint/naming-convention": [
@@ -14,23 +19,7 @@
         "leadingUnderscore": "allow"
       }
     ],
-    "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
-    "no-unused-vars": "off",
-    "import/prefer-default-export": "off",
-    "radix": "off",
-    "no-console": ["warn", { "allow": ["error"] }],
-    "no-debugger": "warn",
-    "no-continue": "off",
-    "implicit-arrow-linebreak": "off",
-    "function-paren-newline": "off",
-    "no-underscore-dangle": "off",
-    "consistent-return": "off",
-    "no-return-assign": "off",
-    "object-curly-newline": "off",
-    "no-restricted-syntax": "off",
-    "no-promise-executor-return": "off",
-    "simple-import-sort/imports": "error",
-    "simple-import-sort/exports": "error"
+    "no-console": ["warn", { "allow": ["error"] }]
   },
   "settings": {
     "import/resolver": {

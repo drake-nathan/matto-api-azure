@@ -1,5 +1,4 @@
 {
-  "version": "0.2.0",
   "configurations": [
     {
       "name": "Attach to Node Functions",
@@ -8,5 +7,6 @@
       "port": 9229,
       "preLaunchTask": "func: host start"
     }
-  ]
+  ],
+  "version": "0.2.0"
 }
