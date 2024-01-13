@@ -1,3 +1,4 @@
+import { configDotenv } from "dotenv";
 import { isAddress } from "viem";
 
 import type { IToken } from "../../../db/schemas/schemaTypes";
@@ -13,6 +14,9 @@ import { getTokenZeroAttributes } from "./getTokenZeroAttributes";
 import { getTokenZeroDescription } from "./getTokenZeroDescription";
 import { getUpdatedTokenValues } from "./getUpdatedTokenValues";
 import { updateTokenInDb } from "./updateTokenInDb";
+
+configDotenv();
+const rootServerUrl = process.env.ROOT_URL;
 
 export const process100xMint: ProcessMintFunction = async (
   token_id,
@@ -89,6 +93,9 @@ export const process100xMint: ProcessMintFunction = async (
     },
     script_type,
     svg: tokenData.image,
+    ...(isTokenZero
+      ? { svgGen: `${rootServerUrl}/project/${project_slug}/svg/${token_id}` }
+      : {}),
     token_id,
     website,
     width_ratio: tokenData.width_ratio,

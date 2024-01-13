@@ -3,6 +3,7 @@ import type { Connection } from "mongoose";
 
 import { connectionFactory } from "../src/db/connectionFactory";
 import { checkIfTokenExists, getSvg } from "../src/db/queries/tokenQueries";
+import { deEscapeSvg } from "../src/utils/deEscapeSvg";
 
 const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
   const { project_slug, token_id } = context.bindingData;
@@ -10,16 +11,6 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
 
   try {
     conn = await connectionFactory(context);
-
-    const textureSlug = "texture-and-hues";
-
-    if (project_slug !== textureSlug) {
-      context.res = {
-        body: "Currently only supporting Texture and Hues.",
-        status: 404,
-      };
-      return;
-    }
 
     const doesTokenExist = await checkIfTokenExists(
       token_id,
@@ -38,7 +29,7 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
 
     if (!svg) {
       context.res = {
-        body: "Could not fetch SVG for this token.",
+        body: "Could not fetch SVG for this token, or an SVG does not exist on this token.",
         status: 404,
       };
       return;
@@ -48,7 +39,7 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
       <!DOCTYPE html>
       <html>
         <body>
-          ${svg}
+          ${deEscapeSvg(svg)}
         </body>
       </html>
     `;
