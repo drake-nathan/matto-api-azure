@@ -49,7 +49,7 @@ export const processBlonksMint: ProcessMintFunction = async (
     aspect_ratio,
     attributes: allBLONKStraits[token_id],
     collection_name,
-    description: description || "",
+    description: description ?? "",
     external_url,
     image: "",
     license,

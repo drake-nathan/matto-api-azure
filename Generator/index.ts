@@ -55,7 +55,7 @@ const httpTrigger: AzureFunction = async (
 
     let scriptInputsJson: string;
 
-    if (req.body && req.body.scriptInputs) {
+    if (req.body?.scriptInputs) {
       scriptInputsJson = JSON.stringify(req.body.scriptInputs);
       context.log.info(
         `Using scriptInputs from request body for token ${token_id} on ${project_name}.`,

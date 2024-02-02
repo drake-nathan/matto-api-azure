@@ -65,7 +65,7 @@ export const getLastTxProcessed = async (
     .sort("-block_number")
     .select("block_number");
 
-  return query?.block_number || null;
+  return query?.block_number ?? null;
 };
 
 export const getTransactionsByEvent = async (

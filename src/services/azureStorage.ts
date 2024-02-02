@@ -32,7 +32,7 @@ export const uploadImage = async (
   const containerName = "images";
 
   const containerClient = blobServiceClient.getContainerClient(
-    folderName || containerName,
+    folderName ?? containerName,
   );
 
   await containerClient.createIfNotExists();

@@ -118,7 +118,7 @@ export const getScriptType = (
     const scriptInputs: IScriptInputs = JSON.parse(scriptInputsJson);
     const { custom_rule } = scriptInputs;
 
-    if (custom_rule && custom_rule.match(regex)) return ScriptType.alt;
+    if (custom_rule?.match(regex)) return ScriptType.alt;
   }
 
   return ScriptType.main;

@@ -93,7 +93,7 @@ export const processChainlifeMint = async (
     aspect_ratio,
     attributes,
     collection_name,
-    description: description || "",
+    description: description ?? "",
     external_url,
     generator_url,
     image,

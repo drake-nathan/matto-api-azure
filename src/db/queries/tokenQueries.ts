@@ -218,7 +218,7 @@ export const getLevels = async (
 
     const { level_shift, transfer_count } = script_inputs;
 
-    return { level_shift: level_shift || 0, token_id, transfer_count };
+    return { level_shift: level_shift ?? 0, token_id, transfer_count };
   });
 
   resParsed.sort((a, b) => a.token_id - b.token_id);
