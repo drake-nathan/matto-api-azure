@@ -72,9 +72,9 @@ export const getUpdatedTokenValues = async ({
   }
 
   const description =
-    tokenData.description && additionalDescription
-      ? `${tokenData.description}\n\nAI Interpretation:\n${additionalDescription}`
-      : "";
+    tokenData.description && additionalDescription ?
+      `${tokenData.description}\n\nAI Interpretation:\n${additionalDescription}`
+    : "";
 
   let attributes: IAttribute[];
   try {
@@ -102,9 +102,9 @@ export const getUpdatedTokenValues = async ({
   }
 
   const aspectRatio =
-    tokenData.width_ratio && tokenData.height_ratio
-      ? tokenData.width_ratio / tokenData.height_ratio
-      : 1;
+    tokenData.width_ratio && tokenData.height_ratio ?
+      tokenData.width_ratio / tokenData.height_ratio
+    : 1;
 
   return {
     additionalDescription,

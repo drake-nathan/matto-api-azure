@@ -42,9 +42,9 @@ export const processNewTransactions = async (
 
     const { event_type, token_id } = tx;
     const script_inputs =
-      usesScriptInputs && token_id
-        ? await fetchScriptInputs(contract, token_id)
-        : undefined;
+      usesScriptInputs && token_id ?
+        await fetchScriptInputs(contract, token_id)
+      : undefined;
 
     if (event_type === "Mint") {
       if (isBulkMint) continue;

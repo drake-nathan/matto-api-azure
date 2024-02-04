@@ -40,8 +40,9 @@ const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
 
     arrOfLogValues.forEach((logValues) => {
       if (logValues) {
-        const tokenMsg = logValues.newTokens.length
-          ? `New tokens: ${logValues.newTokens.join(", ")}.`
+        const tokenMsg =
+          logValues.newTokens.length ?
+            `New tokens: ${logValues.newTokens.join(", ")}.`
           : "No new tokens.";
 
         const logMsg = `${logValues.project_name}: ${logValues.numOfTxsAdded} new transactions. ${tokenMsg} Current supply: ${logValues.currentSupply}`;

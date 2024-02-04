@@ -1,7 +1,7 @@
 import axios from "axios";
 import sharp from "sharp";
 
-import type { ProjectId, ProjectSlug} from "../projects";
+import type { ProjectId, ProjectSlug } from "../projects";
 
 import { projectSizes } from "../projects";
 import { deEscapeSvg } from "../utils/deEscapeSvg";

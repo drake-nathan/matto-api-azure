@@ -73,8 +73,9 @@ export const processChainlifeMint = async (
   );
 
   const regex = /esoterra/gi;
-  const puppeteerGenUrl = script_inputs.custom_rule?.match(regex)
-    ? `${generator_url}?esoterra=true`
+  const puppeteerGenUrl =
+    script_inputs.custom_rule?.match(regex) ?
+      `${generator_url}?esoterra=true`
     : generator_url;
 
   const { attributes, image, image_mid, image_small } =
@@ -146,8 +147,9 @@ export const processChainlifeEvent: ProcessEventFunction = async (
   const { generator_url } = getUrls(project_slug, token_id, external_url);
 
   const regex = /esoterra/gi;
-  const puppeteerGenUrl = script_inputs.custom_rule?.match(regex)
-    ? `${generator_url}?esoterra=true`
+  const puppeteerGenUrl =
+    script_inputs.custom_rule?.match(regex) ?
+      `${generator_url}?esoterra=true`
     : generator_url;
 
   const { attributes, image, image_mid, image_small } =

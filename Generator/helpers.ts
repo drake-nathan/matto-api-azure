@@ -32,16 +32,20 @@ export const getHtml = (
 
   const scriptTags = `
     ${
-      scriptInputs
-        ? `<script>const scriptInputs = ${scriptInputs};</script>`
-        : ""
+      scriptInputs ?
+        `<script>const scriptInputs = ${scriptInputs};</script>`
+      : ""
     }
     ${preMainScript ? getScriptTag(preMainScript) : ""}
     ${getScriptTag(scripts[options.scriptType] ?? mainScript ?? "")}
     ${
-      options.mobile && mobileControls && options.scriptType !== ScriptType.alt
-        ? getScriptTag(mobileControls)
-        : ""
+      (
+        options.mobile &&
+        mobileControls &&
+        options.scriptType !== ScriptType.alt
+      ) ?
+        getScriptTag(mobileControls)
+      : ""
     }
   `;
 
@@ -61,9 +65,9 @@ export const getHtml = (
             }
             canvas {
               ${
-                projectName === "Negative Carbon"
-                  ? "width: 100% !important; height: auto !important;"
-                  : ""
+                projectName === "Negative Carbon" ?
+                  "width: 100% !important; height: auto !important;"
+                : ""
               }
               padding: 0;
               margin: auto;

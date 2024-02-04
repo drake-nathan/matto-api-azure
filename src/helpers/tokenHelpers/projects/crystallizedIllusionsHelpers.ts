@@ -79,13 +79,14 @@ export const processCrystallizedIllusionsMint = async (
   const attributes = await getAttributes(generator_url, script_inputs);
 
   const type = attributes.find((attr) => attr.trait_type === "Type")?.value;
-  const complexity = attributes.find((attr) => attr.trait_type === "Complexity")
-    ?.value;
+  const complexity = attributes.find(
+    (attr) => attr.trait_type === "Complexity",
+  )?.value;
 
   const name =
-    type && complexity
-      ? `${type} #${complexity}`
-      : `${project_name} ${token_id}`;
+    type && complexity ?
+      `${type} #${complexity}`
+    : `${project_name} ${token_id}`;
 
   const newToken: IToken = {
     animation_url: generator_url,

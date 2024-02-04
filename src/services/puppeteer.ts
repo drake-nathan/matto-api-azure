@@ -2,7 +2,7 @@ import puppeteer, { type Viewport } from "puppeteer";
 import sharp from "sharp";
 
 import type { IAttribute, IScriptInputs } from "../db/schemas/schemaTypes";
-import type { ProjectSlug} from "../projects";
+import type { ProjectSlug } from "../projects";
 
 import { ProjectId, projectSizes } from "../projects";
 import { BlobFolder, uploadImage } from "./azureStorage";

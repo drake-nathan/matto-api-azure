@@ -37,8 +37,9 @@ export const getTokenZeroAttributes = async (
     if (token_id === 0) return;
 
     Object.keys(cummulativeValues).forEach((trait_type) => {
-      const value = attributes.find(({ trait_type: tt }) => tt === trait_type)
-        ?.value;
+      const value = attributes.find(
+        ({ trait_type: tt }) => tt === trait_type,
+      )?.value;
 
       if (value !== undefined) {
         cummulativeValues[trait_type] += Number(value);

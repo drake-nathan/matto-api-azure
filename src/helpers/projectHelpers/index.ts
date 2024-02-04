@@ -264,8 +264,9 @@ const reconcileBulkMint = async (
     if (doesTokenExist) continue;
 
     try {
-      const scriptInputs = usesScriptInputs
-        ? await fetchScriptInputs(contract, tokenId)
+      const scriptInputs =
+        usesScriptInputs ?
+          await fetchScriptInputs(contract, tokenId)
         : undefined;
       const newMint = await processMint(
         tokenId,

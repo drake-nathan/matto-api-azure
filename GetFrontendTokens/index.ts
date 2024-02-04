@@ -31,9 +31,9 @@ const httpTrigger: AzureFunction = async (
   const sort =
     sortDirQuery === "asc" || sortDirQuery === "desc" ? sortDirQuery : "asc";
   const sortType =
-    sortTypeQuery === "tokenId" || sortTypeQuery === "worldLevel"
-      ? sortTypeQuery
-      : "tokenId";
+    sortTypeQuery === "tokenId" || sortTypeQuery === "worldLevel" ?
+      sortTypeQuery
+    : "tokenId";
 
   // validate tokenId query, hard code 0 since Number('0') is falsy
   const tokenIdNum =
@@ -76,9 +76,8 @@ const httpTrigger: AzureFunction = async (
         skip,
         sort,
       );
-      hasMore = project.current_supply
-        ? project.current_supply > skip + limit
-        : false;
+      hasMore =
+        project.current_supply ? project.current_supply > skip + limit : false;
     } else {
       tokens = await getTokensWorldLevelSort(
         conn,
@@ -87,9 +86,8 @@ const httpTrigger: AzureFunction = async (
         skip,
         sort,
       );
-      hasMore = project.current_supply
-        ? project.current_supply > skip + limit
-        : false;
+      hasMore =
+        project.current_supply ? project.current_supply > skip + limit : false;
     }
 
     if (!tokens.length) {

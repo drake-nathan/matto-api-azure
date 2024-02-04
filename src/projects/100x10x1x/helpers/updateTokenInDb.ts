@@ -45,13 +45,13 @@ export const updateTokenInDb = async ({
     tokenId === 0 ? await getTokenZeroAttributes(conn) : tokenData.attributes;
 
   const description =
-    tokenId === 0
-      ? await getTokenZeroDescription(
-          chain,
-          contractAddress,
-          collectionDescription,
-        )
-      : tokenData.description;
+    tokenId === 0 ?
+      await getTokenZeroDescription(
+        chain,
+        contractAddress,
+        collectionDescription,
+      )
+    : tokenData.description;
 
   const Token = conn.model<IToken>("Token");
 
