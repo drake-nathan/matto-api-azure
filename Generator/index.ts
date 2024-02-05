@@ -17,7 +17,7 @@ const httpTrigger: AzureFunction = async (
   if (!isProjectSlug(project_slug)) {
     context.res = {
       body: "Invalid project slug.",
-      status: 400,
+      status: 404,
     };
     return;
   }
@@ -25,7 +25,7 @@ const httpTrigger: AzureFunction = async (
   if (!isNumber(token_id)) {
     context.res = {
       body: "Invalid token id.",
-      status: 400,
+      status: 404,
     };
     return;
   }

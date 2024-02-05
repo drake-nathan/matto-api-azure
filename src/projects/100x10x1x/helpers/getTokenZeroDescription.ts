@@ -15,7 +15,7 @@ export const getTokenZeroDescription = async (
   const contract = getContract({
     abi: oneHundredxAbi,
     address: contractAddress,
-    publicClient: viemClient,
+    client: { public: viemClient },
   });
 
   const compositeOrderUnformatted = await contract.read.getOrder();

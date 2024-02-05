@@ -6,8 +6,10 @@
     "outDir": "dist",
     "resolveJsonModule": true,
     "rootDir": ".",
+    "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
     "target": "es2022"
-  }
+  },
+  "exclude": ["node_modules", "dist", "cache"]
 }

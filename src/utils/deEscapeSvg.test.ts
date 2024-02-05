@@ -8,6 +8,7 @@ const expectedSvg = `<?xml version="1.0" encoding="utf-8"?><svg viewBox="0 0 216
 describe("deEscapeSvg()", () => {
   it("should return the expected SVG", () => {
     const result = deEscapeSvg(inputSvg);
+
     expect(result).toEqual(expectedSvg);
   });
 });

@@ -2,7 +2,7 @@ import { isAddress } from "viem";
 
 import type { ProcessEventFunction } from "../../../helpers/tokenHelpers/types";
 
-import { fetchCompositeUpdate } from "../../../services/fetchCompositeUpdate";
+import { triggerCompositeUpdate } from "../../../services/fetchCompositeUpdate";
 import { updateTokenInDb } from "./updateTokenInDb";
 
 export const process100xEvent: ProcessEventFunction = async (
@@ -30,7 +30,7 @@ export const process100xEvent: ProcessEventFunction = async (
   }
 
   // lazy update composite image
-  void fetchCompositeUpdate({ projectSlug: project.project_slug });
+  void triggerCompositeUpdate({ projectSlug: project.project_slug });
 
   const updatedToken = await updateTokenInDb({
     chain,

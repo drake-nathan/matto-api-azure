@@ -68,7 +68,7 @@ export const processBlonksMint: ProcessMintFunction = async (
   const contractUsingViem = getContractViem({
     abi: blonksAbi,
     address: contract_address as `0x${string}`,
-    publicClient: viemClient,
+    client: { public: viemClient },
   });
 
   try {
@@ -144,7 +144,7 @@ export const processBlonksEvent = async (
   const contractUsingViem = getContractViem({
     abi: blonksAbi,
     address: contract_address as `0x${string}`,
-    publicClient: viemClient,
+    client: { public: viemClient },
   });
 
   try {

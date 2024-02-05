@@ -11,7 +11,7 @@ if (!compositeUpdateUrl) {
   throw new Error("COMPOSITE_UPDATE_URL not set");
 }
 
-export const fetchCompositeUpdate = async ({
+export const triggerCompositeUpdate = async ({
   force = false,
   projectSlug,
 }: {

@@ -41,7 +41,7 @@ export const getUpdatedTokenValues = async ({
   const contract = getContract({
     abi: haikuAbi,
     address: contractAddress,
-    publicClient: viemClient,
+    client: { public: viemClient },
   });
 
   let tokenDataJson: string;

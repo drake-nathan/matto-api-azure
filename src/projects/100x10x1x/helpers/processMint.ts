@@ -9,7 +9,7 @@ import {
   updateProjectSupplyAndCount,
 } from "../../../db/queries/projectQueries";
 import { addToken } from "../../../db/queries/tokenQueries";
-import { fetchCompositeUpdate } from "../../../services/fetchCompositeUpdate";
+import { triggerCompositeUpdate } from "../../../services/fetchCompositeUpdate";
 import { getTokenZeroAttributes } from "./getTokenZeroAttributes";
 import { getTokenZeroDescription } from "./getTokenZeroDescription";
 import { getUpdatedTokenValues } from "./getUpdatedTokenValues";
@@ -58,17 +58,17 @@ export const process100xMint: ProcessMintFunction = async (
       tokenId: token_id,
     });
 
-  const description = isTokenZero
-    ? await getTokenZeroDescription(
+  const description =
+    isTokenZero ?
+      await getTokenZeroDescription(
         chain,
         contractAddress,
         collection_description,
       )
     : tokenData.description;
 
-  const attributes = isTokenZero
-    ? await getTokenZeroAttributes(conn)
-    : tokenData.attributes;
+  const attributes =
+    isTokenZero ? await getTokenZeroAttributes(conn) : tokenData.attributes;
 
   const newToken: IToken = {
     artist: tokenData.artist,
@@ -93,9 +93,9 @@ export const process100xMint: ProcessMintFunction = async (
     },
     script_type,
     svg: tokenData.image,
-    ...(isTokenZero
-      ? { svgGen: `${rootServerUrl}/project/${project_slug}/svg/${token_id}` }
-      : {}),
+    ...(isTokenZero ?
+      { svgGen: `${rootServerUrl}/project/${project_slug}/svg/${token_id}` }
+    : {}),
     token_id,
     website,
     width_ratio: tokenData.width_ratio,
@@ -124,7 +124,7 @@ export const process100xMint: ProcessMintFunction = async (
   }
 
   // lazy update composite image
-  void fetchCompositeUpdate({ projectSlug: project_slug });
+  void triggerCompositeUpdate({ projectSlug: project_slug });
 
   context.log.info("Processed Mint for token", token_id, "in", project_name);
   return { newSupply, newTokenId };

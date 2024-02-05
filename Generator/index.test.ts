@@ -8,12 +8,13 @@ describe("Generator", () => {
 
   beforeEach(() => {
     context = {
-      bindingData: { project_slug: "chainlife-testnet", token_id: "1" },
+      bindingData: { project_slug: "chainlife-testnet", token_id: 1 },
       log: { error: jest.fn(), info: jest.fn() },
     } as unknown as Context;
 
     req = {
       body: {},
+      query: {},
     } as unknown as HttpRequest;
   });
 
@@ -22,7 +23,7 @@ describe("Generator", () => {
 
     await httpTrigger(context, req);
 
-    expect(context.res?.status).toEqual(404);
+    expect(context.res?.status).toBe(404);
     expect(context.log.error).toHaveBeenCalledTimes(0);
     expect(typeof context.res?.body).toBe("string");
   });
@@ -32,7 +33,7 @@ describe("Generator", () => {
 
     await httpTrigger(context, req);
 
-    expect(context.res?.status).toEqual(404);
+    expect(context.res?.status).toBe(404);
     expect(context.log.error).toHaveBeenCalledTimes(0);
     expect(typeof context.res?.body).toBe("string");
   });
@@ -42,7 +43,7 @@ describe("Generator", () => {
 
     await httpTrigger(context, req);
 
-    expect(context.res?.status).toEqual(404);
+    expect(context.res?.status).toBe(404);
     expect(context.log.error).toHaveBeenCalledTimes(0);
     expect(typeof context.res?.body).toBe("string");
   });
@@ -50,13 +51,12 @@ describe("Generator", () => {
   it("should return a 200 with correct info", async () => {
     await httpTrigger(context, req);
 
-    expect(context.res?.status).toEqual(200);
+    expect(context.res?.status).toBe(200);
     expect(context.log.error).toHaveBeenCalledTimes(0);
     expect(typeof context.res?.body).toBe("string");
   });
 
   it("should return a 200 if given body scriptInputs", async () => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     req.body.scriptInputs = {
       current_owner: "0xe4c8efd2ed3051b22ea3eede1af266452b0e66e9",
       custom_rule: "",
@@ -69,7 +69,7 @@ describe("Generator", () => {
 
     await httpTrigger(context, req);
 
-    expect(context.res?.status).toEqual(200);
+    expect(context.res?.status).toBe(200);
     expect(context.log.info).toHaveBeenCalledTimes(1);
     expect(context.log.error).toHaveBeenCalledTimes(0);
     expect(typeof context.res?.body).toBe("string");
