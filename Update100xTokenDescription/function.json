@@ -1,0 +1,18 @@
+{
+  "bindings": [
+    {
+      "authLevel": "anonymous",
+      "direction": "in",
+      "methods": ["get"],
+      "name": "req",
+      "route": "update-100x-token-description/{token_id:int}",
+      "type": "httpTrigger"
+    },
+    {
+      "direction": "out",
+      "name": "res",
+      "type": "http"
+    }
+  ],
+  "scriptFile": "../dist/Update100xTokenDescription/index.js"
+}

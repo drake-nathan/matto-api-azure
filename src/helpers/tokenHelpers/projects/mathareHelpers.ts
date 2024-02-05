@@ -17,7 +17,7 @@ import {
 } from "../../../db/queries/projectQueries";
 import {
   addToken,
-  updateOneTokenDesc,
+  updateOneTokenDescription,
   updateScriptInputs,
 } from "../../../db/queries/tokenQueries";
 import { attributes as mathareStartingAttr } from "../../../projects/mathareData/attributes";
@@ -163,7 +163,12 @@ export const updateMathareDescriptions = async (
         mathareDescriptionsJson[token_id - 1]
       }${appended_description}`;
 
-      await updateOneTokenDesc(conn, project_id, token_id, newDescription);
+      await updateOneTokenDescription(
+        conn,
+        project_id,
+        token_id,
+        newDescription,
+      );
     }),
   );
 };

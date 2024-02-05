@@ -1,6 +1,6 @@
 import type { Context } from "@azure/functions";
 
-import { getContract } from "viem";
+import { getContract, isAddress } from "viem";
 
 import type { Chain } from "../..";
 import type { ProjectId, ProjectSlug } from "../..";
@@ -36,12 +36,16 @@ export const getUpdatedTokenValues = async ({
   projectSlug,
   tokenId,
 }: Params): Promise<UpdatedValues> => {
-  const viemClient = getViem(chain);
+  if (!isAddress(contractAddress)) {
+    throw new Error("Invalid contract address");
+  }
+
+  const viem = getViem(chain);
 
   const contract = getContract({
     abi: oneHundredxAbi,
-    address: contractAddress as `0x${string}`,
-    client: { public: viemClient },
+    address: contractAddress,
+    client: { public: viem },
   });
 
   let tokenDataJson: string;

@@ -300,7 +300,7 @@ export const updateAllTokenDesc = async (
   return result.modifiedCount;
 };
 
-export const updateOneTokenDesc = (
+export const updateOneTokenDescription = (
   conn: Connection,
   project_id: ProjectId,
   token_id: number | string,
