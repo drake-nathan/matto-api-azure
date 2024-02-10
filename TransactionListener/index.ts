@@ -6,7 +6,7 @@ import * as dotenv from "dotenv";
 import type { IProject } from "../src/db/schemas/schemaTypes";
 
 import { connectionFactory } from "../src/db/connectionFactory";
-import { checkForNewTransactions } from "../src/helpers/transactionHelpers";
+import { checkForNewTransactions } from "../src/helpers/transactionHelpers/checkForNewTransactions";
 import { projects as allProjects } from "../src/projects";
 
 dotenv.config();
@@ -32,7 +32,7 @@ const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
       projects.map((project) => {
         // this coniditional skips projects that don't store transactions
         if (project.events.length) {
-          return checkForNewTransactions(project, context, conn);
+          return checkForNewTransactions({ conn, context, project });
         }
         return null;
       }),

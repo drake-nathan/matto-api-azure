@@ -1,14 +1,14 @@
 import type { Connection } from "mongoose";
-import type { EventData } from "web3-eth-contract";
 
 import type { Chain, ProjectId } from "../../projects";
+import type { IncomingTx } from "../../web3/fetches/fetchEvents";
 import type { ITransaction } from "../schemas/schemaTypes";
 
 import { nullAddress } from "../../helpers/constants";
 import { getViem } from "../../web3/providers";
 
 export const addTransaction = async (
-  incomingTx: EventData,
+  incomingTx: IncomingTx,
   project_id: ProjectId,
   conn: Connection,
   chain: Chain,
@@ -16,17 +16,16 @@ export const addTransaction = async (
   const viem = getViem(chain);
   const Transaction = conn.model<ITransaction>("Transaction");
   const {
+    args: { from, tokenId },
     blockNumber: block_number,
-    event,
-    returnValues,
+    eventName,
     transactionHash,
   } = incomingTx;
-  const { from, tokenId } = returnValues;
 
   const transaction_hash = transactionHash.toLowerCase();
 
   const event_type =
-    event === "Transfer" && from === nullAddress ? "Mint" : event;
+    eventName === "Transfer" && from === nullAddress ? "Mint" : eventName;
 
   const doesTxExist = await Transaction.findOne({
     block_number,
@@ -44,7 +43,7 @@ export const addTransaction = async (
     block_number,
     event_type,
     project_id,
-    token_id: event === "OrderChanged" ? undefined : parseInt(tokenId),
+    token_id: eventName === "OrderChanged" ? undefined : tokenId,
     transaction_date: new Date(Number(blockTime) * 1000),
     transaction_hash,
   };

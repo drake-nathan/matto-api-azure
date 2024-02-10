@@ -1,6 +1,6 @@
 import type { Context } from "@azure/functions";
 import type { Connection } from "mongoose";
-import type { Contract, EventData } from "web3-eth-contract";
+import type { Contract } from "web3-eth-contract";
 
 import type { IProject } from "../../db/schemas/schemaTypes";
 
@@ -17,24 +17,19 @@ import {
   checkIfTokenExists,
   getAllTokensFromProject,
   getCurrentTokenSupply,
-  removeDuplicateTokens,
 } from "../../db/queries/tokenQueries";
-import {
-  getTransactionsByEvent,
-  getTxCounts,
-} from "../../db/queries/transactionQueries";
+import { getTxCounts } from "../../db/queries/transactionQueries";
 import { ProjectId, ProjectSlug, abis } from "../../projects";
 import { getContractWeb3 } from "../../web3/contractWeb3";
 import { getWeb3 } from "../../web3/providers";
 import { fetchScriptInputs } from "../../web3/web3Fetches";
-import { nullAddress } from "../constants";
 import { getProcessMintFunction } from "../tokenHelpers";
 import {
   checkIfTokensMissingAttributes,
   repairBadTokens,
 } from "../tokenHelpers/projects/chainlifeHelpers";
 import { updateMathareDescriptions } from "../tokenHelpers/projects/mathareHelpers";
-import { processNewTransactions } from "../transactionHelpers";
+import { reconcileTokens } from "./reconcileTokens";
 import { reconcileTransactions } from "./reconcileTransactions";
 
 const processNewProjects = async (projects: IProject[], conn: Connection) => {
@@ -121,77 +116,6 @@ const checkForMissingAttributes = async (
     } else {
       context.log.error(
         `${numOfRemainingBadTokens} bad tokens still remain for ${project_name}, db might be slow, will try again at next reconcile.`,
-      );
-    }
-  }
-};
-
-const reconcileTokens = async (
-  conn: Connection,
-  context: Context,
-  project: IProject,
-  contract: Contract,
-  allTransactions: EventData[],
-  totalTxCount: number,
-  totalTokensInDb: number,
-) => {
-  const { _id: project_id, project_name } = project;
-
-  const totalMintTransactions = allTransactions.filter(
-    (tx) => tx.event === "Transfer" && tx.returnValues.from === nullAddress,
-  ).length;
-
-  context.log.info("Total mint transactions:", totalMintTransactions);
-  context.log.info("Total tokens in db:", totalTokensInDb);
-
-  if (totalMintTransactions === totalTokensInDb) {
-    context.log.info(`${project_name} has been fully reconciled.`);
-    await updateProjectSupplyAndCount(
-      project_id,
-      totalTokensInDb,
-      totalTxCount,
-      conn,
-    );
-  } else {
-    if (totalMintTransactions < totalTokensInDb) {
-      context.log.error(
-        `${project_name} has a token count discrepancy, attempting to fix.`,
-      );
-      await removeDuplicateTokens(project_id, conn);
-    } else {
-      context.log.error(
-        `${project_name} has a token count discrepancy, attempting to fix.`,
-      );
-      const allMintTransactions = (
-        await getTransactionsByEvent(conn, project_id, "Mint")
-      ).sort((a, b) => {
-        if (a.token_id && b.token_id) {
-          return a.token_id - b.token_id;
-        }
-        return 0;
-      });
-
-      await processNewTransactions(
-        allMintTransactions,
-        project,
-        contract,
-        context,
-        conn,
-      );
-    }
-
-    const newTotalTokensInDb = await getCurrentTokenSupply(project_id, conn);
-    if (totalMintTransactions === newTotalTokensInDb) {
-      context.log.info(`${project_name} has been fully reconciled.`);
-      await updateProjectSupplyAndCount(
-        project_id,
-        newTotalTokensInDb,
-        totalTxCount,
-        conn,
-      );
-    } else {
-      context.log.error(
-        `${project_name} still has a token count discrepancy, please check the database.`,
       );
     }
   }
@@ -414,23 +338,23 @@ export const reconcileProject = async (
   if (!events.length) return;
 
   // fetch all transactions from blockchain, add missing ones
-  const { allTransactions, totalTxCount } = await reconcileTransactions(
+  const { allTransactions, totalTxCount } = await reconcileTransactions({
     conn,
     context,
-    project,
     contract,
-  );
+    project,
+  });
 
   if (!isBulkMint) {
-    await reconcileTokens(
+    await reconcileTokens({
+      allTransactions,
       conn,
       context,
-      project,
       contract,
-      allTransactions,
-      totalTxCount,
+      project,
       totalTokensInDb,
-    );
+      totalTxCount,
+    });
   } else {
     await updateProjectSupplyAndCount(
       project_id,

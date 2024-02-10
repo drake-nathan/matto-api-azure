@@ -11,7 +11,7 @@ import {
   updateProjectSupplyAndCount,
 } from "../../../db/queries/projectQueries";
 import { addToken } from "../../../db/queries/tokenQueries";
-import { Chain, abis } from "../../../projects";
+import { abis } from "../../../projects";
 import { fetchResizeUploadImages } from "../../../services/images";
 import { getContractWeb3 } from "../../../web3/contractWeb3";
 import { getWeb3 } from "../../../web3/providers";
@@ -70,7 +70,7 @@ export const processTexturesMint = async (
     image,
   );
 
-  const web3 = getWeb3(Chain.mainnet);
+  const web3 = getWeb3("mainnet");
   const contract = getContractWeb3(
     web3,
     abis[project._id],
