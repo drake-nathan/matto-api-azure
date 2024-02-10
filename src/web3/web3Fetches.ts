@@ -1,44 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 import type { Context } from "@azure/functions";
-import type { Connection } from "mongoose";
 import type { Contract } from "web3-eth-contract";
 
 import type { IAttribute, IScriptInputs } from "../db/schemas/schemaTypes";
-
-import { getLastTxProcessed } from "../db/queries/transactionQueries";
-
-export const fetchEvents = async (
-  contract: Contract,
-  events: string[],
-  project_id: number,
-  conn: Connection,
-  creationBlock: number,
-  fetchAll = false,
-) => {
-  const fromBlock =
-    fetchAll ? creationBlock : (
-      (await getLastTxProcessed(project_id, conn)) ?? creationBlock
-    );
-  const options = { fromBlock };
-
-  const allTransactions = await contract.getPastEvents("allEvents", options);
-  const filteredTransactions = allTransactions.filter((tx) => {
-    if (project_id === 7) {
-      if (tx.event === "OrderChanged") {
-        const mintTx = allTransactions.find(
-          (t) =>
-            t.transactionHash.toLowerCase() ===
-              tx.transactionHash.toLowerCase() && t.event === "Transfer",
-        );
-        if (mintTx) return false;
-      }
-    }
-
-    return events.includes(tx.event);
-  });
-
-  return { filteredTransactions, totalTxCount: allTransactions.length };
-};
 
 export const fetchScriptInputs = async (
   contract: Contract,

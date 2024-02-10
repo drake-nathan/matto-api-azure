@@ -14,11 +14,7 @@ import textureAndHuesAbi from "./abis/TextureAndHues.abi.json";
 import haikuAbi from "./haiku/abi/haiku.abi.json";
 import mfaAbi from "./mfa/abi/mfa.abi.json";
 
-export enum Chain {
-  goerli = "goerli",
-  mainnet = "mainnet",
-}
-
+export type Chain = "goerli" | "mainnet";
 /**
  * ProjectId is used to identify the project in the database.
  *
@@ -79,7 +75,7 @@ export const projects: IProject[] = [
     artist: "Matto",
     artist_address: "0x318c7370927287a7d03fa659848C25db88213DbA",
     aspect_ratio: 1,
-    chain: Chain.goerli,
+    chain: "goerli",
     collection_description:
       "**Chainlife tokens:** microcosms of digital life that are interactive, evolving, and aware.\n\n**Chainlife world:** ever-changing macrocosm that is controlled by you, collaborative, (also) on-chain, and extendible.\n\n**Chainlife forest:** growing a healthy forest ecosystem (not on-chain) to fight climate change and keep Chainlife carbon negative.\n\n**Chainlife project:** genesis project of Matto's Blockchain-interactive NFT platform, GenGames.\n\nLearn more at [chainlife.xyz](https://chainlife.xyz/).",
     collection_image:
@@ -128,7 +124,7 @@ export const projects: IProject[] = [
     artist: "Matto",
     artist_address: "0xF8d9056db2C2189155bc25A30269dc5dDeD15d46",
     aspect_ratio: 1,
-    chain: Chain.mainnet,
+    chain: "mainnet",
     collection_description:
       "**Chainlife tokens:** microcosms of digital life that are interactive, evolving, and aware.\n\n**Chainlife world:** an ever-changing macrocosm that is controlled by you, that is collaborative, (also) on-chain, and extendible.\n\n**Chainlife forest:** growing a healthy forest ecosystem (not on-chain) to fight climate change and keep Chainlife carbon negative.\n\n**Chainlife project:** genesis project of Matto's blockchain interactive NFT platform, GenGames.\n\nLearn more at [chainlife.xyz](https://chainlife.xyz/).",
     collection_image:
@@ -179,7 +175,7 @@ export const projects: IProject[] = [
     artist: "Matto",
     artist_address: "0xA6a4Fe416F8Bf46bc3bCA068aC8b1fC4DF760653",
     aspect_ratio: 1,
-    chain: Chain.mainnet,
+    chain: "mainnet",
     collection_description:
       "Mathare Memories is an interactive, multimedia collection of 68 photographs taken in the Mathare slum of Nairobi, Kenya in 2007. High resolution images and audio files are permanently stored on Arweave, are backed up on Github, and are retrieved for display by on-chain JavaScript running in your browser.\n\nInteractivity:\n\nPress 'P' or long press/click and release on an image to play a short audio recording of Matto reading the token's description. Press 'N' or double-click to display the next token in the collection, and press 'R' to return to the token's starting content. Use the greater-than and less-than keys to change the brightness of the matte displayed behind the image.\n\nProceeds and Royalties:\n\n100% of all artist proceeds are being transparently directed to charity. 100% of all 'creator' secondary fees are being transparently directed to charity. Matto and substratum.art (the platform that powers this multimedia collection) receive no compensation for this project.\n\nAs a 100% charity project, 10% royalties are expected to be paid on all sales and should be sent to the collection's smart contract address.\n\nOn-Chain Metadata:\n\nLike all substratum.art projects, all metadata is stored on-chain. Like all substratum.art projects that use JavaScript, ARIA descriptions are included in the live generator's HTML to enhance the experience of audiences with visual impairment.",
     collection_image:
@@ -221,7 +217,7 @@ export const projects: IProject[] = [
     artist: "Immutable Computer",
     artist_address: "0x18120f6064de06afb42bc89a980c4d80267683ac",
     aspect_ratio: 1.77,
-    chain: Chain.mainnet,
+    chain: "mainnet",
     collection_description:
       "Each Negative Carbon NFT (NCNFT) offsets more than its carbon footprint using rigorously validated, third-party audited, retired, carbon offsets. Each token is assigned an offset certificate and mint, and that certificate's serial number becomes the token's generative art's entropy. For more information, visit http://immutablecomputer.com/carbon.html.",
     collection_name: "Negative Carbon NFT",
@@ -259,7 +255,7 @@ export const projects: IProject[] = [
     artist: "Matto",
     artist_address: "0xA6a4Fe416F8Bf46bc3bCA068aC8b1fC4DF760653",
     aspect_ratio: 1,
-    chain: Chain.mainnet,
+    chain: "mainnet",
     collection_description:
       "Inspired by Buddhist philosophy, Crystallized Illusions is a collection of 99 pieces created through a generative process. Three variations of this process were made to correspond to the categories of illusions as described by Zhiyi (538-597 CE), the fourth patriarch of the T'ien-t'ai (or Tí Taî) Buddhist tradition. Each process was used to created 33 distinct images.",
     collection_name: "Crystallized Illusions",
@@ -297,7 +293,7 @@ export const projects: IProject[] = [
     artist: "Matto",
     artist_address: "0xA6a4Fe416F8Bf46bc3bCA068aC8b1fC4DF760653",
     aspect_ratio: 1,
-    chain: Chain.mainnet,
+    chain: "mainnet",
     collection_description:
       "Texture and Hues is an experimental project in minimalism. Images are vector graphic SVGs, and both the images and metadata are created on-chain. Coded by Matto.",
     collection_name: "Texture and Hues",
@@ -332,7 +328,7 @@ export const projects: IProject[] = [
     artist: "Matto",
     artist_address: "0xA6a4Fe416F8Bf46bc3bCA068aC8b1fC4DF760653",
     aspect_ratio: 1,
-    chain: Chain.mainnet,
+    chain: "mainnet",
     collection_description:
       "BLONKS are owner-responsive, 100% on-chain, CC0, generative vector-graphic illustrations.\n\nTraits are based on values generated at mint and never change, while visual aspects of each NFT are determined by its owner's address (preview changes directly from the smart contract or at http://blonks.xyz). BLONKS NFTs live on Ethereum and require no off-chain dependencies.",
     collection_name: "BLONKS",
@@ -367,7 +363,7 @@ export const projects: IProject[] = [
     artist: "Matto",
     artist_address: "0xF8d9056db2C2189155bc25A30269dc5dDeD15d46",
     aspect_ratio: 0.5625,
-    chain: Chain.goerli,
+    chain: "goerli",
     collection_description:
       "100x10x1 Composition A, is an experimental generative art project: 100 generative tokens, each with 10 layers, together form 1 composite token (100x10x1).",
     collection_name: "100x10x1-a",
@@ -403,7 +399,7 @@ export const projects: IProject[] = [
     artist: "Matto",
     artist_address: "0xA6a4Fe416F8Bf46bc3bCA068aC8b1fC4DF760653",
     aspect_ratio: 1,
-    chain: Chain.mainnet,
+    chain: "mainnet",
     collection_description:
       "Freestyle H(ai)ku is an extension of Matto's 'Freestyle Haiku' poetry project (https://freestylehaiku.com), where he uses various AI technologies to interpret each of his poems, visualize the interpretations, and enhance the resulting artworks detail. Upon mint, each poem is individually stored in the smart contract as the token's description (directly and individually accessible by the smart contract). Image media, AI-generated poem interpretations, and attributes metadata is stored on Arweave, and all metadata is assembled into the token by Substratum. The resulting work is more than a poem or a visual, it is also a vehicle for the introspection of the human condition through the lens of early Artificial Intelligence systems.",
     collection_name: "Freestyle H(ai)ku",
@@ -437,7 +433,7 @@ export const projects: IProject[] = [
     artist: "Matto",
     artist_address: "0xA6a4Fe416F8Bf46bc3bCA068aC8b1fC4DF760653",
     aspect_ratio: 1, // This will vary by token, there is now width_ratio and height_ratio. MFA will be variable. Haiku will probably always be 1.
-    chain: Chain.goerli,
+    chain: "goerli",
     collection_description:
       "MFA is a varied collection of 1/1 fine artworks by Matto.",
     collection_name: "MFA",
@@ -537,7 +533,7 @@ export const projectSizes: ProjectSizes = {
 
 // {
 //   _id: ProjectId.nfn,
-//   chain: Chain.mainnet,
+//   chain: "mainnet",
 //   project_name: 'nfn',
 //   project_slug: ProjectSlug.nfn,
 //   collection_name: 'NFN (Non-Fungible-Novels)',
@@ -573,7 +569,7 @@ export const projectSizes: ProjectSizes = {
 // },
 // {
 //   _id: ProjectId.mfa,
-//   chain: Chain.mainnet,
+//   chain: "mainnet",
 //   project_name: 'MFA',
 //   project_slug: ProjectSlug.mfa,
 //   collection_name: 'MFA (Mattos Fine Art)',
@@ -609,7 +605,7 @@ export const projectSizes: ProjectSizes = {
 // },
 // {
 //   _id: ProjectId.pfp,
-//   chain: Chain.mainnet,
+//   chain: "mainnet",
 //   project_name: 'PFP',
 //   project_slug: ProjectSlug.pfp,
 //   collection_name: 'PFP (Portraits for People)',

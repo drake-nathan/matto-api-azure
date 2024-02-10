@@ -3,7 +3,7 @@ import { createPublicClient, http } from "viem";
 import { goerli, mainnet } from "viem/chains";
 import Web3 from "web3";
 
-import { Chain } from "../projects";
+import type { Chain } from "../projects";
 
 dotenv.config();
 
@@ -14,9 +14,9 @@ if (!mainnetNode || !goerliNode) {
   throw new Error("RPC_NODE_MAINNET or RPC_NODE_GOERLI not found in .env");
 }
 
-const nodes = {
-  [Chain.goerli]: goerliNode,
-  [Chain.mainnet]: mainnetNode,
+const nodes: Record<Chain, string> = {
+  goerli: goerliNode,
+  mainnet: mainnetNode,
 };
 
 export const getWeb3 = (chain: Chain): Web3 => {
@@ -28,10 +28,7 @@ export const getWeb3 = (chain: Chain): Web3 => {
 };
 
 export const getViem = (chain: Chain) => {
-  const chains = {
-    [Chain.goerli]: goerli,
-    [Chain.mainnet]: mainnet,
-  };
+  const chains = { goerli, mainnet };
 
   const client = createPublicClient({
     chain: chains[chain],

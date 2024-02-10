@@ -20,14 +20,13 @@ import {
   removeDuplicateTokens,
 } from "../../db/queries/tokenQueries";
 import {
-  addTransaction,
   getTransactionsByEvent,
   getTxCounts,
 } from "../../db/queries/transactionQueries";
 import { ProjectId, ProjectSlug, abis } from "../../projects";
 import { getContractWeb3 } from "../../web3/contractWeb3";
 import { getWeb3 } from "../../web3/providers";
-import { fetchEvents, fetchScriptInputs } from "../../web3/web3Fetches";
+import { fetchScriptInputs } from "../../web3/web3Fetches";
 import { nullAddress } from "../constants";
 import { getProcessMintFunction } from "../tokenHelpers";
 import {
@@ -36,6 +35,7 @@ import {
 } from "../tokenHelpers/projects/chainlifeHelpers";
 import { updateMathareDescriptions } from "../tokenHelpers/projects/mathareHelpers";
 import { processNewTransactions } from "../transactionHelpers";
+import { reconcileTransactions } from "./reconcileTransactions";
 
 const processNewProjects = async (projects: IProject[], conn: Connection) => {
   // try to add all projects to db, duplicates removed
@@ -124,32 +124,6 @@ const checkForMissingAttributes = async (
       );
     }
   }
-};
-
-const reconcileTransactions = async (
-  conn: Connection,
-  context: Context,
-  project: IProject,
-  contract: Contract,
-) => {
-  const { _id: project_id, chain, creation_block, events } = project;
-
-  const { filteredTransactions: allTransactions, totalTxCount } =
-    await fetchEvents(contract, events, project_id, conn, creation_block, true);
-
-  const newTransactionsAdded = await Promise.all(
-    allTransactions.map((tx) => addTransaction(tx, project_id, conn, chain)),
-  );
-
-  await processNewTransactions(
-    newTransactionsAdded,
-    project,
-    contract,
-    context,
-    conn,
-  );
-
-  return { allTransactions, totalTxCount };
 };
 
 const reconcileTokens = async (
