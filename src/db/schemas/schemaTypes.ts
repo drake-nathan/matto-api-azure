@@ -3,7 +3,10 @@ import type { Viewport } from "puppeteer";
 
 import type { Chain, ProjectId, ProjectSlug } from "../../projects";
 
-export type IRoyaltyInfo = (
+export type IRoyaltyInfo = {
+  additional_payee?: string;
+  additional_payee_bps?: number;
+} & (
   | {
       artist_address: string;
       royalty_fee_by_id: number;
@@ -16,10 +19,7 @@ export type IRoyaltyInfo = (
       royalty_address: string;
       royalty_bps: number;
     }
-) & {
-  additional_payee?: string;
-  additional_payee_bps?: number;
-};
+);
 
 export interface GenScripts {
   alt?: string;
