@@ -88,7 +88,7 @@ export const projects: IProject[] = [
     devParams: {
       isBulkMint: false,
       useInDev: false,
-      useInProd: true,
+      useInProd: false,
       usesPuppeteer: true,
       usesScriptInputs: true,
       usesSvgs: false,
@@ -185,7 +185,7 @@ export const projects: IProject[] = [
     creation_block: 16215143,
     devParams: {
       isBulkMint: true,
-      useInDev: true,
+      useInDev: false,
       useInProd: true,
       usesPuppeteer: false,
       usesScriptInputs: true,
@@ -225,7 +225,7 @@ export const projects: IProject[] = [
     creation_block: 16312447,
     devParams: {
       isBulkMint: false,
-      useInDev: true,
+      useInDev: false,
       useInProd: true,
       usesPuppeteer: true,
       usesScriptInputs: true,
@@ -263,7 +263,7 @@ export const projects: IProject[] = [
     creation_block: 16313758,
     devParams: {
       isBulkMint: true,
-      useInDev: true,
+      useInDev: false,
       useInProd: true,
       usesPuppeteer: true,
       usesScriptInputs: true,
@@ -301,7 +301,7 @@ export const projects: IProject[] = [
     creation_block: 15415501,
     devParams: {
       isBulkMint: true,
-      useInDev: true,
+      useInDev: false,
       useInProd: true,
       usesPuppeteer: false,
       usesScriptInputs: false,
@@ -336,7 +336,7 @@ export const projects: IProject[] = [
     creation_block: 17315032, // not the real creation block
     devParams: {
       isBulkMint: true,
-      useInDev: true,
+      useInDev: false,
       useInProd: true,
       usesPuppeteer: false,
       usesScriptInputs: false,
@@ -372,8 +372,8 @@ export const projects: IProject[] = [
     description: "",
     devParams: {
       isBulkMint: false,
-      useInDev: true,
-      useInProd: true,
+      useInDev: false,
+      useInProd: false,
       usesPuppeteer: false,
       usesScriptInputs: false,
       usesSvgs: true,
@@ -407,7 +407,7 @@ export const projects: IProject[] = [
     creation_block: 18243172,
     devParams: {
       isBulkMint: false,
-      useInDev: true,
+      useInDev: false,
       useInProd: true,
       usesPuppeteer: false,
       usesScriptInputs: false,

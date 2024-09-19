@@ -36,15 +36,16 @@ export const addTransaction = async (
 
   if (doesTxExist) return null;
 
-  const blockTime = (await viem.getBlock({ blockNumber: BigInt(block_number) }))
-    .timestamp;
+  // const blockTime = (await viem.getBlock({ blockNumber: BigInt(block_number) }))
+  //   .timestamp;
 
   const parsedTx: ITransaction = {
     block_number,
     event_type,
     project_id,
     token_id: eventName === "OrderChanged" ? undefined : tokenId,
-    transaction_date: new Date(Number(blockTime) * 1000),
+    // This used to pull the real block time, but that was rate-limiting infura, so just saving new date instead
+    transaction_date: new Date(),
     transaction_hash,
   };
 
