@@ -26,7 +26,9 @@ export const processHaikuEvent: ProcessEventFunction = async (
   );
 
   // NOTE: Haiku doesn't update on transfers
-  if (event_type === "Transfer" || !token_id) return null;
+  if (event_type === "Transfer" || !token_id) {
+    return null;
+  }
 
   if (!isAddress(contractAddress)) {
     throw new Error("Invalid contract address");

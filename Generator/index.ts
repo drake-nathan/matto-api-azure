@@ -97,8 +97,9 @@ const httpTrigger: AzureFunction = async (
     };
 
     // adds mobile controls script if query param ?mobile=true
-    if (req.query.mobile && req.query.mobile === "true")
+    if (req.query.mobile && req.query.mobile === "true") {
       genOptions.mobile = true;
+    }
 
     const generatorHtml = getHtml(
       project_name,
@@ -116,13 +117,17 @@ const httpTrigger: AzureFunction = async (
     };
   } catch (error) {
     context.log.error(error);
-    if (process.env.NODE_ENV === "test") console.error(error);
+    if (process.env.NODE_ENV === "test") {
+      console.error(error);
+    }
     context.res = {
       body: "Something went wrong, ngmi.",
       status: 500,
     };
   } finally {
-    if (conn) await conn.close();
+    if (conn) {
+      await conn.close();
+    }
   }
 };
 

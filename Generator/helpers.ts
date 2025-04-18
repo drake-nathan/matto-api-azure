@@ -99,7 +99,9 @@ export const getScriptType = (
 ): ScriptType => {
   const regex = /esoterra/gi;
 
-  if (!genScripts.alt && !genScripts.painting) return ScriptType.main;
+  if (!genScripts.alt && !genScripts.painting) {
+    return ScriptType.main;
+  }
 
   if (
     (req.query.alt === "false" || req.query.esoterra === "false") &&
@@ -115,14 +117,17 @@ export const getScriptType = (
     return ScriptType.alt;
   }
 
-  if (req.query.painting && req.query.painting === "true")
+  if (req.query.painting && req.query.painting === "true") {
     return ScriptType.painting;
+  }
 
   if (projectSlug === "chainlife" || projectSlug === "chainlife-testnet") {
     const scriptInputs: IScriptInputs = JSON.parse(scriptInputsJson);
     const { custom_rule } = scriptInputs;
 
-    if (custom_rule?.match(regex)) return ScriptType.alt;
+    if (custom_rule?.match(regex)) {
+      return ScriptType.alt;
+    }
   }
 
   return ScriptType.main;

@@ -8,7 +8,9 @@ export const addProject = async (projectToAdd: IProject, conn: Connection) => {
   const Project = conn.model<IProject>("Project");
 
   const doesProjectExist = await Project.exists({ _id });
-  if (doesProjectExist) return;
+  if (doesProjectExist) {
+    return;
+  }
 
   const newProject = new Project({ id: _id, ...projectToAdd });
   const query = await newProject.save();

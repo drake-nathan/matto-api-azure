@@ -27,13 +27,17 @@ const httpTrigger: AzureFunction = async (context: Context): Promise<void> => {
     };
   } catch (error) {
     context.log.error(error);
-    if (process.env.NODE_ENV === "test") console.error(error);
+    if (process.env.NODE_ENV === "test") {
+      console.error(error);
+    }
     context.res = {
       body: "Internal Server Error",
       status: 500,
     };
   } finally {
-    if (conn) await conn.close();
+    if (conn) {
+      await conn.close();
+    }
   }
 };
 

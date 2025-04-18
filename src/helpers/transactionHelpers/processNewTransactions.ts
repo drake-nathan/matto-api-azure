@@ -34,7 +34,9 @@ export const processNewTransactions = async (
   const newTokenIds: number[] = [];
 
   for await (const tx of newTxs) {
-    if (!tx) continue;
+    if (!tx) {
+      continue;
+    }
 
     const { event_type, token_id } = tx;
     const script_inputs =
@@ -43,7 +45,9 @@ export const processNewTransactions = async (
       : undefined;
 
     if (event_type === "Mint") {
-      if (isBulkMint) continue;
+      if (isBulkMint) {
+        continue;
+      }
 
       if (!token_id) {
         if (project_slug !== ProjectSlug["100x10x1-a-goerli"]) {

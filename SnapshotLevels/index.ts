@@ -33,7 +33,9 @@ const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
   } catch (error) {
     context.log.error("SnapshotLevels function error", error);
   } finally {
-    if (conn) await conn.close();
+    if (conn) {
+      await conn.close();
+    }
   }
 };
 

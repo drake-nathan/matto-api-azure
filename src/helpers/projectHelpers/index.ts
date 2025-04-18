@@ -159,7 +159,9 @@ const reconcileBulkMint = async (
       project_slug,
       conn,
     );
-    if (doesTokenExist) continue;
+    if (doesTokenExist) {
+      continue;
+    }
 
     try {
       const scriptInputs =
@@ -284,7 +286,9 @@ const checkIfTokenZeroExists = async (
 
   const doesTokenExist = await checkIfTokenExists(0, slug, conn);
 
-  if (doesTokenExist) return;
+  if (doesTokenExist) {
+    return;
+  }
 
   const processMint = getProcessMintFunction(id);
 
@@ -335,7 +339,9 @@ export const reconcileProject = async (
   await reconcileDescriptions(conn, context, project);
 
   // if no events to listen for, no need to store transactions at all, so we can skip the blockchain pings
-  if (!events.length) return;
+  if (!events.length) {
+    return;
+  }
 
   // fetch all transactions from blockchain, add missing ones
   const { allTransactions, totalTxCount } = await reconcileTransactions({

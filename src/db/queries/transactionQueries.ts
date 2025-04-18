@@ -34,7 +34,9 @@ export const addTransaction = async (
     transaction_hash,
   });
 
-  if (doesTxExist) return null;
+  if (doesTxExist) {
+    return null;
+  }
 
   // const blockTime = (await viem.getBlock({ blockNumber: BigInt(block_number) }))
   //   .timestamp;

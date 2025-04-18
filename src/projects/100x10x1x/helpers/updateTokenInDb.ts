@@ -28,7 +28,9 @@ export const updateTokenInDb = async ({
   project,
   tokenId,
 }: Params) => {
-  if (tokenId === 0) context.log.info("Updating token zero");
+  if (tokenId === 0) {
+    context.log.info("Updating token zero");
+  }
 
   const { image, imageMid, imageSmall, tokenData } =
     await getUpdatedTokenValues({

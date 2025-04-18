@@ -44,7 +44,7 @@ export const fetchEvents = async ({
 }) => {
   const fromBlock =
     fetchAll ? creationBlock : (
-      (await getLastTxProcessed(projectId, conn)) ?? creationBlock
+      ((await getLastTxProcessed(projectId, conn)) ?? creationBlock)
     );
 
   const viem = getViem(chain);
@@ -65,7 +65,9 @@ export const fetchEvents = async ({
             t.transactionHash.toLowerCase() ===
               tx.transactionHash.toLowerCase() && t.eventName === "Transfer",
         );
-        if (mintTx) return false;
+        if (mintTx) {
+          return false;
+        }
       }
     }
 

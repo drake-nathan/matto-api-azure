@@ -214,7 +214,9 @@ export const getLevels = async (
   const resParsed = results.map((token) => {
     const { script_inputs, token_id } = token;
 
-    if (!script_inputs) return { level_shift: 0, token_id, transfer_count: 0 };
+    if (!script_inputs) {
+      return { level_shift: 0, token_id, transfer_count: 0 };
+    }
 
     const { level_shift, transfer_count } = script_inputs;
 

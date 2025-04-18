@@ -45,7 +45,9 @@ const httpTrigger: AzureFunction = (context: Context) => {
     };
   } catch (error) {
     context.log.error(error);
-    if (process.env.NODE_ENV === "test") console.error(error);
+    if (process.env.NODE_ENV === "test") {
+      console.error(error);
+    }
     context.res = {
       body: "Something went wrong, ngmi.",
       status: 500,
