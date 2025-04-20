@@ -40,7 +40,7 @@ export const reconcileTransactions = async ({
     });
 
   const newTransactionsAdded = await Promise.all(
-    allTransactions.map((tx) => addTransaction(tx, project_id, conn, chain)),
+    allTransactions.map((tx) => addTransaction(tx, project_id, conn)),
   );
 
   await processNewTransactions(

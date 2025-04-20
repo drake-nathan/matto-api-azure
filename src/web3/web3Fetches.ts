@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import type { Context } from "@azure/functions";
 import type { Contract } from "web3-eth-contract";
 
@@ -15,7 +14,7 @@ export const fetchScriptInputs = async (
   try {
     const parsedScriptInputs: IScriptInputs = JSON.parse(scriptInputsJson);
     return parsedScriptInputs;
-  } catch (err) {
+  } catch {
     // NOTE: This solved a parse error specifically for Chainlife, but may not work for other projects
     const propertiesArr = scriptInputsJson.split(",");
     const parsedScriptInputs: IScriptInputs = {

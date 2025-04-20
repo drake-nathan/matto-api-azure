@@ -9,6 +9,6 @@ describe("deEscapeSvg()", () => {
   it("should return the expected SVG", () => {
     const result = deEscapeSvg(inputSvg);
 
-    expect(result).toEqual(expectedSvg);
+    expect(result).toStrictEqual(expectedSvg);
   });
 });

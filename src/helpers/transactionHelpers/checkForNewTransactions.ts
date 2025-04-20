@@ -55,9 +55,7 @@ export const checkForNewTransactions = async ({
   });
 
   const newTransactionsAdded = await Promise.all(
-    fetchedTransactions.map(async (tx) =>
-      addTransaction(tx, project_id, conn, chain),
-    ),
+    fetchedTransactions.map(async (tx) => addTransaction(tx, project_id, conn)),
   );
   const newTxNoNull = newTransactionsAdded.filter(Boolean);
 

@@ -45,7 +45,9 @@ const runPuppeteer = async (
 
   // need to wait for the full image to generate before taking a screenshot
   if (projectId === ProjectId.negativeCarbon) {
-    await new Promise((resolve) => setTimeout(resolve, 10000));
+    await new Promise((resolve) => {
+      setTimeout(resolve, 10000);
+    });
   }
 
   const screenshot = await page.screenshot({ encoding: "binary" });

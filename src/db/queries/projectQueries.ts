@@ -84,7 +84,7 @@ export const checkIfProjectExists = async (
   const Project = conn.model<IProject>("Project");
 
   const query = await Project.exists({ project_slug });
-  return !!query;
+  return Boolean(query);
 };
 
 export const updateCollectionDescription = (

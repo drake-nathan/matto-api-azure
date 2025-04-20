@@ -19,7 +19,7 @@ import {
   getCurrentTokenSupply,
 } from "../../db/queries/tokenQueries";
 import { getTxCounts } from "../../db/queries/transactionQueries";
-import { ProjectId, ProjectSlug, abis } from "../../projects";
+import { abis, ProjectId, ProjectSlug } from "../../projects";
 import { getContractWeb3 } from "../../web3/contractWeb3";
 import { getWeb3 } from "../../web3/providers";
 import { fetchScriptInputs } from "../../web3/web3Fetches";
@@ -145,7 +145,7 @@ const reconcileBulkMint = async (
   const iterateFrom = startingIndex;
   const iteratorSize = maxSupply;
 
-  const tokenIterator = [...Array(iteratorSize + iterateFrom).keys()].slice(
+  const tokenIterator = [...new Array(iteratorSize + iterateFrom).keys()].slice(
     iterateFrom,
   );
 

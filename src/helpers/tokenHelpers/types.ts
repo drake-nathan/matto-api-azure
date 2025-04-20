@@ -8,11 +8,11 @@ import type {
 } from "../../db/schemas/schemaTypes";
 
 export type ProcessMintReturn = Promise<
+  | undefined
   | {
       newSupply: number | undefined;
       newTokenId: number;
     }
-  | undefined
 >;
 
 export type ProcessMintFunction = (

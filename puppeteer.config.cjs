@@ -1,7 +1,7 @@
-const { join } = require("path");
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const path = require("node:path");
 /**
- * @type {import("puppeteer").Configuration}
  */
 module.exports = {
-  cacheDirectory: join(__dirname, "cache", "puppeteer"),
+  cacheDirectory: path.join(__dirname, "cache", "puppeteer"),
 };

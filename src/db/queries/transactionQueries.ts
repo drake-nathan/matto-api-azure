@@ -1,19 +1,16 @@
 import type { Connection } from "mongoose";
 
-import type { Chain, ProjectId } from "../../projects";
+import type { ProjectId } from "../../projects";
 import type { IncomingTx } from "../../web3/fetches/fetchEvents";
 import type { ITransaction } from "../schemas/schemaTypes";
 
 import { nullAddress } from "../../helpers/constants";
-import { getViem } from "../../web3/providers";
 
 export const addTransaction = async (
   incomingTx: IncomingTx,
   project_id: ProjectId,
   conn: Connection,
-  chain: Chain,
 ) => {
-  const viem = getViem(chain);
   const Transaction = conn.model<ITransaction>("Transaction");
   const {
     args: { from, tokenId },
@@ -37,9 +34,6 @@ export const addTransaction = async (
   if (doesTxExist) {
     return null;
   }
-
-  // const blockTime = (await viem.getBlock({ blockNumber: BigInt(block_number) }))
-  //   .timestamp;
 
   const parsedTx: ITransaction = {
     block_number,
@@ -114,7 +108,6 @@ export const removeDuplicateTransactions = async (
     { $match: { count: { $gte: 2 } } },
   ]);
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   const duplicateIds = query.flatMap((q) => q.uniqueIds.slice(1));
 
   if (duplicateIds.length) {

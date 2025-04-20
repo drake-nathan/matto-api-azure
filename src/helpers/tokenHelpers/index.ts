@@ -46,8 +46,8 @@ export const getProcessMintFunction = (
 
 export const getProcessEventFunction = (
   projectId: ProjectId,
-): ProcessEventFunction | null => {
-  const processEventFunctions: Record<ProjectId, ProcessEventFunction | null> =
+): null | ProcessEventFunction => {
+  const processEventFunctions: Record<ProjectId, null | ProcessEventFunction> =
     {
       [ProjectId.blonks]: processBlonksEvent,
       [ProjectId.chainlifeMainnet]: processChainlifeEvent,

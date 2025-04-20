@@ -1,20 +1,19 @@
 {
   "azureFunctions.deploySubpath": ".",
-  // "azureFunctions.postDeployTask": "npm install (functions)",
   "azureFunctions.projectLanguage": "TypeScript",
   "azureFunctions.projectRuntime": "~4",
-  // "azureFunctions.preDeployTask": "npm prune (functions)"
   "azureFunctions.scmDoBuildDuringDeployment": true,
   "debug.internalConsoleOptions": "neverOpen",
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },
   "editor.defaultFormatter": "esbenp.prettier-vscode",
-
   "editor.formatOnSave": true,
+  "eslint.runtime": "node",
   "files.exclude": {
     "__azurite*": true,
     "__blobstorage__": true,
     "__queuestorage__": true
-  }
+  },
+  "typescript.tsdk": "node_modules/typescript/lib"
 }
