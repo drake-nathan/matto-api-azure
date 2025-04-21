@@ -1,9 +1,12 @@
 import * as dotenv from "dotenv";
-import { createPublicClient, http } from "viem";
+import { createPublicClient, http, type PublicClient } from "viem";
 import { goerli, mainnet } from "viem/chains";
 import Web3 from "web3";
 
 import type { Chain } from "../projects";
+
+// Import the counter function
+import { incrementRpcCount } from "../utils/rpcCounter";
 
 dotenv.config();
 
@@ -18,21 +21,58 @@ const nodes: Record<Chain, string> = {
   mainnet: mainnetNode,
 };
 
-export const getWeb3 = (chain: Chain): Web3 => {
-  const web3Provider = new Web3.providers.HttpProvider(nodes[chain]);
+// Update getWeb3 to accept functionName & use arrow function
+export const getWeb3: (chain: Chain, functionName?: string) => Web3 = (
+  chain,
+  functionName = "",
+) => {
+  // Create the original provider
+  const originalProvider = new Web3.providers.HttpProvider(nodes[chain]);
 
-  const web3 = new Web3(web3Provider);
+  const proxiedProvider = new Proxy(originalProvider, {
+    get: (target, prop, receiver) => {
+      const originalValue = Reflect.get(target, prop, receiver);
+      if (prop === "send" && typeof originalValue === "function") {
+        return (...args: unknown[]) => {
+          incrementRpcCount(functionName);
+          return originalValue.apply(target, args);
+        };
+      }
+      return originalValue;
+    },
+  });
+
+  const web3 = new Web3(proxiedProvider);
 
   return web3;
 };
 
-export const getViem = (chain: Chain) => {
+// Update getViem to accept functionName & use arrow function
+// Set correct return type PublicClient
+export const getViem: (chain: Chain, functionName?: string) => PublicClient = (
+  chain,
+  functionName = "",
+) => {
   const chains = { goerli, mainnet };
 
-  const client = createPublicClient({
+  // Create the original client
+  const originalClient = createPublicClient({
     chain: chains[chain],
     transport: http(nodes[chain]),
   });
 
-  return client;
+  const proxiedClient = new Proxy(originalClient, {
+    get: (target, prop, receiver) => {
+      const originalValue = Reflect.get(target, prop, receiver);
+      if (typeof originalValue === "function") {
+        return (...args: unknown[]) => {
+          incrementRpcCount(functionName);
+          return originalValue.apply(target, args);
+        };
+      }
+      return originalValue;
+    },
+  });
+
+  return proxiedClient;
 };

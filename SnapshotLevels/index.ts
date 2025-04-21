@@ -7,6 +7,7 @@ import { connectionFactory } from "../src/db/connectionFactory";
 import { addLevelSnapshot } from "../src/db/queries/snapshotQueries";
 import { getLevels } from "../src/db/queries/tokenQueries";
 import { ProjectSlug } from "../src/projects";
+import { logRpcCount } from "../src/utils/rpcCounter";
 
 const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
   let conn: Connection | undefined;
@@ -36,6 +37,7 @@ const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
     if (conn) {
       await conn.close();
     }
+    logRpcCount(context);
   }
 };
 

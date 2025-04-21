@@ -32,7 +32,11 @@ import { updateMathareDescriptions } from "../tokenHelpers/projects/mathareHelpe
 import { reconcileTokens } from "./reconcileTokens";
 import { reconcileTransactions } from "./reconcileTransactions";
 
-const processNewProjects = async (projects: IProject[], conn: Connection) => {
+const processNewProjects = async (
+  projects: IProject[],
+  conn: Connection,
+  functionName?: string,
+) => {
   // try to add all projects to db, duplicates removed
   const resultArr = await Promise.all(
     projects.map(async (project) => {
@@ -42,7 +46,9 @@ const processNewProjects = async (projects: IProject[], conn: Connection) => {
       let { creation_block } = project;
 
       if (project.project_slug === ProjectSlug.blonks) {
-        const block = await getWeb3(project.chain).eth.getBlock("latest");
+        const block = await getWeb3(project.chain, functionName).eth.getBlock(
+          "latest",
+        );
         const { number: blockNumber } = block;
         creation_block = blockNumber;
       }
@@ -71,13 +77,18 @@ export const checkForNewProjects = async (
   context: Context,
   projects: IProject[],
   conn: Connection,
+  functionName?: string,
 ) => {
   const isNewProject = await checkIfNewProjects(projects, conn);
 
   if (isNewProject) {
     context.log.info("New project found, adding to db...");
 
-    const { namesOfProjectsAdded } = await processNewProjects(projects, conn);
+    const { namesOfProjectsAdded } = await processNewProjects(
+      projects,
+      conn,
+      functionName,
+    );
 
     context.log.info("These new projects were added:", ...namesOfProjectsAdded);
   } else {
@@ -299,6 +310,7 @@ export const reconcileProject = async (
   context: Context,
   project: IProject,
   conn: Connection | undefined,
+  functionName?: string,
 ) => {
   const {
     _id: project_id,
@@ -348,6 +360,7 @@ export const reconcileProject = async (
     conn,
     context,
     contract,
+    functionName,
     project,
   });
 

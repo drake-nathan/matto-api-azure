@@ -25,6 +25,17 @@ const fetchSchema = z.array(incomingTxSchema);
 
 export type IncomingTx = z.infer<typeof incomingTxSchema>;
 
+interface FetchEventsParams {
+  chain: Chain;
+  conn: Connection;
+  contractAddress: Address;
+  creationBlock: number;
+  events: string[];
+  fetchAll?: boolean;
+  functionName?: string;
+  projectId: number;
+}
+
 export const fetchEvents = async ({
   chain,
   conn,
@@ -32,22 +43,15 @@ export const fetchEvents = async ({
   creationBlock,
   events,
   fetchAll = false,
+  functionName,
   projectId,
-}: {
-  chain: Chain;
-  conn: Connection;
-  contractAddress: Address;
-  creationBlock: number;
-  events: string[];
-  fetchAll?: boolean;
-  projectId: number;
-}) => {
+}: FetchEventsParams) => {
   const fromBlock =
     fetchAll ? creationBlock : (
-      ((await getLastTxProcessed(projectId, conn)) ?? creationBlock)
+      ((await getLastTxProcessed(projectId, conn)) ?? creationBlock) + 1
     );
 
-  const viem = getViem(chain);
+  const viem = getViem(chain, functionName);
 
   const allTransactions = await viem.getContractEvents({
     abi: oneHundredxAbi,

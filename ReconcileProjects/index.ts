@@ -13,10 +13,13 @@ import {
 } from "../src/helpers/projectHelpers";
 import { updateProjectIfNeeded } from "../src/helpers/projectHelpers/updateProjectIfNeeded";
 import { projects as allProjects } from "../src/projects";
+import { logRpcCount } from "../src/utils/rpcCounter";
 
 dotenv.config();
 
-const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
+const reconcileProjects: AzureFunction = async (
+  context: Context,
+): Promise<void> => {
   let conn: Connection | undefined;
   const projects: IProject[] = [];
 
@@ -33,12 +36,22 @@ const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
   try {
     conn = await connectionFactory(context);
 
-    await checkForNewProjects(context, projects, conn); // checks for new projects in the projects array that it receives and adds it to the database
+    await checkForNewProjects(
+      context,
+      projects,
+      conn,
+      context.executionContext.functionName,
+    );
 
     for await (const project of projects) {
       const _project = await updateProjectIfNeeded(project, context, conn);
 
-      await reconcileProject(context, _project, conn);
+      await reconcileProject(
+        context,
+        _project,
+        conn,
+        context.executionContext.functionName,
+      );
     }
 
     const numOfDuplicateTransactions = await removeDuplicateTransactions(conn);
@@ -63,7 +76,8 @@ const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
     if (conn) {
       await conn.close();
     }
+    logRpcCount(context);
   }
 };
 
-export default timerTrigger;
+export default reconcileProjects;

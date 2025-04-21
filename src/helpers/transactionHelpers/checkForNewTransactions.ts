@@ -13,15 +13,19 @@ import { fetchEvents } from "../../web3/fetches/fetchEvents";
 import { getWeb3 } from "../../web3/providers";
 import { processNewTransactions } from "./processNewTransactions";
 
+interface CheckForNewTransactionsParams {
+  conn: Connection | undefined;
+  context: Context;
+  functionName: string;
+  project: IProject;
+}
+
 export const checkForNewTransactions = async ({
   conn,
   context,
+  functionName,
   project,
-}: {
-  conn: Connection | undefined;
-  context: Context;
-  project: IProject;
-}) => {
+}: CheckForNewTransactionsParams) => {
   const {
     _id: project_id,
     chain,
@@ -31,7 +35,7 @@ export const checkForNewTransactions = async ({
     project_name,
   } = project;
   context.log(`Checking for new transactions for ${project_name}...`);
-  const web3 = getWeb3(chain);
+  const web3 = getWeb3(chain, functionName);
   const contract = getContractWeb3(web3, abis[project_id], contract_address);
 
   const logValues: LogValues = {

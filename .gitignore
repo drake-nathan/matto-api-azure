@@ -97,6 +97,7 @@ local.settings.json
 __blobstorage__
 __queuestorage__
 __azurite_db*__.json
+AzuriteConfig
 
 # Puppeteer artifacts
 cache/

@@ -9,17 +9,21 @@ import { addTransaction } from "../../db/queries/transactionQueries";
 import { fetchEvents } from "../../web3/fetches/fetchEvents";
 import { processNewTransactions } from "../transactionHelpers/processNewTransactions";
 
+interface ReconcileTransactionsParams {
+  conn: Connection;
+  context: Context;
+  contract: Contract;
+  functionName?: string;
+  project: IProject;
+}
+
 export const reconcileTransactions = async ({
   conn,
   context,
   contract,
+  functionName,
   project,
-}: {
-  conn: Connection;
-  context: Context;
-  contract: Contract;
-  project: IProject;
-}) => {
+}: ReconcileTransactionsParams) => {
   const {
     _id: project_id,
     chain,
@@ -36,6 +40,7 @@ export const reconcileTransactions = async ({
       creationBlock: creation_block,
       events,
       fetchAll: true,
+      functionName,
       projectId: project_id,
     });
 

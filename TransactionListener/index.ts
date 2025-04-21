@@ -8,6 +8,7 @@ import type { IProject } from "../src/db/schemas/schemaTypes";
 import { connectionFactory } from "../src/db/connectionFactory";
 import { checkForNewTransactions } from "../src/helpers/transactionHelpers/checkForNewTransactions";
 import { projects as allProjects } from "../src/projects";
+import { logRpcCount } from "../src/utils/rpcCounter";
 
 dotenv.config();
 
@@ -32,7 +33,7 @@ const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
       projects.map((project) => {
         // this coniditional skips projects that don't store transactions
         if (project.events.length) {
-          return checkForNewTransactions({ conn, context, project });
+          return checkForNewTransactions({ conn, context, functionName: context.executionContext.functionName, project });
         }
         return null;
       }),
@@ -59,6 +60,7 @@ const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
     if (conn) {
       await conn.close();
     }
+    logRpcCount(context);
   }
 };
 
