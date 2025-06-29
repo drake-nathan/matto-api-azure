@@ -195,9 +195,12 @@ export interface CollectionResponse {
   tokens: TokenAbbr[];
 }
 
-export type ProjectSizes = Record<ProjectId, {
+export type ProjectSizes = Record<
+  ProjectId,
+  {
     full: Viewport;
     mid: Viewport;
     small: Viewport;
     thumb?: Viewport;
-  }>;
+  }
+>;

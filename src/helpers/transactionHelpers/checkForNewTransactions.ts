@@ -16,7 +16,7 @@ import { processNewTransactions } from "./processNewTransactions";
 interface CheckForNewTransactionsParams {
   conn: Connection | undefined;
   context: Context;
-  functionName: string;
+  functionName?: string;
   project: IProject;
 }
 
@@ -27,53 +27,65 @@ export const checkForNewTransactions = async ({
   project,
 }: CheckForNewTransactionsParams) => {
   const {
-    _id: project_id,
+    _id: projectId,
     chain,
-    contract_address,
-    creation_block,
+    contract_address: contractAddress,
+    creation_block: creationBlock,
     events,
-    project_name,
+    project_name: projectName,
   } = project;
-  context.log(`Checking for new transactions for ${project_name}...`);
+
+  context.log(`Checking for new transactions for ${projectName}...`);
+
   const web3 = getWeb3(chain, functionName);
-  const contract = getContractWeb3(web3, abis[project_id], contract_address);
+  const contract = getContractWeb3(web3, abis[projectId], contractAddress);
 
   const logValues: LogValues = {
     currentSupply: 0,
     newTokens: [],
     numOfTxsAdded: 0,
-    project_name,
+    project_name: projectName,
   };
 
   if (!conn) {
-    throw new Error("No connection to database. (checkForNewTransactions)");
+    context.log.error(
+      `No DB connection for ${projectName} in checkForNewTransactions`,
+    );
+    return logValues;
   }
 
-  const { filteredTransactions: fetchedTransactions } = await fetchEvents({
+  const { err, filteredTransactions: fetchedTransactions } = await fetchEvents({
     chain,
     conn,
-    contractAddress: contract_address as Address,
-    creationBlock: creation_block,
+    context,
+    contractAddress: contractAddress as Address,
+    creationBlock,
     events,
-    projectId: project_id,
+    functionName,
+    projectId,
   });
 
+  if (err) {
+    context.log.error(`Error fetching transactions for ${projectName}: ${err}`);
+    return logValues;
+  }
+
   const newTransactionsAdded = await Promise.all(
-    fetchedTransactions.map(async (tx) => addTransaction(tx, project_id, conn)),
+    fetchedTransactions.map(async (tx) => addTransaction(tx, projectId, conn)),
   );
   const newTxNoNull = newTransactionsAdded.filter(Boolean);
 
-  if (newTxNoNull.length) {
-    context.log.info(
-      `${newTxNoNull.length} missing transactions found and added.`,
-    );
-  } else {
-    const currentSupply = await getProjectCurrentSupply(project._id, conn);
+  if (newTxNoNull.length === 0) {
+    const currentSupply = await getProjectCurrentSupply(projectId, conn);
     logValues.currentSupply = currentSupply;
     return logValues;
   }
 
   logValues.numOfTxsAdded = newTxNoNull.length;
+
+  context.log.info(
+    `${newTxNoNull.length} missing transactions found and added.`,
+  );
 
   const newTokenIds = await processNewTransactions(
     newTxNoNull,
@@ -82,9 +94,10 @@ export const checkForNewTransactions = async ({
     context,
     conn,
   );
+
   logValues.newTokens = newTokenIds;
 
-  const newSupply = await getProjectCurrentSupply(project._id, conn);
+  const newSupply = await getProjectCurrentSupply(projectId, conn);
   logValues.currentSupply = newSupply;
 
   return logValues;

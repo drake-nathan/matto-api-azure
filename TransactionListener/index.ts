@@ -33,7 +33,12 @@ const timerTrigger: AzureFunction = async (context: Context): Promise<void> => {
       projects.map((project) => {
         // this coniditional skips projects that don't store transactions
         if (project.events.length) {
-          return checkForNewTransactions({ conn, context, functionName: context.executionContext.functionName, project });
+          return checkForNewTransactions({
+            conn,
+            context,
+            functionName: context.executionContext.functionName,
+            project,
+          });
         }
         return null;
       }),

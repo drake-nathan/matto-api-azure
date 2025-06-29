@@ -1,33 +1,29 @@
+import type { Context } from "@azure/functions";
 import type { Connection } from "mongoose";
-import type { Address } from "viem";
+import type { Address, GetContractEventsReturnType } from "viem";
 
-import { z } from "zod";
+import { getLastTxProcessed } from "../../db/queries/transactionQueries"; // External first
+import { filterRelevantTransactions } from "../../helpers/transactionHelpers/filterRelevantTransactions";
+import { abis, type Chain, type ProjectId } from "../../projects";
+import { getViem } from "../providers"; // Local providers
 
-import type { Chain } from "../../projects";
-
-import { getLastTxProcessed } from "../../db/queries/transactionQueries";
-import { oneHundredxAbi } from "../../projects/100x10x1x/abi";
-import { zodAddress, zodBigIntToNumber, zodHash } from "../../utils/zod";
-import { getViem } from "../providers";
-
-const incomingTxSchema = z.object({
-  address: zodAddress,
-  args: z.object({
-    from: zodAddress.optional(),
-    to: zodAddress.optional(),
-    tokenId: zodBigIntToNumber.optional(),
-  }),
-  blockNumber: zodBigIntToNumber,
-  eventName: z.string(),
-  transactionHash: zodHash,
-});
-const fetchSchema = z.array(incomingTxSchema);
-
-export type IncomingTx = z.infer<typeof incomingTxSchema>;
+// Define IncomingTx type based on Viem's log structure
+export interface IncomingTx {
+  args: {
+    [key: string]: any;
+    from?: Address;
+    to?: Address;
+    tokenId?: number;
+  };
+  blockNumber: number;
+  eventName: string;
+  transactionHash: string;
+}
 
 interface FetchEventsParams {
   chain: Chain;
   conn: Connection;
+  context: Context;
   contractAddress: Address;
   creationBlock: number;
   events: string[];
@@ -36,9 +32,13 @@ interface FetchEventsParams {
   projectId: number;
 }
 
+// Define chunk size as number for Web3.js path
+const CHUNK_SIZE = 10000n;
+
 export const fetchEvents = async ({
   chain,
   conn,
+  context,
   contractAddress,
   creationBlock,
   events,
@@ -46,58 +46,100 @@ export const fetchEvents = async ({
   functionName,
   projectId,
 }: FetchEventsParams) => {
-  const fromBlock =
-    fetchAll ? creationBlock : (
-      ((await getLastTxProcessed(projectId, conn)) ?? creationBlock) + 1
+  // Define return type structure with correct order
+  const result: {
+    err?: string;
+    filteredTransactions: IncomingTx[];
+    totalTxCount: number;
+  } = {
+    filteredTransactions: [],
+    totalTxCount: 0,
+  };
+
+  try {
+    const lastProcessed = await getLastTxProcessed(projectId, conn);
+    const fromBlock = BigInt(
+      fetchAll ? creationBlock : (lastProcessed ?? creationBlock) + 1,
     );
 
-  const viem = getViem(chain, functionName);
+    const viem = getViem(chain, functionName);
+    const latestBlock = await viem.getBlockNumber();
 
-  const allTransactions = await viem.getContractEvents({
-    abi: oneHundredxAbi,
-    address: contractAddress,
-    fromBlock: BigInt(fromBlock),
-  });
+    context.log.info(
+      `[fetchEvents - ${contractAddress}] Fetching events from block ${fromBlock} to ${latestBlock} using Viem`,
+    );
 
-  const validatedTransactions = fetchSchema.parse(allTransactions);
+    let currentStartBlock = fromBlock;
+    const finalEndBlock = latestBlock;
+    let allTransactions: GetContractEventsReturnType = [];
 
-  const filteredTransactions = validatedTransactions.filter((tx) => {
-    if (projectId === 7) {
-      if (tx.eventName === "OrderChanged") {
-        const mintTx = allTransactions.find(
-          (t) =>
-            t.transactionHash.toLowerCase() ===
-              tx.transactionHash.toLowerCase() && t.eventName === "Transfer",
-        );
-        if (mintTx) {
-          return false;
-        }
+    while (currentStartBlock <= finalEndBlock) {
+      let currentEndBlock = currentStartBlock + CHUNK_SIZE - 1n;
+      if (currentEndBlock > finalEndBlock) {
+        currentEndBlock = finalEndBlock;
       }
+
+      context.log.info(
+        `[fetchEvents - ${contractAddress}] Processing Viem chunk: ${currentStartBlock} - ${currentEndBlock}`,
+      );
+
+      try {
+        const allTransactionsChunk = await viem.getContractEvents({
+          abi: abis[projectId as ProjectId],
+          address: contractAddress,
+          fromBlock: currentStartBlock,
+          toBlock: currentEndBlock,
+        });
+        allTransactions = allTransactions.concat(allTransactionsChunk);
+      } catch (error: unknown) {
+        context.log.error(
+          `[fetchEvents - ${contractAddress}] Error fetching Viem chunk ${currentStartBlock}-${currentEndBlock}:`,
+          error instanceof Error ? error.message : error,
+        );
+        result.err = `Error fetching Viem events in chunk ${currentStartBlock}-${currentEndBlock}`;
+        return result;
+      }
+
+      currentStartBlock += CHUNK_SIZE;
     }
 
-    return events.includes(tx.eventName);
-  });
+    context.log.info(
+      `[fetchEvents - ${contractAddress}] Total Viem events fetched: ${allTransactions.length}`,
+    );
 
-  return {
-    filteredTransactions,
-    totalTxCount: allTransactions.length,
-  };
+    const filteredTransactions = filterRelevantTransactions(
+      allTransactions,
+      events,
+    );
+
+    // Transform filtered Viem logs to IncomingTx format
+    const transformedFilteredTransactions: IncomingTx[] =
+      filteredTransactions.map((log) => ({
+        args: (log as any).args || {},
+        blockNumber: Number(log.blockNumber),
+        eventName: (log as any).eventName || "Unknown",
+        transactionHash: log.transactionHash,
+      }));
+
+    result.filteredTransactions = transformedFilteredTransactions;
+
+    // TODO: Implement logic to update the last processed block in the DB if conn exists
+    context.log.info(
+      `[fetchEvents - ${contractAddress}] TODO: Update last processed block to ${finalEndBlock.toString()}`,
+    );
+
+    // Get total count after processing
+    result.totalTxCount = await conn.models.Transaction.countDocuments({
+      projectId,
+    });
+
+    return result;
+  } catch (err: unknown) {
+    const error = err as Error;
+    context.log.error(
+      `Error fetching events for project ${projectId}: ${error.message}`,
+    );
+    result.err = error.message;
+    return result;
+  }
 };
-
-// const callFetchEvents = async () => {
-//   const conn = await connectionFactory();
-
-//   const transactions = await fetchEvents({
-//     chain: "goerli",
-//     conn,
-//     contractAddress: "0x6aBf38A6cB1f0ab87047E80Efd1B109C8E5CeFF3",
-//     creationBlock: 10129683,
-//     events: ["Transfer", "OrderChanged"],
-//     fetchAll: true,
-//     projectId: 7,
-//   });
-
-//   console.log(transactions.filteredTransactions[45]);
-// };
-
-// void callFetchEvents();

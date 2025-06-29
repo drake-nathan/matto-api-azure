@@ -20,7 +20,7 @@ export const getTokenZeroDescription = async (
 
   const compositeOrderUnformatted = await contract.read.getOrder();
   // add space between commas
-  const compositeOrder = compositeOrderUnformatted.replaceAll(',', ", ");
+  const compositeOrder = compositeOrderUnformatted.replaceAll(",", ", ");
 
   const extraDescription =
     "Token 0 represents the composite artwork. It is owned by the smart-contract, and it can be leant out (and recalled back), by the artist at any time.";

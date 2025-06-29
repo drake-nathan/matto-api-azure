@@ -24,37 +24,34 @@ export const reconcileTransactions = async ({
   functionName,
   project,
 }: ReconcileTransactionsParams) => {
-  const {
-    _id: project_id,
-    chain,
-    contract_address,
-    creation_block,
-    events,
-  } = project;
+  const { _id: project_id, events } = project;
 
-  const { filteredTransactions: allTransactions, totalTxCount } =
-    await fetchEvents({
-      chain,
-      conn,
-      contractAddress: contract_address as Address,
-      creationBlock: creation_block,
-      events,
-      fetchAll: true,
-      functionName,
-      projectId: project_id,
-    });
+  const contractAddress = project.contract_address as Address;
 
-  const newTransactionsAdded = await Promise.all(
-    allTransactions.map((tx) => addTransaction(tx, project_id, conn)),
-  );
-
-  await processNewTransactions(
-    newTransactionsAdded,
-    project,
-    contract,
-    context,
+  const { err, filteredTransactions, totalTxCount } = await fetchEvents({
+    chain: project.chain,
     conn,
+    context,
+    contractAddress,
+    creationBlock: project.creation_block,
+    events,
+    functionName,
+    projectId: project_id,
+  });
+
+  if (err) {
+    context.log.error(err);
+    return { allTransactions: [], totalTxCount: 0 };
+  }
+
+  context.log.info(
+    `[reconcileTransactions - ${project.project_name}] Got ${filteredTransactions.length} filtered transactions`,
   );
 
-  return { allTransactions, totalTxCount };
+  // Add transactions to the database
+  await Promise.all(
+    filteredTransactions.map((tx) => addTransaction(tx, project_id, conn)),
+  );
+
+  return { allTransactions: filteredTransactions, totalTxCount };
 };

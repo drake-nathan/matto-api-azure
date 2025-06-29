@@ -21,7 +21,7 @@ import {
 import { getTxCounts } from "../../db/queries/transactionQueries";
 import { abis, ProjectId, ProjectSlug } from "../../projects";
 import { getContractWeb3 } from "../../web3/contractWeb3";
-import { getWeb3 } from "../../web3/providers";
+import { getViem, getWeb3 } from "../../web3/providers";
 import { fetchScriptInputs } from "../../web3/web3Fetches";
 import { getProcessMintFunction } from "../tokenHelpers";
 import {
@@ -46,11 +46,10 @@ const processNewProjects = async (
       let { creation_block } = project;
 
       if (project.project_slug === ProjectSlug.blonks) {
-        const block = await getWeb3(project.chain, functionName).eth.getBlock(
-          "latest",
-        );
-        const { number: blockNumber } = block;
-        creation_block = blockNumber;
+        // Use getViem to get latest block number
+        const viem = getViem(project.chain, functionName);
+        const blockNumber = await viem.getBlockNumber();
+        creation_block = Number(blockNumber); // Convert BigInt to number
       }
 
       return addProject(
@@ -337,7 +336,7 @@ export const reconcileProject = async (
 
   const totalTokensInDb = await getCurrentTokenSupply(project_id, conn);
 
-  const web3 = getWeb3(chain);
+  const web3 = getWeb3(chain, functionName);
   const contract = getContractWeb3(web3, abis[project_id], contract_address);
 
   if (isBulkMint) {

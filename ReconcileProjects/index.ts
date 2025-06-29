@@ -44,6 +44,9 @@ const reconcileProjects: AzureFunction = async (
     );
 
     for await (const project of projects) {
+      context.log.info(
+        `Reconciling project: ${project.project_name} (ID: ${project._id})`,
+      ); // Log project being processed
       const _project = await updateProjectIfNeeded(project, context, conn);
 
       await reconcileProject(

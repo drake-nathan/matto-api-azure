@@ -155,7 +155,9 @@ export const updateMathareDescriptions = async (
   const { _id: project_id, appended_description, maximum_supply } = project;
 
   // create array of token ids starting from 1 to maximum_supply
-  const tokenIds = Array.from(new Array(maximum_supply).keys()).map((i) => i + 1);
+  const tokenIds = Array.from(new Array(maximum_supply).keys()).map(
+    (i) => i + 1,
+  );
 
   await Promise.all(
     tokenIds.map(async (token_id) => {

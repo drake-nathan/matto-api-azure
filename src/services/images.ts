@@ -29,7 +29,9 @@ export const fetchResizeUploadImages = async (
         `Error fetching image for ${projectSlug} ${tokenId}: ${error.message}`,
       );
     } else {
-      throw new TypeError(`Error fetching image for ${projectSlug} ${tokenId}.`);
+      throw new TypeError(
+        `Error fetching image for ${projectSlug} ${tokenId}.`,
+      );
     }
   }
 
