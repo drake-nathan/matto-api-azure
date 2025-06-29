@@ -354,31 +354,69 @@ export const reconcileProject = async (
     return;
   }
 
-  // fetch all transactions from blockchain, add missing ones
-  const { allTransactions, totalTxCount } = await reconcileTransactions({
-    conn,
-    context,
-    contract,
-    functionName,
-    project,
-  });
+  // Progressive reconciliation: process blocks in chunks
+  let hasMoreBlocks = true;
+  let iterationCount = 0;
+  const maxIterations = 5; // Limit iterations to prevent infinite loops in a single function call
 
-  if (!isBulkMint) {
-    await reconcileTokens({
+  while (hasMoreBlocks && iterationCount < maxIterations) {
+    iterationCount++;
+
+    context.log.info(
+      `[reconcileProject - ${project_name}] Starting reconciliation iteration ${iterationCount}/${maxIterations}`,
+    );
+
+    // fetch all transactions from blockchain, add missing ones
+    const {
       allTransactions,
+      totalTxCount,
+      hasMoreBlocks: moreBlocks,
+      lastProcessedBlock,
+    } = await reconcileTransactions({
       conn,
       context,
       contract,
+      functionName,
       project,
-      totalTokensInDb,
-      totalTxCount,
+      maxBlocksPerInvocation: 30000, // Use smaller chunks for ReconcileProjects
     });
-  } else {
-    await updateProjectSupplyAndCount(
-      project_id,
-      totalTokensInDb,
-      totalTxCount,
-      conn,
+
+    hasMoreBlocks = moreBlocks || false;
+
+    if (!isBulkMint) {
+      await reconcileTokens({
+        allTransactions,
+        conn,
+        context,
+        contract,
+        project,
+        totalTokensInDb,
+        totalTxCount,
+      });
+    } else {
+      await updateProjectSupplyAndCount(
+        project_id,
+        totalTokensInDb,
+        totalTxCount,
+        conn,
+      );
+    }
+
+    if (hasMoreBlocks) {
+      context.log.info(
+        `[reconcileProject - ${project_name}] More blocks to process. Processed up to block ${lastProcessedBlock}. Will continue in next iteration.`,
+      );
+    } else {
+      context.log.info(
+        `[reconcileProject - ${project_name}] Reconciliation complete after ${iterationCount} iteration(s).`,
+      );
+      break;
+    }
+  }
+
+  if (hasMoreBlocks && iterationCount >= maxIterations) {
+    context.log.warn(
+      `[reconcileProject - ${project_name}] Reached maximum iterations (${maxIterations}). More blocks still need processing. Will continue in next ReconcileProjects run.`,
     );
   }
 };

@@ -54,7 +54,15 @@ export const checkForNewTransactions = async ({
     return logValues;
   }
 
-  const { err, filteredTransactions: fetchedTransactions } = await fetchEvents({
+  // Use a smaller block limit for TransactionListener since it runs more frequently
+  const maxBlocksForListener = 10000; // Process up to 10k blocks per TransactionListener invocation
+
+  const {
+    err,
+    filteredTransactions: fetchedTransactions,
+    hasMoreBlocks,
+    lastProcessedBlock,
+  } = await fetchEvents({
     chain,
     conn,
     context,
@@ -62,12 +70,19 @@ export const checkForNewTransactions = async ({
     creationBlock,
     events,
     functionName,
+    maxBlocksPerInvocation: maxBlocksForListener,
     projectId,
   });
 
   if (err) {
     context.log.error(`Error fetching transactions for ${projectName}: ${err}`);
     return logValues;
+  }
+
+  if (hasMoreBlocks) {
+    context.log.info(
+      `${projectName}: More blocks available for processing (processed up to ${lastProcessedBlock}). Consider running ReconcileProjects for full sync.`,
+    );
   }
 
   const newTransactionsAdded = await Promise.all(

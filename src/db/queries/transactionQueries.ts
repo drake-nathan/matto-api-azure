@@ -57,11 +57,77 @@ export const getLastTxProcessed = async (
 ) => {
   const Transaction = conn.model<ITransaction>("Transaction");
 
-  const query = await Transaction.findOne({ project_id })
+  // Get the highest block number from real transactions
+  const lastRealTx = await Transaction.findOne({
+    event_type: { $ne: "__LAST_PROCESSED_MARKER__" },
+    project_id,
+  })
     .sort("-block_number")
     .select("block_number");
 
-  return query?.block_number ?? null;
+  // Get the last processed marker
+  const lastMarker = await Transaction.findOne({
+    event_type: "__LAST_PROCESSED_MARKER__",
+    project_id,
+  })
+    .sort("-block_number")
+    .select("block_number");
+
+  const realTxBlock = lastRealTx?.block_number ?? null;
+  const markerBlock = lastMarker?.block_number ?? null;
+
+  // Return the highest block number between real transactions and the marker
+  if (realTxBlock === null && markerBlock === null) {
+    return null;
+  }
+
+  if (realTxBlock === null) {
+    return markerBlock;
+  }
+
+  if (markerBlock === null) {
+    return realTxBlock;
+  }
+
+  return Math.max(realTxBlock, markerBlock);
+};
+
+export const updateLastProcessedBlock = async (
+  project_id: number,
+  block_number: number,
+  conn: Connection,
+): Promise<boolean> => {
+  try {
+    const Transaction = conn.model<ITransaction>("Transaction");
+
+    // Create a special marker transaction to track the last processed block
+    // This won't be a real transaction, just a tracking mechanism
+    const markerTx: ITransaction = {
+      block_number,
+      event_type: "__LAST_PROCESSED_MARKER__",
+      project_id,
+      transaction_date: new Date(),
+      transaction_hash: `marker_${project_id}_${block_number}_${Date.now()}`,
+    };
+
+    // Remove any existing marker for this project
+    await Transaction.deleteMany({
+      event_type: "__LAST_PROCESSED_MARKER__",
+      project_id,
+    });
+
+    // Insert the new marker
+    const newMarker = new Transaction(markerTx);
+    await newMarker.save();
+
+    return true;
+  } catch (error) {
+    console.error(
+      `Error updating last processed block for project ${project_id}:`,
+      error,
+    );
+    return false;
+  }
 };
 
 export const getTransactionsByEvent = async (
@@ -150,4 +216,30 @@ export const checkIfTransactionExists = (
   });
 
   return query.exec();
+};
+
+export const resetLastProcessedBlock = async (
+  project_id: number,
+  conn: Connection,
+): Promise<boolean> => {
+  try {
+    const Transaction = conn.model<ITransaction>("Transaction");
+
+    // Remove any existing marker for this project
+    const result = await Transaction.deleteMany({
+      event_type: "__LAST_PROCESSED_MARKER__",
+      project_id,
+    });
+
+    console.log(
+      `Reset last processed block for project ${project_id}. Removed ${result.deletedCount} markers.`,
+    );
+    return true;
+  } catch (error) {
+    console.error(
+      `Error resetting last processed block for project ${project_id}:`,
+      error,
+    );
+    return false;
+  }
 };

@@ -9,6 +9,7 @@
     }
   },
   "functionTimeout": "00:10:00",
+  "functions": ["ReconcileProjects"],
   "logging": {
     "applicationInsights": {
       "samplingSettings": {
